@@ -1,2 +1,4 @@
 # Project exclude paths
 /venv/
+/output/*.log
+/output/*.png
