@@ -1,0 +1,428 @@
+{
+    "data_sources": {
+        "2019-XRT-Rates": {
+            "file_spec": "./data/XRT/curve2_plain_nosys.dat",
+            "description": "Data from Swift/XRT.  Use my eruption JD = 2458723.278+/-0.256",
+            "type": "XrtRateDataSource",
+            "light_curves": {
+                "nominal": {
+                    "eruption_jd": 2458723.278,
+                    "query_params": { "day_range": [0, 100] },
+                    "data_sets": [
+                        {"set": "WT", "color": "darkslategray", "label": "WT", "breaks": []},
+                        {"set": "PC", "color": "cyan", "label": "PC ", "breaks": []}
+                    ]
+                }
+            }
+        },
+        "2019-XRT-Ratios": {
+            "file_spec": "./data/XRT/hardrat_plain.dat",
+            "description": "Hard/Soft Ratio Data from Swift/XRT.  Use my eruption JD = 2458723.278+/-0.256",
+            "type": "XrtRatioDataSource",
+            "light_curves": {
+                "hard_data": {
+                    "eruption_jd": 2458723.278,
+                    "query_params": { "day_range": [0, 100], "data_type": "hard data" },
+                    "data_sets": [
+                        {"set": "WT", "color": "darkslategray", "label": "WT", "breaks": []},
+                        {"set": "PC", "color": "cyan", "label": "PC", "breaks": []}
+                    ]
+                },
+                "soft_data": {
+                    "eruption_jd": 2458723.278,
+                    "query_params": { "day_range": [0, 100], "data_type": "soft data" },
+                    "data_sets": [
+                        {"set": "WT", "color": "darkslategray", "label": "WT", "breaks": []},
+                        {"set": "PC", "color": "cyan", "label": "PC", "breaks": []}
+                    ]
+                },
+                "hardness_ratio": {
+                    "eruption_jd": 2458723.278,
+                    "query_params": { "day_range": [0, 100], "data_type": "hardness ratio" },
+                    "data_sets": [
+                        {"set": "WT", "color": "darkslategray", "label": "WT", "breaks": []},
+                        {"set": "PC", "color": "cyan", "label": "PC", "breaks": []}
+                    ]
+                }
+            }
+        },
+        "2019-UVOT": {
+            "file_spec": "/Users/steveo/Documents/V3890_Sgr_Data/Swift_UVOT/maghist_*.fits",
+            "description": "Data from Swift/UVOT.  Use my eruption JD = 2458723.278+/-0.256",
+            "type": "UvotFitsMagnitudeDataSource",
+            "light_curves": {
+                "nominal": {
+                    "eruption_jd": 2458723.278,
+                    "query_params": { "day_range": [0, 100] },
+                    "data_sets": [
+                        {"set": "UVW2", "color": "darkviolet", "label": "UVW2 filter", "breaks": [6.5, 12.0, 21.5, 30.5]},
+                        {"set": "UVM2", "color": "violet", "label": "UVM2 filter", "breaks": [4.9,  9.5, 21.3, 31.8, 65.7]}
+                    ]
+                }
+            }
+        },
+        "2019-AAVSO": {
+            "file_spec": "./data/AAVSO/phot_aavsodata_5ed4cc7016a24.txt",
+            "description": "Data from AAVSO.  I have calculated the eruption JD = 2458723.278+/-0.256",
+            "type": "AavsoMagnitudeDataSource",
+            "light_curves":{
+                "nominal": {
+                    "eruption_jd": 2458723.278,
+                    "query_params": { "excluded_observers": "SPET", "day_range": [0, 100] },
+                    "data_sets": [
+                        {"set": "I", "color": "darkred", "label": "I-band","breaks": [0.35, 0.46, 9.6, 22.2, 30.0, 38.9, 66.5]},
+                        {"set": "R", "color": "r", "label": "R-band",      "breaks": [0.35, 0.46, 8.2, 22.6, 29.0, 38.5]},
+                        {"set": "V", "color": "g", "label": "V-band",      "breaks": [0.35, 0.46, 8.2, 21.1, 31.8, 40.0]},
+                        {"set": "B", "color": "b", "label": "B-band",      "breaks": [0.35, 0.42, 7.0, 22.3, 31.5, 50.5]}
+                    ]
+                },
+                "nominal-err": {
+                    "eruption_jd": 2458723.022,
+                    "query_params": { "excluded_observers": "SPET", "day_range": [0, 100] },
+                    "data_sets": [
+                        {"set": "I", "color": "darkred", "label": "I-band","breaks": [0.60, 0.74, 10.06, 22.46, 30.26, 39.16, 66.76]},
+                        {"set": "R", "color": "r", "label": "R-band",      "breaks": [0.60, 0.74, 8.56, 22.86, 29.26, 38.76]},
+                        {"set": "V", "color": "g", "label": "V-band",      "breaks": [0.60, 0.79, 8.76, 21.36, 32.06, 40.00]},
+                        {"set": "B", "color": "b", "label": "B-band",      "breaks": [0.60, 0.74, 7.46, 22.56, 31.76, 50.76]}
+                    ]
+                },
+                "nominal+err": {
+                    "eruption_jd": 2458723.534,
+                    "query_params": { "excluded_observers": "SPET", "day_range": [0, 100] },
+                    "data_sets": [
+                        {"set": "I", "color": "darkred", "label": "I-band","breaks": [0.095, 0.20, 9.14, 21.94, 29.74, 38.64, 66.24]},
+                        {"set": "R", "color": "r", "label": "R-band",      "breaks": [0.095, 0.20, 7.74, 22.14, 28.74, 38.24]},
+                        {"set": "V", "color": "g", "label": "V-band",      "breaks": [0.095, 3.09, 7.94, 20.84, 31.54, 39.74]},
+                        {"set": "B", "color": "b", "label": "B-band",      "breaks": [0.095, 3.1,  8.2, 22.04, 31.24, 50.24]}
+                    ]
+                },
+                "nominal+SPET_Revised_Breaks": {
+                    "eruption_jd": 2458723.278,
+                    "query_params": { "excluded_observers": "", "day_range": [0, 100] },
+                    "data_sets": [
+                        {"set": "I", "color": "darkred", "label": "B-band","breaks": [0.35, 0.46, 8.6, 24.2, 30.0, 38.9, 66.5]},
+                        {"set": "R", "color": "r", "label": "R-band",      "breaks": [0.35, 0.46, 9.6, 24.2, 29.0, 38.5]},
+                        {"set": "V", "color": "g", "label": "V-band",      "breaks": [0.35, 0.46, 8.2, 21.1, 31.8, 40.0]},
+                        {"set": "B", "color": "b", "label": "B-band",      "breaks": [0.35, 0.42, 7.0, 22.3, 31.5, 50.5]}
+                    ]
+                }
+            }
+        },
+        "1990-Schaefer": {
+            "file_spec": "./data/Schaefer/Schaefer (2010) Table 15 - Eruption Light Curves V3890 Sgr - 1990.txt",
+            "description": "Data from Schaefer (2010).  He gives peak JD = 2448009",
+            "type": "SchaeferMagnitudeDataSource",
+            "light_curves": {
+                "nominal": {
+                    "eruption_jd": 2448008.65,
+                    "query_params": {},
+                    "data_sets": [
+                        {"set": "V", "color": "g", "label": "V-band",  "breaks": [0.35, 0.46, 8.9, 21.1, 31.8, 40.0]},
+                        {"set": "B", "color": "b", "label": "B-band",  "breaks": [0.35, 0.42, 7.0, 22.3, 31.5, 50.5]}
+                    ]
+                },
+                "nominal_same_fits_2019": {
+                    "eruption_jd": 2448008.65,
+                    "query_params": {},
+                    "data_sets": [
+                        {"set": "V", "color": "g", "label": "V-band",  "copy_fits": "2019-AAVSO/nominal", "fit_x_shift": 0, "fit_y_shift": 0},
+                        {"set": "B", "color": "b", "label": "B-band",  "copy_fits": "2019-AAVSO/nominal", "fit_x_shift": 0, "fit_y_shift": 0}
+                    ]
+                }
+            }
+        },
+        "1962-Schaefer": {
+            "file_spec": "./data/Schaefer/Schaefer (2010) Table 15 - Eruption Light Curves V3890 Sgr - 1962.txt",
+            "description": "Data from Schaefer (2010).  He gives peak JD = 2437818",
+            "type": "SchaeferMagnitudeDataSource",
+            "light_curves": {
+                "nominal": {
+                    "eruption_jd": 2437817.65,
+                    "query_params": {},
+                    "data_sets": [
+                        {"set": "B", "color": "b", "label": "B-band",  "breaks": [0.35, 0.42, 7.0, 22.3, 31.5, 50.5]}
+                    ]
+                },
+                "nominal_same_fits_2019": {
+                    "eruption_jd": 2437817.65,
+                    "query_params": {},
+                    "data_sets": [
+                        {"set": "B", "color": "b", "label": "B-band",  "copy_fits": "2019-AAVSO/nominal", "fit_x_shift": 0, "fit_y_shift": 1}
+                    ]
+                }
+            }
+        },
+        "2019-AAVSO-Shifted": {
+            "file_spec": "./data/AAVSO/phot_aavsodata_5ed4cc7016a24.txt",
+            "description": "*** Data from AAVSO with the fits shifted +0.25d to test uncertainties.  eruption JD = 2458723.278+/-0.256 ***",
+            "type": "AavsoMagnitudeDataSource",
+            "light_curves":{
+                "nominal": {
+                    "eruption_jd": 2458723.278,
+                    "query_params": { "excluded_observers": "SPET", "day_range": [0, 100] },
+                    "data_sets": [
+                        {"set": "I", "color": "darkred", "label": "I-band", "copy_fits": "2019-AAVSO/nominal", "fit_x_shift": 0.25, "fit_y_shift": 0},
+                        {"set": "R", "color": "r", "label": "R-band", "copy_fits": "2019-AAVSO/nominal", "fit_x_shift": 0.25, "fit_y_shift": 0},
+                        {"set": "V", "color": "g", "label": "V-band", "copy_fits": "2019-AAVSO/nominal", "fit_x_shift": 0.25, "fit_y_shift": 0},
+                        {"set": "B", "color": "b", "label": "B-band", "copy_fits": "2019-AAVSO/nominal", "fit_x_shift": 0.25, "fit_y_shift": 0}
+                    ]
+                },
+                "nominal-err": {
+                    "eruption_jd": 2458723.022,
+                    "query_params": { "excluded_observers": "SPET", "day_range": [0, 100] },
+                    "data_sets": [
+                        {"set": "I", "color": "darkred", "label": "I-band", "copy_fits": "2019-AAVSO/nominal-err", "fit_x_shift": 0.25, "fit_y_shift": 0},
+                        {"set": "R", "color": "r", "label": "R-band", "copy_fits": "2019-AAVSO/nominal-err", "fit_x_shift": 0.25, "fit_y_shift": 0},
+                        {"set": "V", "color": "g", "label": "V-band", "copy_fits": "2019-AAVSO/nominal-err", "fit_x_shift": 0.25, "fit_y_shift": 0},
+                        {"set": "B", "color": "b", "label": "B-band", "copy_fits": "2019-AAVSO/nominal-err", "fit_x_shift": 0.25, "fit_y_shift": 0}
+                    ]
+                },
+                "nominal+err": {
+                    "eruption_jd": 2458723.534,
+                    "query_params": { "excluded_observers": "SPET", "day_range": [0, 100] },
+                    "data_sets": [
+                        {"set": "I", "color": "darkred", "label": "I-band", "copy_fits": "2019-AAVSO/nominal+err", "fit_x_shift": 0.25, "fit_y_shift": 0},
+                        {"set": "R", "color": "r", "label": "R-band", "copy_fits": "2019-AAVSO/nominal+err", "fit_x_shift": 0.25, "fit_y_shift": 0},
+                        {"set": "V", "color": "g", "label": "V-band", "copy_fits": "2019-AAVSO/nominal+err", "fit_x_shift": 0.25, "fit_y_shift": 0},
+                        {"set": "B", "color": "b", "label": "B-band", "copy_fits": "2019-AAVSO/nominal+err", "fit_x_shift": 0.25, "fit_y_shift": 0}
+                    ]
+                }
+            }
+        }
+    },
+    "plots": {
+        "Combination Plots": [
+            {
+                "type": "ColorMagnitudePlot",
+                "file_name": "./output/V3890Sgr-Color-mag.png",
+                "title": "Color-magnitude plot of the 2019 eruption of V3890 Sgr",
+                "params": {
+                    "show_title": true
+                },
+                "plot_sets": [
+                    {"data_sets": "2019-AAVSO/nominal"}
+                ]
+            },
+            {
+                "type": "SpectralEvolutionDistributionPlot",
+                "file_name": "./output/V3890Sgr-SED-log(freq)-single.png",
+                "title": "The evolution of the SED of the 2019 eruption of V3890 Sgr",
+                "params": {
+                    "show_title": true, "x_axis": "frequency",
+                    "nu_c": {"I": 3.72e14, "R": 4.556e14, "V": 5.441e14, "B": 6.737e14, "UVM2": 1.335e15, "UVW2": 1.555e15},
+                    "delta_t": [0.35, 1, 2, 3, 5, 10, 20, 30, 40]
+                },
+                "plot_sets": [
+                    {"data_sets": "2019-AAVSO/nominal"},
+                    {"data_sets": "2019-UVOT/nominal"}
+                ]
+            },
+            {
+                "type": "SpectralEvolutionDistributionPlot",
+                "file_name": "./output/V3890Sgr-SED-wavelength-single.png",
+                "title": "The evolution of the SED of the 2019 eruption of V3890 Sgr",
+                "params": {
+                    "show_title": true, "x_axis": "wavelength",
+                    "lambda_c": {"I": 806, "R": 658, "V": 551, "B": 445, "UVM2": 224.6, "UVW2": 192.8},
+                    "delta_t": [0.35, 1, 2, 3, 5, 10, 20, 30, 40]
+                },
+                "plot_sets": [
+                    {"data_sets": "2019-AAVSO/nominal"},
+                    {"data_sets": "2019-UVOT/nominal"}
+                ]
+            },
+            {
+                "type": "SingleMagnitudeTimePlot",
+                "file_name": "./output/V3890Sgr-1990-2019-LC-log(day)-single-nominal.png",
+                "title": "The 2019 and 1990 eruptions of V3890 Sgr in the V-band with fitted lightcurves",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "x_scale_log": true, "x_size": 2, "y_size": 2, "y_shift": 1},
+                "plot_sets": [
+                    {"data_sets": "2019-AAVSO/nominal/V", "label": "2019 V-band"},
+                    {"data_sets": "1990-Schaefer/nominal/V", "label": "1990 V-band", "color": "m"}
+                ]
+            },
+            {
+                "type": "SingleMagnitudeTimePlot",
+                "file_name": "./output/V3890Sgr-2019-UV-V-B-LC-log(day)-single-nominal.png",
+                "title": "The 2019 eruption of V3890 Sgr in the\nV, B, UVW2 and UVM2 bands",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "x_scale_log": true, "x_size": 2, "y_size": 2, "y_lim": [5.8, 20.2], "y_shift": 1},
+                "plot_sets": [
+                    {"data_sets": "2019-AAVSO/nominal/V"},
+                    {"data_sets": "2019-AAVSO/nominal/B"},
+                    {"data_sets": "2019-UVOT/nominal/UVW2"},
+                    {"data_sets": "2019-UVOT/nominal/UVM2"}
+                ]
+            },
+            {
+                "type": "SingleMagnitudeTimePlot",
+                "file_name": "./output/V3890Sgr-2019-UV-V-B-LC-log(day)-single-nominal-fits.png",
+                "title": "The 2019 eruption of V3890 Sgr with model\ncurves in the V, B, UVW2 & UVM2 bands",
+                "params": {"show_title": true, "show_data": false, "show_fits": true, "x_scale_log": true, "x_size": 1, "y_size": 1, "legend_loc": "lower left"},
+                "plot_sets": [
+                    {"data_sets": "2019-AAVSO/nominal/V"},
+                    {"data_sets": "2019-AAVSO/nominal/B"},
+                    {"data_sets": "2019-UVOT/nominal/UVW2"},
+                    {"data_sets": "2019-UVOT/nominal/UVM2"}
+                ]
+            },
+            {
+                "type": "SingleMagnitudeAndRateTimePlot",
+                "file_name": "./output/V3890Sgr-2019-ALL-log(day)-single-nominal.png",
+                "title": "The 2019 eruption of V3890 Sgr in the visual, UV and X-ray bands",
+                "params": {"show_title": true, "show_data": false, "show_fits": true, "x_scale_log": true, "x_lim": [0.05, 110], "y2_scale_log": true, "y2_lim": [0.2, 40]},
+                "plot_sets": [
+                    {"data_sets": "2019-AAVSO/nominal"},
+                    {"data_sets": "2019-UVOT/nominal"},
+                    {"data_sets": "2019-XRT-Rates/nominal"}
+                ]
+            }
+        ],
+        "2019 Eruption XRT plots": [
+            {
+                "type": "SingleRateTimePlot",
+                "file_name": "./output/V3890Sgr-2019-XRT-LC-linear-day-nominal.png",
+                "title": "The 2019 eruption of V3890 Sgr in\nSwift XRT ($t_{{e}}=2458723.278$)",
+                "params": {"show_title": true, "show_data": true, "legend_loc": "upper right", "x_scale_log": false},
+                "plot_sets": [{ "data_sets": "2019-XRT-Rates/nominal" }]
+            },
+            {
+                "type": "SingleRateTimePlot",
+                "file_name": "./output/V3890Sgr-2019-XRT-LC-log(day)-single-nominal.png",
+                "title": "The 2019 eruption of V3890 Sgr in\nSwift XRT ($t_{{e}}=2458723.278$)",
+                "params": {"show_title": true, "show_data": true, "legend_loc": "upper left", "x_scale_log": true},
+                "plot_sets": [{"data_sets": "2019-XRT-Rates/nominal"}]
+            },
+            {
+                "type": "RatesAndRatioTimePlot",
+                "file_name": "./output/V3890Sgr-2019-XRT-LC-log(day)-triple-ratios.png",
+                "title": "The Swift XRT X-ray Hard/Soft ratio for the 2019 eruption\nof V3890 Sgr ($t_{{e}}=2458723.278$)",
+                "params": {"show_title": true, "legend_loc": "upper left", "x_scale_log": true, "y_scale_log": true},
+                "plot_sets": [{"data_sets": "2019-XRT-Ratios/hard_data"}, {"data_sets": "2019-XRT-Ratios/soft_data"}, {"data_sets": "2019-XRT-Ratios/hardness_ratio"}]
+            }
+        ],
+        "2019 Eruption UVOT plots": [
+            {
+                "type": "SingleMagnitudeTimePlot",
+                "file_name": "./output/V3890Sgr-2019-UVOT-LC-linear-day-nominal.png",
+                "title": "The 2019 eruption of V3890 Sgr in\nSwift UV ($t_{{e}}=2458723.278$)",
+                "params": { "show_title": true },
+                "plot_sets": [{ "data_sets": "2019-UVOT/nominal" }]
+            },
+            {
+                "type": "MagnitudeFitResidualsTimePlot",
+                "file_name": "./output/V3890Sgr-2019-UVOT-LC-log(day)-single-nominal.png",
+                "title": "The 2019 eruption of V3890 Sgr in Swift UV ($t_{{e}}=2458723.278$)",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
+                "plot_sets": [{"data_sets": "2019-UVOT/nominal"}]
+            }
+        ],
+        "2019 AAVSO Visual plots":[
+            {
+                "type": "SingleMagnitudeTimePlot",
+                "file_name": "./output/V3890Sgr-2019-AAVSO-LC-linear-day-nominal.png",
+                "title": "The 2019 eruption of V3890 Sgr\n($t_{{e}}=2458723.278$)",
+                "params": {"show_title": true, "x_scale_log": false, "x_size": 1, "y_size": 1},
+                "plot_sets": [{"data_sets": "2019-AAVSO/nominal"}]
+            },
+            {
+                "type": "MagnitudeFitResidualsTimePlot",
+                "file_name": "./output/V3890Sgr-2019-AAVSO-LC-log(day)-single-nominal.png",
+                "title": "The 2019 eruption of V3890 Sgr from AAVSO visual observations ($t_{{e}}=2458723.278$)",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
+                "plot_sets": [{"data_sets": "2019-AAVSO/nominal"}]
+            },
+            {
+                "type": "MagnitudeFitResidualsTimePlot",
+                "file_name": "./output/V3890Sgr-2019-AAVSO-LC-log(day)-single-nominal-err.png",
+                "title": "The 2019 eruption of V3890 Sgr from AAVSO visual observations ($t_{{e}}-\\sigma=2458723.022$)",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
+                "plot_sets": [{"data_sets": "2019-AAVSO/nominal-err"}]
+            },
+            {
+                "type": "MagnitudeFitResidualsTimePlot",
+                "file_name": "./output/V3890Sgr-2019-AAVSO-LC-log(day)-single-nominal+err.png",
+                "title": "The 2019 eruption of V3890 Sgr from AAVSO visual observations ($t_{{e}}+\\sigma=2458723.534$)",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
+                "plot_sets": [{"data_sets": "2019-AAVSO/nominal+err"}]
+            },
+            {
+                "type": "TwoByTwoMagnitudeLogTimePlot",
+                "file_name": "./output/V3890Sgr-2019-AAVSO-LC-log(day)-2x2-nominal.png",
+                "title": "The 2019 eruption of V3890 Sgr from AAVSO visual observations ($t_{{e}}=2458723.278$)",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true},
+                "plot_sets": [{"data_sets": "2019-AAVSO/nominal"}]
+            },
+            {
+                "type": "TwoByTwoMagnitudeLogTimePlot",
+                "file_name": "./output/V3890Sgr-2019-AAVSO-LC-log(day)-2x2-nominal-err.png",
+                "title": "The 2019 eruption of V3890 Sgr from AAVSO visual observations ($t_{{e}}-\\sigma=2458723.022$)",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true},
+                "plot_sets": [{"data_sets": "2019-AAVSO/nominal-err"}]
+            },
+            {
+                "type": "TwoByTwoMagnitudeLogTimePlot",
+                "file_name": "./output/V3890Sgr-2019-AAVSO-LC-log(day)-2x2-nominal+err.png",
+                "title": "The 2019 eruption of V3890 Sgr from AAVSO visual observations ($t_{{e}}+\\sigma=2458723.534$)",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true},
+                "plot_sets": [{"data_sets": "2019-AAVSO/nominal+err"}]
+            }
+        ],
+        "1990 Eruption Visual Plots (based on Schaefer data)": [
+            {
+                "type": "SingleMagnitudeTimePlot",
+                "file_name": "./output/V3890Sgr-1990-Schaefer-LC-linear-day-nominal.png",
+                "title": "The 1990 eruption of V3890 Sgr\n($t_{{e}}=2448009-0.35$)",
+                "params": {"show_title": true},
+                "plot_sets": [{"data_sets": "1990-Schaefer/nominal"}]
+            },
+            {
+                "type": "MagnitudeFitResidualsTimePlot",
+                "file_name": "./output/V3890Sgr-1990-Schaefer-LC-log(day)-single-nominal.png",
+                "title": "The 1990 eruption of V3890 Sgr ($t_{{e}}=2448009-0.35$)",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
+                "plot_sets": [{"data_sets": "1990-Schaefer/nominal"}]
+            },
+            {
+                "type": "MagnitudeFitResidualsTimePlot",
+                "file_name": "./output/V3890Sgr-1990-Schaefer-LC-log(day)-single-nominal-2019-fits.png",
+                "title": "The 1990 eruption of V3890 Sgr ($t_{{e}}=2448009-0.35$) with slopes from 2019 eruption",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
+                "plot_sets": [{"data_sets": "1990-Schaefer/nominal_same_fits_2019"}]
+            }
+        ],
+        "1962 Eruption Visual Plots (based on Schaefer data)": [
+            {
+                "type": "SingleMagnitudeTimePlot",
+                "file_name": "./output/V3890Sgr-1962-Schaefer-LC-linear-day-nominal.png",
+                "title": "The 1962 eruption of V3890 Sgr\n($t_{{e}}=22437818-0.35$)",
+                "params": {"show_title": true},
+                "plot_sets": [{"data_sets": "1962-Schaefer/nominal"}]
+            },
+            {
+                "type": "MagnitudeFitResidualsTimePlot",
+                "file_name": "./output/V3890Sgr-1962-Schaefer-LC-log(day)-single-nominal.png",
+                "title": "The 1962 eruption of V3890 Sgr ($t_{{e}}=22437818-0.35$)",
+                "enabled": false,
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
+                "plot_sets": [{"data_sets": "1962-Schaefer/nominal"}]
+            },
+            {
+                "type": "MagnitudeFitResidualsTimePlot",
+                "file_name": "./output/V3890Sgr-1962-Schaefer-LC-log(day)-single-nominal-2019-fits.png",
+                "title": "The 1962 eruption of V3890 Sgr ($t_{{e}}=22437818-0.35$)\noverlaid with slopes from the 2019 eruption",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
+                "plot_sets": [{"data_sets": "1962-Schaefer/nominal_same_fits_2019"}]
+            }
+        ],
+        "Temporary Plots": [
+            {
+                "type": "MagnitudeFitResidualsTimePlot",
+                "file_name": "./output/V3890Sgr-2019-AAVSO-LC-log(day)-single-nominal+SPET-revised-breaks.png",
+                "title": "The 2019 eruption of V3890 Sgr ($t_{{e}}=2458723.278$) [+SPET data, revised breaks]",
+                "enabled": false,
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
+                "plot_sets": [{"data_sets": "2019-AAVSO/nominal+SPET_Revised_Breaks"}]
+            }
+        ]
+    }
+}

@@ -1,0 +1,49 @@
+Table 15
+Eruption Light Curve for V3890 Sgr
+
+Julian Date	Band	Magnitude	Source	
+1990 eruption				
+2448002.18	V	>13.0	Jones IAUC 5007	
+2448006.89	?	>12.0	Liller IAUC 5010	
+2448009.22	V	8.24 +or- 0.15	Jones IAUC 5004	
+2448010.18	V	9.0 +or- 0.15	Pearce IAUC 5003	
+2448010.64	?	8.8 +or- 0.15	Liller IAUC 5010	
+2448011.20	V	8.34 +or- 0.15	Jones IAUC 5004	
+2448011.35	V	9.1 +or- 0.15	Pearce IAUC 5004	
+2448011.65	?	8.6 +or- 0.15	Liller IAUC 5010	
+2448012.30	V	9.30 +or- 0.02	Kato et al. IAUC 5007	
+2448013.35	V	9.4 +or- 0.15	Pearce IAUC 5004	
+2448014.68	V	9.8 +or- 0.15	Pereira IAUC 5007	
+2448015.68	V	9.9 +or- 0.15	Pereira IAUC 5008	
+2448016.53	V	10.08 +or- 0.02	Buckley et al. IAUC 5019	
+2448016.53	B	10.86 +or- 0.15	Buckley et al. IAUC 5020	
+2448016.53	U	10.33 +or- 0.15	Buckley et al. IAUC 5021	
+2448016.67	V	10.3 +or- 0.15	Pereira IAUC 5009	
+2448017.39	V	9.7 +or- 0.15	Pearce IAUC 5010	
+2448017.67	V	9.7 +or- 0.15	Pereira IAUC 5009	
+2448018.37	V	9.8 +or- 0.15	Pearce IAUC 5010	
+2448018.53	V	10.38 +or- 0.02	Buckley et al. IAUC 5019	
+2448018.53	B	11.22 +or- 0.15	Buckley et al. IAUC 5020	
+2448018.53	U	10.62 +or- 0.15	Buckley et al. IAUC 5021	
+2448018.61	V	9.0 +or- 0.15	Boattini IAUC 5007	
+2448018.61	V	10.3 +or- 0.15	Schmeer IAUC 5015	
+2448018.67	V	9.3 +or- 0.15	Pereira IAUC 5015	
+2448019.55	V	10.71 +or- 0.02	Buckley et al. IAUC 5019	
+2448019.55	B	11.62 +or- 0.15	Buckley et al. IAUC 5020	
+2448019.55	U	11.02 +or- 0.15	Buckley et al. IAUC 5021	
+2448026.53	V	11.4 +or- 0.15	Pearce IAUC 5015	
+2448026.70	FES-V	11.63 +or- 0.30	Gonzalez-Riestra IAUC 5021	
+2448027.37	V	11.7 +or- 0.15	Pearce IAUC 5015	
+2448028.37	V	11.9 +or- 0.15	Pearce IAUC 5015	
+2448028.54	V	12.0 +or- 0.15	Pearce IAUC 5015	
+2448029.37	V	12.1 +or- 0.15	Pearce IAUC 5021	
+2448029.57	V	12.2 +or- 0.15	Schmeer IAUC 5021	
+2448030.53	V	12.5 +or- 0.15	Schmeer IAUC 5021	
+2448031.35	V	12.5 +or- 0.15	Pearce IAUC 5021	
+2448032.35	V	12.9 +or- 0.15	Pearce IAUC 5021	
+2448033.36	V	13.3 +or- 0.15	Pearce IAUC 5021	
+2448034.36	V	13.6 +or- 0.15	Pearce IAUC 5021	
+2448035.36	V	13.8 +or- 0.15	Pearce IAUC 5028	
+2448042.36	V	>14.2	Pearce IAUC 5028	
+2448043.80	B	>15.4	Belserene IAUC 5028	
+2448044.36	V	>14.2	Pearce IAUC 5028	

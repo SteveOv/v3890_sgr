@@ -1,0 +1,24 @@
+Table 15
+Eruption Light Curve for V3890 Sgr
+
+Julian Date	Band	Magnitude	Source	
+1962 eruption				
+2437795	B	>15.2	Dinerstein 1973	
+2437818.52	B	10.74 +or- 0.15	Wenzel 1990	
+2437818.54	B	10.84 +or- 0.15	Wenzel 1990	
+2437818.8	B	10.60 +or- 0.15	Miller 1991	
+2437819.8	B	10.78 +or- 0.15	Miller 1991	
+2437820.52	B	11.14 +or- 0.15	Wenzel 1990	
+2437821.49	B	11.04 +or- 0.15	Wenzel 1990	
+2437824.45	B	11.34 +or- 0.15	Wenzel 1990	
+2437824.47	B	11.24 +or- 0.15	Wenzel 1990	
+2437824.49	B	11.44 +or- 0.15	Wenzel 1990	
+2437824.8	B	10.90 +or- 0.15	Miller 1991	
+2437825.0	B	11.31 +or- 0.15	Miller 1991	
+2437826.0	B	11.52 +or- 0.15	Miller 1991	
+2437827.0	B	11.62 +or- 0.15	Miller 1991	
+2437841.8	B	14.35 +or- 0.15	Miller 1991	
+2437843.8	B	14.99 +or- 0.15	Miller 1991	
+2437844.8	B	15.36 +or- 0.15	Miller 1991	
+2437845.8	B	15.61 +or- 0.15	Miller 1991	
+2437929	B	>15.0	Dinerstein 1973	

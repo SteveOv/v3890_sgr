@@ -1,0 +1,6 @@
+time (JD)
+time (+ err)
+time (- err)
+rate
+rate (+ err)
+rate (- err)
