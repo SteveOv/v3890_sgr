@@ -195,9 +195,10 @@
             {
                 "type": "ColorMagnitudePlot",
                 "file_name": "./output/V3890Sgr-Color-mag.png",
-                "title": "Color-magnitude plot of the 2019 eruption of V3890 Sgr",
+                "title": "Color-magnitude plot of the 2019 eruption",
                 "params": {
-                    "show_title": true
+                    "show_title": true, "x_lim": [-1.0, 1.0], "x_ticks": [-1.0, -0.5, 0, 0.5, 1.0], "y_lim": [-10, 0],
+                    "E(B-V)": "0.564+/-0.069", "A_V": 3.1, "mu": "16.6483+/-0.0024", "max_delta_t": 30, "legend_loc": "lower right"
                 },
                 "plot_sets": [
                     {"data_sets": "2019-AAVSO/nominal"}

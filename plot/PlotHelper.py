@@ -46,6 +46,12 @@ class PlotHelper:
         Sets up the plot_sets, which contain the data/params for each set of data to be included in a plot (bands/rates)
         The params associated with each plot_set are those copies over from the fitting/data source with
         overrides from the bands in the plot config
+
+        Each plot_set contains the following
+            "df": the DataFrame containing the source data
+            "fits": the fitted light curve (0 or more fit instances)
+            "params": conflation of the configuration light-curve/band params and the plot_set/params
+                     (plot params override/extend these as necessary)
         """
         plot_sets = {}
 
