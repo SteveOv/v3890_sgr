@@ -21,10 +21,13 @@ class RatesAndRatioTimePlot(BasePlot):
 
         self._default_y_lim_ratio = (-2, 21)
         self._default_y_ticks_ratio = [0, 10, 20]
+        self._default_y_lim_ratio_log = (0.01, 21)
+
         self._default_y_lim = (-2, 31)
         self._default_y_ticks = [0, 10, 20, 30]
-        self._default_y_lim_log = (0.01, 31)        # Rates and Ratios use the same log ticks/scale
-        self._default_y_ticks_log = [0.1, 1, 10]
+        self._default_y_lim_log = (0.01, 41)
+
+        self._default_y_ticks_log = [0.1, 1, 10] # Rates and Ratios use the same log ticks/scale
         return
 
     def _render_plot(self, plot_sets: Dict, title: str) -> plt.figure:
@@ -43,7 +46,7 @@ class RatesAndRatioTimePlot(BasePlot):
 
                 if y_scale_log:
                     ax.set_yscale("log")
-                    ax.set(xlim=x_lim, ylim=self._param("y_lim_ratio", self._default_y_lim_ratio))
+                    ax.set(xlim=x_lim, ylim=self._param("y_lim_ratio", self._default_y_lim_ratio_log))
                     ax.set_yticks(self._param("y_ticks_ratio", self._default_y_ticks_log), minor=False)
                     ax.set_yticklabels(self._param("y_ticks_ratio", self._default_y_ticks_log), minor=False)
                 else:
