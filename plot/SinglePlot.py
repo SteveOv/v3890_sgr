@@ -3,7 +3,7 @@ from typing import Dict, List
 from pandas import DataFrame
 import numpy as np
 import matplotlib.pyplot as plt
-from plot import BasePlot
+from plot import BasePlot, PlotData, PlotSet
 
 
 class SinglePlot(BasePlot, ABC):
@@ -31,13 +31,9 @@ class SinglePlot(BasePlot, ABC):
 
         self._default_y_label = "y data"
         self._default_y_shift = 0
-
-        self._x_data_column = "x"
-        self._y_data_column = "y"
-        self._y_err_column = "dy"
         return
 
-    def _render_plot(self, plot_sets: Dict, title: str) -> plt.figure:
+    def _render_plot(self, plot_data: PlotData, title: str) -> plt.figure:
         # Make it possible for subtype to override creating the figure and axis
         fig = self._create_fig()
         ax = self._create_ax(fig)
@@ -49,18 +45,14 @@ class SinglePlot(BasePlot, ABC):
         self._configure_ax(ax)
 
         # Hooks for the subtype to plot each data type
-        self._render_plot_sets(ax, plot_sets)
+        self._render_plot_sets(ax, plot_data.plot_sets)
+
+        # Hook for subtype to choose whether/how to render epoch data
+        self._render_epochs(ax, plot_data.epochs)
 
         if self._show_legend:
             ax.legend(loc=self._legend_loc)
         return fig
-
-    def _render_plot_sets(self, ax, plot_sets):
-        ix = 0
-        for set_key in plot_sets.keys():
-            plot_set = plot_sets[set_key]
-            self._render_plot_set(ax, ix, plot_set)
-            ix += 1
 
     def _create_fig(self):
         return plt.figure(figsize=(self._x_size, self._y_size), constrained_layout=True)
@@ -78,18 +70,27 @@ class SinglePlot(BasePlot, ABC):
         ax.grid(which='major', linestyle='-', linewidth=self._line_width, alpha=0.3)
         return
 
-    def _render_plot_set(self, ax, ix: int, plot_set: Dict):
-        shift_by = self._param("y_shift", self._default_y_shift) * ix
-        label = self._define_data_label(plot_set, shift_by)
-        color = plot_set["params"]['color']
-        df = plot_set["df"]
+    def _render_plot_sets(self, ax, plot_sets: Dict[str, PlotSet]):
+        ix = 0
+        for set_key in plot_sets.keys():
+            ps = plot_sets[set_key]
+            self._render_plot_set(ax, ix, ps)
+            ix += 1
 
-        self._plot_df_to_error_bars_on_ax(ax, df, self._x_data_column, self._y_data_column, self._y_err_column,
-                                          color, label, shift_by)
+    def _render_plot_set(self, ax, ix: int, ps: PlotSet):
+        y_shift = self._param("y_shift", self._default_y_shift) * ix
+        label = self._define_data_label(ps.label, y_shift)
+        color = ps.color
+        self._plot_points_to_error_bars_on_ax(ax,
+                                              x_points=ps.x, y_points=ps.y, y_err_points=ps.y_err,
+                                              color=color, label=label, y_shift=y_shift)
         return
 
-    def _define_data_label(self, plot_set: Dict, shift_by: float = 0):
-        label = plot_set["params"]["label"]
+    def _render_epochs(self, ax, epochs: Dict[str, float]):
+        # TODO
+        return
+
+    def _define_data_label(self, label: str, shift_by: float = 0):
         return label + (F" (shifted {shift_by:+.1f})" if shift_by != 0 else "")
 
     # TODO: Maybe these would be better on the BasePlot
@@ -107,6 +108,7 @@ class SinglePlot(BasePlot, ABC):
         """
         Plot the passed data as a sequence of error bars using standard formatting as configured for this instance.
         """
+        # TODO: extend this to include x_err too
         return ax.errorbar(x_points, np.add(y_points, y_shift), yerr=y_err_points,
                            label=label, fmt=fmt, color=color, fillstyle='full', markersize=self._marker_size,
                            capsize=1, ecolor=color, elinewidth=self._line_width, alpha=0.5, zorder=1)

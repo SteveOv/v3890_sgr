@@ -1,6 +1,6 @@
 from typing import Dict
 import numpy as np
-from plot import SinglePlotSupportingLogAxes
+from plot import SinglePlotSupportingLogAxes, PlotSet
 
 
 class SingleMagnitudeTimePlot(SinglePlotSupportingLogAxes):
@@ -25,10 +25,6 @@ class SingleMagnitudeTimePlot(SinglePlotSupportingLogAxes):
         # y-axis - not "log-able" and mags are already a log scale
         self._default_y_label = f"Apparent magnitude [mag]"
         self._default_y_lim = (5.8, 19)
-
-        self._x_data_column = "day"
-        self._y_data_column = "mag"
-        self._y_err_column = "mag_err"
         return
 
     def _configure_ax(self, ax):
@@ -42,19 +38,19 @@ class SingleMagnitudeTimePlot(SinglePlotSupportingLogAxes):
         super()._configure_ax(ax)
         return
 
-    def _render_plot_set(self, ax, ix: int, plot_set: Dict):
+    def _render_plot_set(self, ax, ix: int, ps: PlotSet):
         show_data = self._param("show_data", True)
         show_fits = self._param("show_fits", False)
         y_shift = self._param("y_shift", 0) * ix
-        label = self._define_data_label(plot_set, y_shift)
+        label = self._define_data_label(ps.label, y_shift)
 
         if show_data:
             # super class plots the data as a set of error bars
-            super()._render_plot_set(ax, ix, plot_set)
+            super()._render_plot_set(ax, ix, ps)
 
-        if show_fits:
-            color = plot_set["params"]['color']
-            for fit in plot_set['fits']:
+        if show_fits and ps.fits is not None:
+            color = ps.color
+            for fit in ps.fits:
                 x_points = self._log_scale_x_points(fit.x_points)
                 fit_line, = self._plot_points_to_lines_on_ax(ax, x_points, fit.y_points, color, y_shift=y_shift)
                 if not show_data and len(label) > 0:
@@ -62,8 +58,7 @@ class SingleMagnitudeTimePlot(SinglePlotSupportingLogAxes):
                     label = ""  # Stop the label being repeated for each subsequent fit in this plot_set's fits
         return
 
-    def _define_data_label(self, plot_set: Dict, y_shift: float = 0):
-        label = plot_set["params"]["label"]
+    def _define_data_label(self, label: str, y_shift: float = 0):
         return label + (F" (shifted {y_shift:+.1f} mag)" if y_shift != 0 else "")
 
     def _log_scale_x_points(self, x_points):

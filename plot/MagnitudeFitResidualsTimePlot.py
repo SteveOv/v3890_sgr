@@ -1,7 +1,7 @@
 from typing import Dict
 import matplotlib.pylab as plt
 from matplotlib.gridspec import GridSpec
-from plot import SingleMagnitudeTimePlot
+from plot import SingleMagnitudeTimePlot, PlotSet
 
 
 class MagnitudeFitResidualsTimePlot(SingleMagnitudeTimePlot):
@@ -29,7 +29,6 @@ class MagnitudeFitResidualsTimePlot(SingleMagnitudeTimePlot):
         Create the main ax, for the magnitude/time light curve and then the optional 2nd ax below for the residuals.
         Fully replace the super's implementation here as we need to use a GridSpec to manage the layout
         """
-        fig = plt.figure(figsize=(self._x_size, self._y_size), constrained_layout=True)
         gs = GridSpec(nrows=2, ncols=1, height_ratios=[8, 2], figure=fig)
 
         if self._show_residuals:
@@ -54,22 +53,20 @@ class MagnitudeFitResidualsTimePlot(SingleMagnitudeTimePlot):
             self._ax_res.set_ylabel(self._y_label_residuals)
             self._ax_res.set_yticks(self._y_ticks_residuals)
             self._ax_res.invert_yaxis()
-            if self._param("x_scale_log"):
+            if self._param("x_scale_log", self._default_x_scale_log):
                 self._ax_res.grid(which="minor", linestyle="-", linewidth=self._line_width, alpha=0.1)
         return
 
-    def _render_plot_set(self, ax, ix: int, plot_set: Dict):
+    def _render_plot_set(self, ax, ix: int, ps: PlotSet):
         # Super() looks after the main ax with the magnitude/time plot
-        super()._render_plot_set(ax, ix, plot_set)
+        super()._render_plot_set(ax, ix, ps)
 
         # now we plot the residuals to the additional ax
         if self._show_residuals and self._ax_res is not None:
-            fits = plot_set["fits"]
-            df = plot_set["df"]
-            color = plot_set["params"]["color"]
-
             # TODO: will need revisiting if the Log Fits are reworked to not take df and to work in logs internally
-            x_points, y_points = fits.calculate_residuals(df, "log_day", self._y_data_column)
+            x_points, y_points = ps.fits.calculate_residuals(
+                ps.df, "log_day", "rate" if ps.data_type == "rate" else "mag")
             x_points = self._log_scale_x_points(x_points)
-            self._ax_res.plot(x_points, y_points, ".", color=color, markersize=self._marker_size * 2, alpha=1, zorder=2)
+            self._ax_res.plot(
+                x_points, y_points, ".", color=ps.color, markersize=self._marker_size * 2, alpha=1, zorder=2)
         return

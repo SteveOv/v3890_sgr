@@ -2,7 +2,7 @@ from typing import Dict
 import numpy as np
 import matplotlib.pyplot as plt
 from pandas import DataFrame
-from plot import SinglePlotSupportingLogAxes
+from plot import SinglePlotSupportingLogAxes, PlotSet
 
 
 class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
@@ -42,7 +42,7 @@ class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
         self._default_y2_ticks_log = [1, 10, 100]
         return
 
-    def _render_plot(self, plot_sets: Dict, title: str) -> plt.figure:
+    def _render_plot(self, plot_sets: Dict[str, PlotSet], title: str) -> plt.figure:
 
         x_axis = self._param("x_axis", self._default_x_axis)
         if x_axis == "frequency":
@@ -77,7 +77,7 @@ class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
         """
         return
 
-    def _render_plot_sets(self, ax, plot_sets: Dict):
+    def _render_plot_sets(self, ax, plot_sets: Dict[str, PlotSet]):
         """
         Completely subclass the data rendering logic of the superclass()
         In this case we're not directly plotting photometric data,
@@ -125,17 +125,17 @@ class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
         return
 
     @classmethod
-    def _perform_sed_analysis_magnitudes(cls, plot_sets: Dict, lambda_c_lookup: Dict, nu_c_lookup: Dict, delta_ts: Dict) -> DataFrame:
+    def _perform_sed_analysis_magnitudes(cls, plot_sets: Dict[str, PlotSet],
+                                         lambda_c_lookup: Dict, nu_c_lookup: Dict, delta_ts: Dict) -> DataFrame:
         rows = []
         for plot_set_key in plot_sets:
             plot_set = plot_sets[plot_set_key]
-            band = plot_set["params"]["set"]
-            label = plot_set["params"]["label"]
-            fits = plot_set["fits"]
+            band = plot_set.param("set")
+            label = plot_set.label
 
             # Now use the fits to calculate magnitudes at the requested time intervals
             for delta_t in delta_ts:
-                mag = fits.find_y_value(np.log10(delta_t))
+                mag = plot_set.fits.find_y_value(np.log10(delta_t))
                 if mag is not None:
                     rows.append({"band": band, "lambda_c": lambda_c_lookup[band], "nu_c": np.log10(nu_c_lookup[band]),
                                  "label": label, "delta_t": delta_t, "mag": mag.nominal_value, "mag_err": mag.std_dev})

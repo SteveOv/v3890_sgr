@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Type
 import matplotlib
 import matplotlib.pyplot as plt
+from plot import PlotData
 
 
 class BasePlot(ABC):
@@ -56,22 +57,22 @@ class BasePlot(ABC):
         return self._param("legend_loc", self._default_legend_loc)
 
     @classmethod
-    def create(cls, type_name: str, plot_param: Dict) -> Type["BasePlot"]:
+    def create(cls, type_name: str, plot_params: Dict) -> Type["BasePlot"]:
         """
         Factory method for creating a BasePlot of the chosen type with the requested parameters dictionary.
         Will raise a KeyError if the type_name is not a recognised subclass.
         """
         ctor = cls._get_subclass_hierarchy()[type_name.casefold()]
-        plot = ctor(plot_param)
+        plot = ctor(plot_params)
         return plot
 
-    def plot_to_file(self, plot_sets: Dict, file_name: str, title: str = None):
+    def plot_to_file(self, plot_data: PlotData, file_name: str, title: str = None):
         """
         Convenience method to create, plot, save and close a MagnitudeLogTimeOnSingleAxisPlot
         """
         self._initialize_plot_for_file(title)
 
-        fig = self._render_plot(plot_sets, title)
+        fig = self._render_plot(plot_data, title)
         if fig is not None:
             self._save_current_plot_to_file(file_name)
             plt.close(fig)
@@ -79,13 +80,13 @@ class BasePlot(ABC):
             self._log("No figure generated.  Nothing to write to file.")
         return
 
-    def plot_to_screen(self, plot_sets: Dict, title: str = None):
+    def plot_to_screen(self, plot_data: PlotData, title: str = None):
         """
         Convenience method to create, plot, save and close a MagnitudeLogTimeOnSingleAxisPlot
         """
         self._initialize_plot_for_screen(title)
 
-        fig = self._render_plot(plot_sets, title)
+        fig = self._render_plot(plot_data, title)
         if fig is not None:
             self._show_current_plot_on_screen()
             plt.close(fig)
@@ -94,7 +95,7 @@ class BasePlot(ABC):
         return
 
     @abstractmethod
-    def _render_plot(self, bands: Dict, title: str) -> plt.figure:
+    def _render_plot(self, plot_data: PlotData, title: str) -> plt.figure:
         """
         Render the requested plot returning a matplotlib figure which can be displayed or printed as required.
         """

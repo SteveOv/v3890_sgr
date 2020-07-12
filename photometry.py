@@ -39,6 +39,10 @@ for data_source_key in settings["data_sources"]:
                         fits = StraightLineLogLogFitSet.fit_to_data(
                             band_df, "log_day", "mag", "mag_err", set_params['breaks'])
 
+                    # TODO: temporary way of telling downstream code what columns to use
+                    set_params["x_col"] = "day"
+                    set_params["y_col"] = "mag"
+                    set_params["y_err_col"] = "mag_err"
                     data_sets_data[data_set_key] = {'df': band_df, 'fits': fits, 'params': set_params}
                 light_curves[F'{data_source_key}/{lc_key}'] = data_sets_data
         elif isinstance(ds, RateDataSource):
@@ -51,6 +55,11 @@ for data_source_key in settings["data_sources"]:
                     print(f"\nAnalysing {data_source_key}/{lc_key}/data_sets['{data_set_key}'] rate data")
                     type_df = df.query(f"rate_type == '{data_set_key}'")
                     fits = None  # StraightLineLogLogFitSet.fit_to_data(type_df, "log_day", "rate", "rate_err", type_params['breaks'])
+
+                    # TODO: temporary way of telling downstream code what columns to use
+                    set_params["x_col"] = "day"
+                    set_params["y_col"] = "rate"
+                    set_params["y_err_col"] = "rate_err"
                     data_set_data[data_set_key] = {'df': type_df, 'fits': fits, 'params': set_params}
                 light_curves[F"{data_source_key}/{lc_key}"] = data_set_data
 
@@ -62,7 +71,8 @@ print(F"****************************************************************")
 for plot_group_config in settings["plots"]:
     print(F"\nProcessing plot group: {plot_group_config}")
     for plot_config in settings["plots"][plot_group_config]:
-        PlotHelper.plot_to_file(plot_config, light_curves)
+        plot_data = PlotHelper.create_plot_data_from_config(plot_config, light_curves)
+        PlotHelper.plot_to_file(plot_config, plot_data)
 
 
 # TODO: work out the t0, t2 and t3 times for the V-band

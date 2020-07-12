@@ -1,5 +1,5 @@
 from typing import Dict
-from plot import SingleMagnitudeTimePlot
+from plot import SingleMagnitudeTimePlot, PlotSet
 import numpy as np
 
 
@@ -53,25 +53,20 @@ class SingleMagnitudeAndRateTimePlot(SingleMagnitudeTimePlot):
             self._ax2.set(ylim=self._param("y2_lim", self._default_y2_lim))
         return
 
-    def _render_plot_set(self, ax, ix: int, plot_set: Dict):
-        df = plot_set["df"]
+    def _render_plot_set(self, ax, ix: int, ps: PlotSet):
 
-        if "mag" in df.columns and "mag_err" in df.columns:
+        if ps.data_type == "band":
             # Magnitude data - plotted against the default y-axis
-            super()._render_plot_set(ax, ix, plot_set)
-        elif "rate" in df.columns and "rate_err" in df.columns:
+            super()._render_plot_set(ax, ix, ps)
+        elif ps.data_type == "rate":
             # Rate/count data - plotted against the secondary y-axis
             # TODO: if self._param("show_data"):
-            label = self._define_data_label(plot_set, is_rate=True)
-            color = plot_set["params"]['color']
-            self._plot_df_to_error_bars_on_ax(self._ax2,
-                                              df, self._x_data_column, self._y2_data_column, self._y2_err_column,
-                                              color, label)
-
+            label = self._define_data_label(ps.label, is_rate=True)
+            self._plot_points_to_error_bars_on_ax(self._ax2, ps.x, ps.y, ps.y_err, ps.color, label)
             # TODO: Fits
         return
 
-    def _render_plot_sets(self, ax, plot_sets):
+    def _render_plot_sets(self, ax, plot_sets: Dict[str, PlotSet]):
         super()._render_plot_sets(ax, plot_sets)
 
         # Once all the plots have been made we can configure the additional legend for the y2 axis
@@ -79,11 +74,11 @@ class SingleMagnitudeAndRateTimePlot(SingleMagnitudeTimePlot):
             self._ax2.legend(loc=self._param("y2_legend_loc", self._default_y2_legend_loc))
         return
 
-    def _define_data_label(self, plot_set: Dict, y_shift: float = 0, is_rate=False):
+    def _define_data_label(self, label: str, y_shift: float = 0, is_rate=False):
         if is_rate:
-            label = plot_set["params"]["label"] + (F" (shifted {y_shift:+.1f} [rate])" if y_shift != 0 else "")
+            label = label + (F" (shifted {y_shift:+.1f} [rate])" if y_shift != 0 else "")
         else:
-            label = super()._define_data_label(plot_set, y_shift)
+            label = super()._define_data_label(label, y_shift)
         return label
 
     def _log_scale_x_points(self, x_points):

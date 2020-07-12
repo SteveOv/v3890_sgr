@@ -1,7 +1,7 @@
 from typing import Dict
 import numpy as np
 from uncertainties import unumpy, ufloat_fromstr
-from plot import SinglePlot
+from plot import SinglePlot, PlotSet
 
 
 class ColorMagnitudePlot(SinglePlot):
@@ -40,7 +40,7 @@ class ColorMagnitudePlot(SinglePlot):
         super()._configure_ax(ax)
         return
 
-    def _render_plot_sets(self, ax, plot_sets: Dict):
+    def _render_plot_sets(self, ax, plot_sets: Dict[str, PlotSet]):
         """
         Completely subclass the data rendering logic of the superclass()
         In this case we're not directly plotting photometric data,
@@ -49,8 +49,6 @@ class ColorMagnitudePlot(SinglePlot):
         # we are interested in the B and V band data (TODO: remove hard coding later)
         b_set = plot_sets["2019-AAVSO/nominal/B"]
         v_set = plot_sets["2019-AAVSO/nominal/V"]
-        b_fits = b_set["fits"]
-        v_fits = v_set["fits"]
 
         # Loop through time, sampling the apparent mag of the fit for each set
         # From this we calculate the absolute mag (from V band) and the observed color (B-V)
@@ -60,10 +58,10 @@ class ColorMagnitudePlot(SinglePlot):
         delta_ts = np.append(np.arange(0.1, 2.0, 0.1), np.arange(2.0, self._max_delta_t, 0.5))
         for delta_t in delta_ts:
             log_delta_t = np.log10(delta_t)
-            b = b_fits.find_y_value(log_delta_t)
-            v = v_fits.find_y_value(log_delta_t)
+            b = b_set.fits.find_y_value(log_delta_t)
+            v = v_set.fits.find_y_value(log_delta_t)
             if b is not None and v is not None:
-                bv = b-v
+                bv = b - v
                 b_v_obs.append(bv)
                 b_v_int.append(bv - self._e_bv)
                 abs_mag.append(v - self._mu)
@@ -75,12 +73,13 @@ class ColorMagnitudePlot(SinglePlot):
                     capsize=1, ecolor=color, elinewidth=self._line_width, alpha=0.5, zorder=1)
 
         # Now let's look at the underlying data and compare measurements
-        b_df = b_set["df"]
-        v_df = v_set["df"]
+        # TODO: look to do this without interacting with the PlotSet's df directly
+        b_df = b_set.df
+        v_df = v_set.df
         b_df["r_day"] = np.round(b_df["day"], 3)
         v_df["r_day"] = np.round(v_df["day"], 3)
-        df_join = b_set["df"].drop_duplicates(subset="r_day").set_index("r_day")\
-            .join(v_set["df"].drop_duplicates(subset="r_day").set_index("r_day"), on="r_day", how="inner", lsuffix="_b", rsuffix="_v", sort="b_day")\
+        df_join = b_df.drop_duplicates(subset="r_day").set_index("r_day")\
+            .join(v_df.drop_duplicates(subset="r_day").set_index("r_day"), on="r_day", how="inner", lsuffix="_b", rsuffix="_v", sort="b_day")\
             .query(F"r_day <= {self._max_delta_t}")
 
         b_v_obs, b_v_obs_err = ColorMagnitudePlot._subtract_with_err(df_join["mag_b"], df_join["mag_v"], df_join["mag_err_b"], df_join["mag_err_v"])

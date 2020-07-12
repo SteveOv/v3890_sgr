@@ -2,7 +2,7 @@ from typing import Dict
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
-from plot import BasePlot
+from plot import BasePlot, PlotData, PlotSet
 
 
 class RatesAndRatioTimePlot(BasePlot):
@@ -30,7 +30,7 @@ class RatesAndRatioTimePlot(BasePlot):
         self._default_y_ticks_log = [0.1, 1, 10] # Rates and Ratios use the same log ticks/scale
         return
 
-    def _render_plot(self, plot_sets: Dict, title: str) -> plt.figure:
+    def _render_plot(self, plot_data: PlotData, title: str) -> plt.figure:
 
         fig = plt.figure(figsize=(self._x_size, self._y_size), constrained_layout=True)
         gs = GridSpec(nrows=3, ncols=1, height_ratios=[3, 3, 2], figure=fig)
@@ -84,15 +84,13 @@ class RatesAndRatioTimePlot(BasePlot):
 
             # OK, now we can go through each band and derive information from it and plot its data
             # Reverse the order of the bands so the labels match the vertical displacement of the curves
-            for plot_set_key in plot_sets.keys():
+            for plot_set_key in plot_data.plot_sets.keys():
                 if sub_plot_type in plot_set_key:
-                    plot_set = plot_sets[plot_set_key]
-                    set_params = plot_set['params']
-                    color = set_params['color']
-                    label = set_params['label']
+                    ps = plot_data.plot_sets[plot_set_key]
+                    color = ps.color
+                    label = ps.label
 
-                    df = plot_set['df']
-                    ax.errorbar(df['day'], df['rate'], yerr=df['rate_err'], label=label,
+                    ax.errorbar(ps.x, ps.y, yerr=ps.y_err, label=label,
                                 fmt=",", color=color, fillstyle='full', markersize=self._marker_size, capsize=1,
                                 ecolor=color, elinewidth=self._line_width, alpha=0.5, zorder=1)
 
