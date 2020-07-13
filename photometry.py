@@ -32,12 +32,12 @@ for data_source_key in settings["data_sources"]:
 
                     if "copy_fits" in set_params:
                         print(f"Copying the breaks/fits as already generated for {set_params['copy_fits']}")
-                        fits = StraightLineLogLogFitSet.copy(
+                        fits = StraightLineLogXFitSet.copy(
                             light_curves[set_params['copy_fits']][data_set_key]['fits'],
                             x_shift=set_params['fit_x_shift'], y_shift=set_params['fit_y_shift'])
                     else:
-                        fits = StraightLineLogLogFitSet.fit_to_data(
-                            band_df, "log_day", "mag", "mag_err", set_params['breaks'])
+                        fits = StraightLineLogXFitSet.fit_to_data(
+                            band_df, "day", "mag", "mag_err", set_params['breaks'])
 
                     # TODO: temporary way of telling downstream code what columns to use
                     set_params["x_col"] = "day"
@@ -54,7 +54,7 @@ for data_source_key in settings["data_sources"]:
 
                     print(f"\nAnalysing {data_source_key}/{lc_key}/data_sets['{data_set_key}'] rate data")
                     type_df = df.query(f"rate_type == '{data_set_key}'")
-                    fits = None  # StraightLineLogLogFitSet.fit_to_data(type_df, "log_day", "rate", "rate_err", type_params['breaks'])
+                    fits = None  # StraightLineLogXFitSet.fit_to_data(type_df, "day", "rate", "rate_err", type_params['breaks'])
 
                     # TODO: temporary way of telling downstream code what columns to use
                     set_params["x_col"] = "day"
@@ -74,7 +74,6 @@ for plot_group_config in settings["plots"]:
         plot_data = PlotHelper.create_plot_data_from_config(plot_config, light_curves)
         PlotHelper.plot_to_file(plot_config, plot_data)
 
-
 # TODO: work out the t0, t2 and t3 times for the V-band
 print(F"\n\n****************************************************************")
 print(F"Analysing combined Photometry to estimate distance to V3890 Sgr")
@@ -87,21 +86,19 @@ for lc_key in ['2019-AAVSO/nominal', '2019-AAVSO/nominal-err', '2019-AAVSO/nomin
     fitsB = light_curves[lc_key]['B']['fits']
 
     # Get the V-band peak, as tracking this will give us our distance modulus
-    log_t0, V_t0 = fitsV.find_peak_y_value(is_minimum=True)
-    t0 = mag.time_from_log10_time(log_t0)
+    t0, V_t0 = fitsV.find_peak_y_value(is_minimum=True)
     print(F"[{lc_key}] V-band peak; V_t0 = {V_t0:.4f} mag @ t0 = {t0:.4f}")
 
     # Now we need the t2 time - first get the mag two declined from peak
     V_t2 = V_t0 + 2
-    log_t2 = fitsV.find_x_value(V_t2)
-    t2 = mag.time_from_log10_time(log_t2) - t0
+    t2 = fitsV.find_x_value(V_t2)
     print(F"[{lc_key}] V-band decline: V_t2 = {V_t2:.4f} mag @ t2 = {t2:.4f}")
 
     # Get the t3 time for information only
-    t3 = mag.time_from_log10_time(fitsV.find_x_value(V_t0 + 3))
+    t3 = fitsV.find_x_value(V_t0 + 3)
 
     # Now find the magnitude in the B-band at the V-band t2 time, so we can work out the (B-V)_obs,t2 colour
-    B_t2 = fitsB.find_y_value(log_t2)
+    B_t2 = fitsB.find_y_value(t2)
     print(F"[{lc_key}] B-band magnitude at t2: B_t2 = {B_t2:.4f} mag")
 
     # So now we can find the observed colour at t_2

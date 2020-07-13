@@ -51,8 +51,8 @@ class SingleMagnitudeTimePlot(SinglePlotSupportingLogAxes):
         if show_fits and ps.fits is not None:
             color = ps.color
             for fit in ps.fits:
-                x_points = self._log_scale_x_points(fit.x_points)
-                fit_line, = self._plot_points_to_lines_on_ax(ax, x_points, fit.y_points, color, y_shift=y_shift)
+                x_points = self._log_scale_x_points(fit.endpoints_x)
+                fit_line, = self._plot_points_to_lines_on_ax(ax, x_points, fit.endpoints_y, color, y_shift=y_shift)
                 if not show_data and len(label) > 0:
                     fit_line.set_label(label)
                     label = ""  # Stop the label being repeated for each subsequent fit in this plot_set's fits

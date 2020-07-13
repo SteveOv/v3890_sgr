@@ -135,7 +135,7 @@ class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
 
             # Now use the fits to calculate magnitudes at the requested time intervals
             for delta_t in delta_ts:
-                mag = plot_set.fits.find_y_value(np.log10(delta_t))
+                mag = plot_set.fits.find_y_value(delta_t)
                 if mag is not None:
                     rows.append({"band": band, "lambda_c": lambda_c_lookup[band], "nu_c": np.log10(nu_c_lookup[band]),
                                  "label": label, "delta_t": delta_t, "mag": mag.nominal_value, "mag_err": mag.std_dev})

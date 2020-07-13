@@ -65,8 +65,7 @@ class MagnitudeFitResidualsTimePlot(SingleMagnitudeTimePlot):
         if self._show_residuals and self._ax_res is not None:
             # TODO: will need revisiting if the Log Fits are reworked to not take df and to work in logs internally
             x_points, y_points = ps.fits.calculate_residuals(
-                ps.df, "log_day", "rate" if ps.data_type == "rate" else "mag")
-            x_points = self._log_scale_x_points(x_points)
+                ps.df, "day", "rate" if ps.data_type == "rate" else "mag")
             self._ax_res.plot(
                 x_points, y_points, ".", color=ps.color, markersize=self._marker_size * 2, alpha=1, zorder=2)
         return

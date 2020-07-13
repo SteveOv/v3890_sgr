@@ -423,6 +423,14 @@
                 "enabled": false,
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
                 "plot_sets": [{"data_sets": "2019-AAVSO/nominal+SPET_Revised_Breaks"}]
+            },
+            {
+                "type": "MagnitudeFitResidualsTimePlot",
+                "file_name": "./output/V3890Sgr-2019-AAVSO-LC-log(day)-single-nominal-shifted.png",
+                "title": "The 2019 eruption of V3890 Sgr ($t_{{e}}=2458723.278$) [fits shifted]",
+                "enabled": true,
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
+                "plot_sets": [{"data_sets": "2019-AAVSO-Shifted/nominal"}]
             }
         ]
     }

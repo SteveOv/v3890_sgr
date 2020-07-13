@@ -57,9 +57,8 @@ class ColorMagnitudePlot(SinglePlot):
         b_v_int = []
         delta_ts = np.append(np.arange(0.1, 2.0, 0.1), np.arange(2.0, self._max_delta_t, 0.5))
         for delta_t in delta_ts:
-            log_delta_t = np.log10(delta_t)
-            b = b_set.fits.find_y_value(log_delta_t)
-            v = v_set.fits.find_y_value(log_delta_t)
+            b = b_set.fits.find_y_value(delta_t)
+            v = v_set.fits.find_y_value(delta_t)
             if b is not None and v is not None:
                 bv = b - v
                 b_v_obs.append(bv)

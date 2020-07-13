@@ -14,9 +14,9 @@ class StraightLineFit(FitBase, ABC):
     """
 
     def __init__(self, id: int, range_from: float, range_to: float,
-                 x_points: List[float], y_points: List[uncertainties.UFloat],
+                 endpoints_x: List[float], endpoints_y: List[uncertainties.UFloat],
                  fit_params: (uncertainties.UFloat, uncertainties.UFloat) = None):
-        super().__init__(id, range_from, range_to, x_points, y_points)
+        super().__init__(id, range_from, range_to, endpoints_x, endpoints_y)
         self._fit_params = fit_params
 
     def __str__(self):
@@ -82,7 +82,7 @@ class StraightLineFit(FitBase, ABC):
             lxi = len(xi)
             lyi = len(yi)
             ldyi = len(dyi)
-            if lxi > 0 and lyi == lxi and ldyi == lyi:
+            if (0 < lxi == lyi) and ldyi == lyi:
                 # When absolute_sigma=True the values passed to sigma are treated as absolute value of same units as yi
                 # and the variance of the popt params are in the diagonal of the returned pcov matrix. The sigmas of the
                 # fitting params are the sqrt() of these values. When absolute_sigma=False the sigma values are used as
@@ -130,7 +130,7 @@ class StraightLineFit(FitBase, ABC):
         peak_y = None
         at_x = None
         if self.has_fit:
-            for x in (self.range_from, self.range_to):
+            for x in self._endpoints_x:
                 y_val = StraightLineFit._y_from_straight_line_func(x, self.slope, self.const)
                 if peak_y is None or ((is_minimum and y_val < peak_y) | (is_minimum is False and y_val > peak_y)):
                     peak_y = y_val
