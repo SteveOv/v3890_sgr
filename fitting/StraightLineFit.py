@@ -14,9 +14,9 @@ class StraightLineFit(FitBase, ABC):
     """
 
     def __init__(self, id: int, range_from: float, range_to: float,
-                 endpoints_x: List[float], endpoints_y: List[uncertainties.UFloat],
+                 x_endpoints: List[float], y_endpoints: List[uncertainties.UFloat],
                  fit_params: (uncertainties.UFloat, uncertainties.UFloat) = None):
-        super().__init__(id, range_from, range_to, endpoints_x, endpoints_y)
+        super().__init__(id, range_from, range_to, x_endpoints, y_endpoints)
         self._fit_params = fit_params
 
     def __str__(self):
@@ -103,10 +103,10 @@ class StraightLineFit(FitBase, ABC):
                 # Ensure it extends over the limits of the range, not just the available data.
                 # Don't use ufloats for the x/y_fit as we've no uncertainty for them and the will be used for plotting
                 # the slopes.  Uncertainties in the slopes are encapsulated in the slope and const values.
-                x_points = [range_from, range_to]
-                y_points = cls._y_from_straight_line_func(x_points, *popt).tolist()
+                x_endpoints = [range_from, range_to]
+                y_endpoints = cls._y_from_straight_line_func(x_endpoints, *popt).tolist()
 
-                fit = cls(id, range_from, range_to, x_points, y_points, fit_params)
+                fit = cls(id, range_from, range_to, x_endpoints, y_endpoints, fit_params)
         return fit
 
     def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):
@@ -130,7 +130,7 @@ class StraightLineFit(FitBase, ABC):
         peak_y = None
         at_x = None
         if self.has_fit:
-            for x in self._endpoints_x:
+            for x in self._x_endpoints:
                 y_val = StraightLineFit._y_from_straight_line_func(x, self.slope, self.const)
                 if peak_y is None or ((is_minimum and y_val < peak_y) | (is_minimum is False and y_val > peak_y)):
                     peak_y = y_val

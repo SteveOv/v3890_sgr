@@ -14,6 +14,7 @@ from plot.SinglePlotSupportingLogAxes import *
 from plot.SingleMagnitudeTimePlot import *
 from plot.MagnitudeFitResidualsTimePlot import *
 from plot.SingleRateTimePlot import *
+from plot.RateFitResidualsTimePlot import *
 from plot.SingleMagnitudeAndRateTimePlot import *
 from plot.TwoByTwoMagnitudeLogTimePlot import *
 

@@ -23,16 +23,13 @@ class SingleMagnitudeAndRateTimePlot(SingleMagnitudeTimePlot):
         self._default_legend_loc = "upper left"
 
         # Default settings for the second, y-axis (which can support a log scale, unlike the main (magnitude) y-axis)
-        self._default_y2_label = "Count Rate (0.1 - 10 keV) [s$\\^{-1}$]"
+        self._default_y2_label = "X-ray Count Rate [ph s$^{-1}$]"
         self._default_y2_legend_loc = "upper right"
         self._default_y2_lim = [0, 25]
 
         self._default_y2_scale_log = False
         self._default_y2_lim_log = [0.01, 25]
         self._default_y2_ticks_log = [1, 10, 100]
-
-        self._y2_data_column = "rate"
-        self._y2_err_column = "rate_err"
         return
 
     def _configure_ax(self, ax):
@@ -54,16 +51,12 @@ class SingleMagnitudeAndRateTimePlot(SingleMagnitudeTimePlot):
         return
 
     def _render_plot_set(self, ax, ix: int, ps: PlotSet):
-
         if ps.data_type == "band":
             # Magnitude data - plotted against the default y-axis
             super()._render_plot_set(ax, ix, ps)
         elif ps.data_type == "rate":
-            # Rate/count data - plotted against the secondary y-axis
-            # TODO: if self._param("show_data"):
-            label = self._define_data_label(ps.label, is_rate=True)
-            self._plot_points_to_error_bars_on_ax(self._ax2, ps.x, ps.y, ps.y_err, ps.color, label)
-            # TODO: Fits
+            # Rate/count data - make sure it's plotted against the secondary y-axis
+            super()._render_plot_set(self._ax2, ix, ps)
         return
 
     def _render_plot_sets(self, ax, plot_sets: Dict[str, PlotSet]):
@@ -81,8 +74,3 @@ class SingleMagnitudeAndRateTimePlot(SingleMagnitudeTimePlot):
             label = super()._define_data_label(label, y_shift)
         return label
 
-    def _log_scale_x_points(self, x_points):
-        """
-        TODO: Temp fix for the fact that currently the straight line log fit code publishes x_points as logs
-        """
-        return np.power(10, x_points) if self._param("x_scale_log", self._default_x_scale_log) else x_points

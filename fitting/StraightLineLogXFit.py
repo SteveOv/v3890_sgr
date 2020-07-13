@@ -22,6 +22,13 @@ class StraightLineLogXFit(StraightLineFit):
         return text
 
     @property
+    def linear_x_endpoints(self) -> List[float]:
+        """
+        The x_endpoints in terms of a linear x-axis
+        """
+        return np.power(10, self._x_endpoints)
+
+    @property
     def power_law(self) -> str:
         """
         Restates this fit's slope as a power law, assuming that the slope is a straight line fit on log(y)/log(x) data.
@@ -63,17 +70,17 @@ class StraightLineLogXFit(StraightLineFit):
         # fact that the data defining the slope is in "log10(x)" form, and therefore the x-shift is not linear.
         if x_shift != 0 and src.has_fit and isinstance(src, cls) and isinstance(cp, cls):
             # We need to "un-log", shift and then "re-log" the data.
-            cp._endpoints_x = cls._shift_on_log10_values(src.endpoints_x, x_shift)
+            cp._x_endpoints = cls._shift_on_log10_values(src._x_endpoints, x_shift)
 
             # An x-shift will change the parameters of the slope.  The super() has applied a linear shift
             # which works OK in the y-axis but not in the x-axis.  Calculate new slope based on revised (x,y) points.
-            slope = ufloat(np.divide(cp.endpoints_y[1] - cp.endpoints_y[0], cp.endpoints_x[1] - cp.endpoints_x[0]),
+            slope = ufloat(np.divide(cp._y_endpoints[1] - cp._y_endpoints[0], cp._x_endpoints[1] - cp._x_endpoints[0]),
                            src.slope.std_dev)
-            const = cls._const_from_straight_line_func(cp.endpoints_x[0], cp.endpoints_y[0], slope)
+            const = cls._const_from_straight_line_func(cp._x_endpoints[0], cp._y_endpoints[0], slope)
             cp._fit_params = (slope, const)
 
-            test_y = cls._y_from_straight_line_func(cp.endpoints_x, cp.slope.nominal_value, cp.const.nominal_value)
-            assert all(cp.endpoints_y) == all(test_y)
+            test_y = cls._y_from_straight_line_func(cp._x_endpoints, cp.slope.nominal_value, cp.const.nominal_value)
+            assert all(cp._y_endpoints) == all(test_y)
         return cp
 
     def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):

@@ -9,8 +9,8 @@
                     "eruption_jd": 2458723.278,
                     "query_params": { "day_range": [0, 100] },
                     "data_sets": [
-                        {"set": "WT", "color": "darkslategray", "label": "WT", "breaks": []},
-                        {"set": "PC", "color": "cyan", "label": "PC ", "breaks": []}
+                        {"set": "WT", "filter": "rate_type=='WT'", "color": "gray", "label": "WT", "breaks": []},
+                        {"set": "PC", "filter": "rate_type=='PC'", "color": "lightskyblue", "label": "PC ", "breaks": []}
                     ]
                 }
             }
@@ -22,26 +22,34 @@
             "light_curves": {
                 "hard_data": {
                     "eruption_jd": 2458723.278,
-                    "query_params": { "day_range": [0, 100], "data_type": "hard data" },
+                    "query_params": { "day_range": [0, 100], "data_type": "hard" },
                     "data_sets": [
-                        {"set": "WT", "color": "darkslategray", "label": "WT", "breaks": []},
-                        {"set": "PC", "color": "cyan", "label": "PC", "breaks": []}
+                        {"set": "WT", "filter": "rate_type=='WT'", "color": "gray", "label": "WT", "breaks": []},
+                        {"set": "PC", "filter": "rate_type=='PC'", "color": "lightskyblue", "label": "PC", "breaks": []}
                     ]
                 },
                 "soft_data": {
                     "eruption_jd": 2458723.278,
-                    "query_params": { "day_range": [0, 100], "data_type": "soft data" },
+                    "query_params": { "day_range": [0, 100], "data_type": "soft" },
                     "data_sets": [
-                        {"set": "WT", "color": "darkslategray", "label": "WT", "breaks": []},
-                        {"set": "PC", "color": "cyan", "label": "PC", "breaks": []}
+                        {"set": "WT", "filter": "rate_type=='WT'", "color": "gray", "label": "WT", "breaks": []},
+                        {"set": "PC", "filter": "rate_type=='PC'", "color": "lightskyblue", "label": "PC", "breaks": []}
                     ]
                 },
                 "hardness_ratio": {
                     "eruption_jd": 2458723.278,
-                    "query_params": { "day_range": [0, 100], "data_type": "hardness ratio" },
+                    "query_params": { "day_range": [0, 100], "data_type": "ratio" },
                     "data_sets": [
-                        {"set": "WT", "color": "darkslategray", "label": "WT", "breaks": []},
-                        {"set": "PC", "color": "cyan", "label": "PC", "breaks": []}
+                        {"set": "WT", "filter": "rate_type=='WT'", "color": "gray", "label": "WT", "breaks": []},
+                        {"set": "PC", "filter": "rate_type=='PC'", "color": "lightskyblue", "label": "PC", "breaks": []}
+                    ]
+                },
+                "nominal-hard-soft": {
+                    "eruption_jd": 2458723.278,
+                    "query_params": { "day_range": [0, 100] },
+                    "data_sets": [
+                        {"set": "hard_data", "filter": "data_type=='hard'", "color": "darkcyan", "label": "Hard (1.5-10 keV)", "breaks": [2.8, 4.45, 13, 25]},
+                        {"set": "soft_data", "filter": "data_type=='soft'", "color": "cyan", "label": "Soft (0.3-1.5 keV)", "breaks": [4.8, 5.3, 8.2, 14.7, 15.37]}
                     ]
                 }
             }
@@ -274,7 +282,7 @@
                 "plot_sets": [
                     {"data_sets": "2019-AAVSO/nominal"},
                     {"data_sets": "2019-UVOT/nominal"},
-                    {"data_sets": "2019-XRT-Rates/nominal"}
+                    {"data_sets": "2019-XRT-Ratios/nominal-hard-soft"}
                 ]
             }
         ],
@@ -287,11 +295,11 @@
                 "plot_sets": [{ "data_sets": "2019-XRT-Rates/nominal" }]
             },
             {
-                "type": "SingleRateTimePlot",
+                "type": "RateFitResidualsTimePlot",
                 "file_name": "./output/V3890Sgr-2019-XRT-LC-log(day)-single-nominal.png",
-                "title": "The 2019 eruption of V3890 Sgr in\nSwift XRT ($t_{{e}}=2458723.278$)",
-                "params": {"show_title": true, "show_data": true, "legend_loc": "upper left", "x_scale_log": true},
-                "plot_sets": [{"data_sets": "2019-XRT-Rates/nominal"}]
+                "title": "TThe 2019 eruption of V3890 Sgr in\nSwift XRT ($t_{{e}}=2458723.278$)",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true, "y_scale_log": true, "x_lim": [0.5, 100]},
+                "plot_sets": [{"data_sets": "2019-XRT-Ratios/nominal-hard-soft"}]
             },
             {
                 "type": "RatesAndRatioTimePlot",

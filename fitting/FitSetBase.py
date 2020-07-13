@@ -49,14 +49,17 @@ class FitSetBase(ABC):
         return new_set
 
     @classmethod
-    def fit_to_data(cls, df: DataFrame, x_col: str, y_col: str, y_err_col: str, breaks: List[float], start_id: int = 0)\
+    def fit_to_data(cls, df: DataFrame, x_col: str, y_col: str, y_err_col: str,
+                    breaks: List[float], start_id: int = 0, constrain: bool = False)\
             -> FitSetBase:
         """
         Factory method for a fit set.  Will create a set of fits to the passed data (x, y and delta y)
-        based on the list of breaks.  Each fit will be labelled with a subscript starting at start_id
+        based on the list of breaks.  Each fit will be labelled with a subscript starting at start_id.
+        If constrain is True the ranges extend only between the outermost breaks.  If it's false and data exists
+        beyond the breaks, additional ranges will be defined before/after the outermost as needed to cover these data.
         """
         fits = []
-        ranges = cls._ranges_from_breaks(df[x_col], breaks)
+        ranges = cls._ranges_from_breaks(df[x_col], breaks, constrain)
         for range in ranges:
             from_xi = range[0]
             to_xi = range[1]
@@ -139,7 +142,7 @@ class FitSetBase(ABC):
         pass
 
     @classmethod
-    def _ranges_from_breaks(cls, xi: List[float], breaks: List[float] = None) -> [(float, float)]:
+    def _ranges_from_breaks(cls, xi: List[float], breaks: List[float] = None, constrain: bool = False) -> [(float, float)]:
         """
         Turn the passed break points (each a single xi value) into ranges over which fits can be calculated.
         The ranges extend between each break point and extend out to the min and max limits of the data.
@@ -152,15 +155,16 @@ class FitSetBase(ABC):
             min_xi = min(xi)
             max_xi = max(xi)
 
-            # If we have data, make sure the breaks are present for the min/max values
-            # so that the resulting ranges extend to fully cover the data.
-            if breaks is None or len(breaks) == 0:
-                breaks = [min_xi]
-            elif min(breaks) > min_xi:
-                breaks = np.append(breaks, min_xi)
+            # If we have data, and we're told to extend the ranges to cover it all, make sure the breaks are present
+            # for the min/max values so that the resulting ranges extend to fully cover the data.
+            if not constrain:
+                if breaks is None or len(breaks) == 0:
+                    breaks = [min_xi]
+                elif min(breaks) > min_xi:
+                    breaks = np.append(breaks, min_xi)
 
-            if max(breaks) < max_xi:
-                breaks = np.append(breaks, max_xi)
+                if max(breaks) < max_xi:
+                    breaks = np.append(breaks, max_xi)
 
         # Now go through the list splitting into pairs (ranges).    Don't use ufloats for ranges
         # as we've no uncertainty for them & they are not data, being used primarily for finding the fits.

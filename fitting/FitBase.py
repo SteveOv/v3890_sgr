@@ -12,13 +12,13 @@ class FitBase(ABC):
     """
 
     def __init__(self, id: int, range_from: float, range_to: float,
-                 endpoints_x: List[float], endpoints_y: List[uncertainties.UFloat]):
+                 x_endpoints: List[float], y_endpoints: List[uncertainties.UFloat]):
         self.__id = id
         self._range_from = range_from
         self._range_to = range_to
 
-        self._endpoints_x = endpoints_x
-        self._endpoints_y = endpoints_y
+        self._x_endpoints = x_endpoints
+        self._y_endpoints = y_endpoints
 
     def __str__(self):
         text = f"{type(self).__name__}[{self.id}] covering x in ({self.range_from}, {self.range_to})"
@@ -29,12 +29,12 @@ class FitBase(ABC):
         return self.__id
 
     @property
-    def endpoints_x(self) -> List[float]:
-        return self._endpoints_x
+    def x_endpoints(self) -> List[float]:
+        return self._x_endpoints
 
     @property
-    def endpoints_y(self) -> List[uncertainties.UFloat]:
-        return self._endpoints_y
+    def y_endpoints(self) -> List[uncertainties.UFloat]:
+        return self._y_endpoints
 
     @property
     def range_from(self) -> float:
@@ -58,9 +58,12 @@ class FitBase(ABC):
         Make a copy of the source Fit, optionally applying a shift to the x and y values
         and assigning a new subscript to its symbol. Must be overridden if subclass extends FitBase.
         """
-        cp = cls(src.id if new_id is None else new_id,
-                 np.add(src.range_from, x_shift), np.add(src.range_to, x_shift),
-                 np.add(copy.copy(src.endpoints_x), x_shift), np.add(copy.copy(src.endpoints_y), y_shift))
+        if isinstance(src, FitBase):
+            cp = cls(src.id if new_id is None else new_id,
+                     np.add(src._range_from, x_shift), np.add(src._range_to, x_shift),
+                     np.add(copy.copy(src._x_endpoints), x_shift), np.add(copy.copy(src._y_endpoints), y_shift))
+        else:
+            cp = None
         return cp
 
     @classmethod
@@ -106,6 +109,6 @@ class FitBase(ABC):
         """
         Returns whether the passed x_value is within the x range of this Fit
         """
-        return (x_value >= min(self._endpoints_x)) & (x_value <= max(self._endpoints_x))
+        return (x_value >= min(self._x_endpoints)) & (x_value <= max(self._x_endpoints))
 
 

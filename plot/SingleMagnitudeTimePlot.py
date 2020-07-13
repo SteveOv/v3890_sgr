@@ -17,6 +17,9 @@ class SingleMagnitudeTimePlot(SinglePlotSupportingLogAxes):
     def __init__(self, plot_params: Dict):
         super().__init__(plot_params, x_axis_supports_log=True, y_axis_supports_log=False)
 
+        self._default_show_data = True
+        self._default_show_fits = False
+
         # x-axis - expected to cover a range of 0 to 100 days (linear and log)
         self._default_x_label = "$\\Delta t$ [days]"
         self._default_x_lim = (-1, 100)
@@ -39,8 +42,8 @@ class SingleMagnitudeTimePlot(SinglePlotSupportingLogAxes):
         return
 
     def _render_plot_set(self, ax, ix: int, ps: PlotSet):
-        show_data = self._param("show_data", True)
-        show_fits = self._param("show_fits", False)
+        show_data = self._param("show_data", self._default_show_data)
+        show_fits = self._param("show_fits", self._default_show_fits)
         y_shift = self._param("y_shift", 0) * ix
         label = self._define_data_label(ps.label, y_shift)
 
@@ -51,8 +54,8 @@ class SingleMagnitudeTimePlot(SinglePlotSupportingLogAxes):
         if show_fits and ps.fits is not None:
             color = ps.color
             for fit in ps.fits:
-                x_points = self._log_scale_x_points(fit.endpoints_x)
-                fit_line, = self._plot_points_to_lines_on_ax(ax, x_points, fit.endpoints_y, color, y_shift=y_shift)
+                fit_line, = self._plot_points_to_lines_on_ax(
+                    ax, fit.linear_x_endpoints, fit.y_endpoints, color, y_shift=y_shift)
                 if not show_data and len(label) > 0:
                     fit_line.set_label(label)
                     label = ""  # Stop the label being repeated for each subsequent fit in this plot_set's fits
@@ -61,8 +64,3 @@ class SingleMagnitudeTimePlot(SinglePlotSupportingLogAxes):
     def _define_data_label(self, label: str, y_shift: float = 0):
         return label + (F" (shifted {y_shift:+.1f} mag)" if y_shift != 0 else "")
 
-    def _log_scale_x_points(self, x_points):
-        """
-        TODO: Temp fix for the fact that currently the straight line log fit code publishes x_points as logs
-        """
-        return np.power(10, x_points) if self._param("x_scale_log", self._default_x_scale_log) else x_points
