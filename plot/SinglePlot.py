@@ -123,19 +123,10 @@ class SinglePlot(BasePlot, ABC):
 
         # Optionally draw any fitted lines
         if self.show_fits and ps.fits is not None:
-            for fit in ps.fits:
-                y_endpoints = fit.y_endpoints
-                if isinstance(fit, StraightLineLogXFit):
-                    x_endpoints = fit.linear_x_endpoints
-                else:
-                    x_endpoints = fit.x_endpoints
+            if self.show_data:
+                label = None    # Already associated the label with data, so don't need to do so here
+            lines = ps.fits.draw_on_ax(ax, color, label=label, line_width=self._line_width, y_shift=this_y_shift)
 
-                fit_line, = self._plot_points_to_lines_on_ax(ax, x_endpoints, y_endpoints, color, y_shift=this_y_shift)
-
-                # If we didn't show the corresponding data then attach the label to the fits
-                if not self.show_data and fit_line is not None and len(label) > 0:
-                    fit_line.set_label(label)
-                    label = ""  # Stop the label being repeated for each subsequent fit in this plot_set's fits
         return
 
     def _draw_epochs(self, ax, epochs: Dict[str, float]):

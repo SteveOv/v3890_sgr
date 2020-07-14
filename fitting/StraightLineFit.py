@@ -109,6 +109,13 @@ class StraightLineFit(FitBase, ABC):
                 fit = cls(id, range_from, range_to, x_endpoints, y_endpoints, fit_params)
         return fit
 
+    def draw_on_ax(self, ax, color: str, line_width: float = 0.5, label: str = None, y_shift: float = 0):
+        """
+        Gets the FitSet to draw itself onto the passed matplotlib ax
+        """
+        return ax.plot(self._x_endpoints, np.add(self._y_endpoints, y_shift), "-'", label=label,
+                       color=color, linewidth=line_width, alpha=1, zorder=2)
+
     def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):
         """
         Calculate the residuals - the y-difference between the y data points

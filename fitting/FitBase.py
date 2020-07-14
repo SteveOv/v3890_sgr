@@ -3,6 +3,7 @@ from typing import List
 import numpy as np
 import uncertainties
 import copy
+from matplotlib.axes import Axes
 from fitting import FitBase
 
 
@@ -27,14 +28,6 @@ class FitBase(ABC):
     @property
     def id(self) -> int:
         return self.__id
-
-    @property
-    def x_endpoints(self) -> List[float]:
-        return self._x_endpoints
-
-    @property
-    def y_endpoints(self) -> List[uncertainties.UFloat]:
-        return self._y_endpoints
 
     @property
     def range_from(self) -> float:
@@ -73,6 +66,13 @@ class FitBase(ABC):
             -> FitBase:
         """
         Factory method to create a Fit based on the passed data (xi, yi and delta yi) over the requested range of xi.
+        """
+        pass
+
+    @abstractmethod
+    def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, label: str = None, y_shift: float = 0):
+        """
+        Gets the Fit to draw itself onto the passed matplotlib ax
         """
         pass
 

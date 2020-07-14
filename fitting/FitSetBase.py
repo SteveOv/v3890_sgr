@@ -3,9 +3,11 @@ from typing import List
 from pandas import DataFrame
 import copy
 import uncertainties
+import numpy as np
+from matplotlib.axes import Axes
+from matplotlib.lines import Line2D
 from fitting import FitSetBase
 from fitting.FitBase import FitBase
-import numpy as np
 
 
 class FitSetBase(ABC):
@@ -77,6 +79,15 @@ class FitSetBase(ABC):
         fit_set = cls(fits, breaks)
         print(fit_set)
         return fit_set
+
+    def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, label: str = None, y_shift: float = 0):
+        """
+        Gets the FitSet to draw itself onto the passed matplotlib ax
+        """
+        for fit in self:
+            fit.draw_on_ax(ax, color, line_width=line_width, label=label, y_shift=y_shift)
+            label = None  # Make sure we only set the label once otherwise it will be duplicated in any legend
+        return
 
     def calculate_residuals(self, df: DataFrame, x_col: str, y_col: str) -> (List[float], List[float]):
         """

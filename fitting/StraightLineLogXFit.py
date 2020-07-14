@@ -2,6 +2,7 @@ import numpy as np
 from typing import List, Union
 import uncertainties
 from uncertainties import ufloat
+from matplotlib.axes import Axes
 from fitting import FitBase, StraightLineFit
 
 
@@ -20,13 +21,6 @@ class StraightLineLogXFit(StraightLineFit):
         else:
             text = super().__str__()
         return text
-
-    @property
-    def linear_x_endpoints(self) -> List[float]:
-        """
-        The x_endpoints in terms of a linear x-axis
-        """
-        return np.power(10, self._x_endpoints)
 
     @property
     def power_law(self) -> str:
@@ -82,6 +76,13 @@ class StraightLineLogXFit(StraightLineFit):
             test_y = cls._y_from_straight_line_func(cp._x_endpoints, cp.slope.nominal_value, cp.const.nominal_value)
             assert all(cp._y_endpoints) == all(test_y)
         return cp
+
+    def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, label: str = None, y_shift: float = 0):
+        """
+        Gets the FitSet to draw itself onto the passed matplotlib ax
+        """
+        return ax.plot(np.power(10, self._x_endpoints), np.add(self._y_endpoints, y_shift), label=label,
+                       color=color, linestyle="-", linewidth=line_width, alpha=1, zorder=2, antialiased=True)
 
     def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):
         """

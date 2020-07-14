@@ -4,6 +4,7 @@ from pandas import DataFrame
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
 from plot import PlotData
 
 
@@ -167,7 +168,7 @@ class BasePlot(ABC):
         # self._log(f"_param[{key}] == '{value}' (default='{default}')")
         return value
 
-    def _plot_df_to_error_bars_on_ax(self, ax, df: DataFrame, x_col: str, y_col: str, y_err_col: str,
+    def _plot_df_to_error_bars_on_ax(self, ax: Axes, df: DataFrame, x_col: str, y_col: str, y_err_col: str,
                                      color: str, label: str = None, y_shift: float = 0, fmt: str = ","):
         """
         Plot the passed data as a sequence of error bars using standard formatting as configured for this instance.
@@ -176,7 +177,7 @@ class BasePlot(ABC):
             ax, df[x_col], df[y_col], df[y_err_col], color, label, y_shift, fmt)
 
     def _plot_points_to_error_bars_on_ax(self,
-                                         ax, x_points: List[float], y_points: List[float], y_err_points: List[float],
+                                         ax: Axes, x_points: List[float], y_points: List[float], y_err_points: List[float],
                                          color: str, label: str = None, y_shift: float = 0, fmt: str = ","):
         """
         Plot the passed data as a sequence of error bars using standard formatting as configured for this instance.
@@ -186,14 +187,14 @@ class BasePlot(ABC):
                            label=label, fmt=fmt, color=color, fillstyle='full', markersize=self._marker_size,
                            capsize=1, ecolor=color, elinewidth=self._line_width, alpha=0.5, zorder=1)
 
-    def _plot_df_to_lines_on_ax(self, ax, df: DataFrame, x_col: str, y_col: str,
+    def _plot_df_to_lines_on_ax(self, ax: Axes, df: DataFrame, x_col: str, y_col: str,
                                 color: str, label: str = None, y_shift: float = 0, line_style: str = "-"):
         """
         Plot the passed data as a sequence of lines using standard formatting as configured for this instance.
         """
         return self._plot_points_to_lines_on_ax(ax, df[x_col], df[y_col], color, label, y_shift, line_style)
 
-    def _plot_points_to_lines_on_ax(self, ax, x_points: List[float], y_points: List[float],
+    def _plot_points_to_lines_on_ax(self, ax: Axes, x_points: List[float], y_points: List[float],
                                     color: str, label: str = None, y_shift: float = 0, line_style: str = "-"):
         """
         Plot the passed data as a sequence of lines using standard formatting as configured for this instance.
