@@ -1,6 +1,5 @@
 from typing import Dict
 from plot import SingleMagnitudeTimePlot, PlotSet
-import numpy as np
 
 
 class SingleMagnitudeAndRateTimePlot(SingleMagnitudeTimePlot):
@@ -26,6 +25,7 @@ class SingleMagnitudeAndRateTimePlot(SingleMagnitudeTimePlot):
         self._default_y2_label = "X-ray Count Rate [ph s$^{-1}$]"
         self._default_y2_legend_loc = "upper right"
         self._default_y2_lim = [0, 25]
+        self._default_y2_ticks = [0, 10, 20, 30]
 
         self._default_y2_scale_log = False
         self._default_y2_lim_log = [0.01, 25]
@@ -38,15 +38,19 @@ class SingleMagnitudeAndRateTimePlot(SingleMagnitudeTimePlot):
 
         # Now we set up the secondary y-axis
         self._ax2 = ax.twinx()
-        self._ax2.set_ylabel(self._param("y2_label", self._default_y2_label))
+
+        # Rotate the label so that "down" is towards the axis.
+        self._ax2.set_ylabel(self._param("y2_label", self._default_y2_label), rotation=270)
 
         y2_scale_log = self._param("y2_scale_log", self._default_y2_scale_log)
         if y2_scale_log:
             self._ax2.set_yscale("log")
-            self._ax2.set_yticks(self._param("y2_ticks_log", self._default_y2_ticks_log), minor=False)
-            self._ax2.set_yticklabels(self._param("y2_ticks_log", self._default_y2_ticks_log), minor=False)
+            self._ax2.set_yticks(self._param("y2_ticks", self._default_y2_ticks_log), minor=False)
+            self._ax2.set_yticklabels(self._param("y2_ticks", self._default_y2_ticks_log), minor=False)
             self._ax2.set(ylim=self._param("y2_lim", self._default_y2_lim_log))
         else:
+            self._ax2.set_yticks(self._param("y2_ticks", self._default_y2_ticks), minor=False)
+            self._ax2.set_yticklabels(self._param("y2_ticks", self._default_y2_ticks), minor=False)
             self._ax2.set(ylim=self._param("y2_lim", self._default_y2_lim))
         return
 
