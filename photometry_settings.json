@@ -241,7 +241,7 @@
                 ]
             },
             {
-                "type": "SingleMagnitudeTimePlot",
+                "type": "MagnitudeTimePlot",
                 "file_name": "./output/V3890Sgr-1990-2019-LC-log(day)-single-nominal.png",
                 "title": "The 2019 and 1990 eruptions of V3890 Sgr in the V-band with fitted lightcurves",
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "x_scale_log": true, "x_size": 2, "y_size": 2, "y_shift": 1},
@@ -251,7 +251,7 @@
                 ]
             },
             {
-                "type": "SingleMagnitudeTimePlot",
+                "type": "MagnitudeTimePlot",
                 "file_name": "./output/V3890Sgr-2019-UV-V-B-LC-log(day)-single-nominal.png",
                 "title": "The 2019 eruption of V3890 Sgr in the\nV, B, UVW2 and UVM2 bands",
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "x_scale_log": true, "x_size": 2, "y_size": 2, "y_lim": [5.8, 20.2], "y_shift": 1},
@@ -263,7 +263,7 @@
                 ]
             },
             {
-                "type": "SingleMagnitudeTimePlot",
+                "type": "MagnitudeTimePlot",
                 "file_name": "./output/V3890Sgr-2019-UV-V-B-LC-log(day)-single-nominal-fits.png",
                 "title": "The 2019 eruption of V3890 Sgr with model\ncurves in the V, B, UVW2 & UVM2 bands",
                 "params": {"show_title": true, "show_data": false, "show_fits": true, "x_scale_log": true, "x_size": 1, "y_size": 1, "legend_loc": "lower left"},
@@ -275,7 +275,7 @@
                 ]
             },
             {
-                "type": "SingleMagnitudeAndRateTimePlot",
+                "type": "MagnitudeAndRateTimePlot",
                 "file_name": "./output/V3890Sgr-2019-ALL-log(day)-single-nominal.png",
                 "title": "The 2019 eruption of V3890 Sgr in the visual, UV and X-ray bands",
                 "params": {"show_title": true, "show_data": false, "show_fits": true, "x_scale_log": true, "x_lim": [0.05, 110], "y2_scale_log": true, "y2_lim": [0.03, 60], "y2_ticks": [0.1, 1, 10, 20, 30]},
@@ -288,14 +288,14 @@
         ],
         "2019 Eruption XRT plots": [
             {
-                "type": "SingleRateTimePlot",
+                "type": "RateTimePlot",
                 "file_name": "./output/V3890Sgr-2019-XRT-LC-linear-day-nominal.png",
                 "title": "The 2019 eruption of V3890 Sgr in\nSwift XRT ($t_{{e}}=2458723.278$)",
                 "params": {"show_title": true, "show_data": true, "legend_loc": "upper right", "x_scale_log": false},
                 "plot_sets": [{ "data_sets": "2019-XRT-Rates/nominal" }]
             },
             {
-                "type": "RateFitResidualsTimePlot",
+                "type": "RateAndResidualsTimePlot",
                 "file_name": "./output/V3890Sgr-2019-XRT-LC-log(day)-single-nominal.png",
                 "title": "TThe 2019 eruption of V3890 Sgr in\nSwift XRT ($t_{{e}}=2458723.278$)",
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true, "y_scale_log": true, "x_lim": [0.5, 100]},
@@ -311,14 +311,14 @@
         ],
         "2019 Eruption UVOT plots": [
             {
-                "type": "SingleMagnitudeTimePlot",
+                "type": "MagnitudeTimePlot",
                 "file_name": "./output/V3890Sgr-2019-UVOT-LC-linear-day-nominal.png",
                 "title": "The 2019 eruption of V3890 Sgr in\nSwift UV ($t_{{e}}=2458723.278$)",
                 "params": { "show_title": true },
                 "plot_sets": [{ "data_sets": "2019-UVOT/nominal" }]
             },
             {
-                "type": "MagnitudeFitResidualsTimePlot",
+                "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/V3890Sgr-2019-UVOT-LC-log(day)-single-nominal.png",
                 "title": "The 2019 eruption of V3890 Sgr in Swift UV ($t_{{e}}=2458723.278$)",
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
@@ -327,28 +327,28 @@
         ],
         "2019 AAVSO Visual plots":[
             {
-                "type": "SingleMagnitudeTimePlot",
+                "type": "MagnitudeTimePlot",
                 "file_name": "./output/V3890Sgr-2019-AAVSO-LC-linear-day-nominal.png",
                 "title": "The 2019 eruption of V3890 Sgr\n($t_{{e}}=2458723.278$)",
                 "params": {"show_title": true, "x_scale_log": false, "x_size": 1, "y_size": 1},
                 "plot_sets": [{"data_sets": "2019-AAVSO/nominal"}]
             },
             {
-                "type": "MagnitudeFitResidualsTimePlot",
+                "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/V3890Sgr-2019-AAVSO-LC-log(day)-single-nominal.png",
                 "title": "The 2019 eruption of V3890 Sgr from AAVSO visual observations ($t_{{e}}=2458723.278$)",
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
                 "plot_sets": [{"data_sets": "2019-AAVSO/nominal"}]
             },
             {
-                "type": "MagnitudeFitResidualsTimePlot",
+                "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/V3890Sgr-2019-AAVSO-LC-log(day)-single-nominal-err.png",
                 "title": "The 2019 eruption of V3890 Sgr from AAVSO visual observations ($t_{{e}}-\\sigma=2458723.022$)",
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
                 "plot_sets": [{"data_sets": "2019-AAVSO/nominal-err"}]
             },
             {
-                "type": "MagnitudeFitResidualsTimePlot",
+                "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/V3890Sgr-2019-AAVSO-LC-log(day)-single-nominal+err.png",
                 "title": "The 2019 eruption of V3890 Sgr from AAVSO visual observations ($t_{{e}}+\\sigma=2458723.534$)",
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
@@ -378,21 +378,21 @@
         ],
         "1990 Eruption Visual Plots (based on Schaefer data)": [
             {
-                "type": "SingleMagnitudeTimePlot",
+                "type": "MagnitudeTimePlot",
                 "file_name": "./output/V3890Sgr-1990-Schaefer-LC-linear-day-nominal.png",
                 "title": "The 1990 eruption of V3890 Sgr\n($t_{{e}}=2448009-0.35$)",
                 "params": {"show_title": true},
                 "plot_sets": [{"data_sets": "1990-Schaefer/nominal"}]
             },
             {
-                "type": "MagnitudeFitResidualsTimePlot",
+                "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/V3890Sgr-1990-Schaefer-LC-log(day)-single-nominal.png",
                 "title": "The 1990 eruption of V3890 Sgr ($t_{{e}}=2448009-0.35$)",
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
                 "plot_sets": [{"data_sets": "1990-Schaefer/nominal"}]
             },
             {
-                "type": "MagnitudeFitResidualsTimePlot",
+                "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/V3890Sgr-1990-Schaefer-LC-log(day)-single-nominal-2019-fits.png",
                 "title": "The 1990 eruption of V3890 Sgr ($t_{{e}}=2448009-0.35$) with slopes from 2019 eruption",
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
@@ -401,14 +401,14 @@
         ],
         "1962 Eruption Visual Plots (based on Schaefer data)": [
             {
-                "type": "SingleMagnitudeTimePlot",
+                "type": "MagnitudeTimePlot",
                 "file_name": "./output/V3890Sgr-1962-Schaefer-LC-linear-day-nominal.png",
                 "title": "The 1962 eruption of V3890 Sgr\n($t_{{e}}=22437818-0.35$)",
                 "params": {"show_title": true},
                 "plot_sets": [{"data_sets": "1962-Schaefer/nominal"}]
             },
             {
-                "type": "MagnitudeFitResidualsTimePlot",
+                "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/V3890Sgr-1962-Schaefer-LC-log(day)-single-nominal.png",
                 "title": "The 1962 eruption of V3890 Sgr ($t_{{e}}=22437818-0.35$)",
                 "enabled": false,
@@ -416,7 +416,7 @@
                 "plot_sets": [{"data_sets": "1962-Schaefer/nominal"}]
             },
             {
-                "type": "MagnitudeFitResidualsTimePlot",
+                "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/V3890Sgr-1962-Schaefer-LC-log(day)-single-nominal-2019-fits.png",
                 "title": "The 1962 eruption of V3890 Sgr ($t_{{e}}=22437818-0.35$)\noverlaid with slopes from the 2019 eruption",
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true},
@@ -425,7 +425,7 @@
         ],
         "Temporary Plots": [
             {
-                "type": "MagnitudeFitResidualsTimePlot",
+                "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/V3890Sgr-2019-AAVSO-LC-log(day)-single-nominal+SPET-revised-breaks.png",
                 "title": "The 2019 eruption of V3890 Sgr ($t_{{e}}=2458723.278$) [+SPET data, revised breaks]",
                 "enabled": false,
@@ -433,7 +433,7 @@
                 "plot_sets": [{"data_sets": "2019-AAVSO/nominal+SPET_Revised_Breaks"}]
             },
             {
-                "type": "MagnitudeFitResidualsTimePlot",
+                "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/V3890Sgr-2019-AAVSO-LC-log(day)-single-nominal-shifted.png",
                 "title": "The 2019 eruption of V3890 Sgr ($t_{{e}}=2458723.278$) [fits shifted]",
                 "enabled": true,

@@ -6,14 +6,13 @@ from plot import SinglePlot, PlotSet
 
 class ColorMagnitudePlot(SinglePlot):
     """
-    TODO
+    This is a color-magnitude plot.  It is based on SinglePlot as it doesn't need log support on either axis.
+
+    TODO: WIP as there is still hard coded implementation in here.
     """
 
     def __init__(self, plot_params: Dict):
         super().__init__(plot_params)
-        self._default_x_size = 1
-        self._default_y_size = 1
-        self._default_show_legend = True
 
         self._default_x_label = "$(B-V)_{int}$"
         self._default_x_lim = (-1, 1)
@@ -40,7 +39,7 @@ class ColorMagnitudePlot(SinglePlot):
         super()._configure_ax(ax)
         return
 
-    def _render_plot_sets(self, ax, plot_sets: Dict[str, PlotSet]):
+    def _draw_plot_sets(self, ax, plot_sets: Dict[str, PlotSet]):
         """
         Completely subclass the data rendering logic of the superclass()
         In this case we're not directly plotting photometric data,

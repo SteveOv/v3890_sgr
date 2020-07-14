@@ -1,6 +1,5 @@
 from typing import Dict
 import numpy as np
-import matplotlib.pyplot as plt
 from pandas import DataFrame
 from plot import SinglePlotSupportingLogAxes, PlotSet
 
@@ -8,6 +7,7 @@ from plot import SinglePlotSupportingLogAxes, PlotSet
 class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
 
     def __init__(self, plot_params: Dict):
+        # Only x_axis is log-able.  The main y-axis will show magnitudes which is already log data. y2 will be log-able.
         super().__init__(plot_params, x_axis_supports_log=True, y_axis_supports_log=False)
 
         # Override the most basic behaviour - we need a large plot with labelling of data points, so no legend
@@ -16,20 +16,20 @@ class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
         self._default_show_legend = False
 
         self._default_x_scale_log = True
-        self._default_y_scale_log = False
         self._default_x_axis = "frequency"
 
-        self._y_label = "Apparent magnitude [mag]"
-        self._y_lim = (5.8, 17)
+        self._default_y_label = "Apparent magnitude [mag]"
+        self._default_y_lim = (5.8, 17)
 
+        # x-axis can be set up for frequency (defaults to log scale) or wavelength (defaults to linear scale)
         self._x_axis = self._param("x_axis", self._default_x_axis)
         if self._x_axis == self._default_x_axis:
-            self._x_scale_log = True
+            self._default_x_scale_log = True
             self._default_x_label = "$\\log(\\nu)$ [Hz]"
             self._default_x_lim_log = (np.log10(3.5e14), np.log10(2.0e15))
             self._default_x_ticks_log = [14.6, 14.7, 14.8, 14.9, 15.0, 15.1, 15.2, 15.3]
         else:
-            self._x_scale_log = False
+            self._default_x_scale_log = False
             self._default_x_lim = (100, 900)
             self._default_x_ticks = np.arange(200, 900, 200)
             self._default_x_label = "Wavelength [nm]"
@@ -42,20 +42,9 @@ class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
         self._default_y2_ticks_log = [1, 10, 100]
         return
 
-    def _render_plot(self, plot_sets: Dict[str, PlotSet], title: str) -> plt.figure:
-
-        x_axis = self._param("x_axis", self._default_x_axis)
-        if x_axis == "frequency":
-            self._default_x_scale_log = True
-        else:
-            self._default_x_scale_log = False
-            self._default_x_label = "wavelength [nm]"
-
-        return super()._render_plot(plot_sets, title)
-
     def _configure_ax(self, ax):
         # Invert the y-axis for magnitudes
-        ax.set(ylim=self._y_lim)
+        ax.set(ylim=self._param("y_lim", self._default_y_lim))
         ax.invert_yaxis()
 
         # This looks after the shared x-axis and the primary y-axis
@@ -77,7 +66,7 @@ class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
         """
         return
 
-    def _render_plot_sets(self, ax, plot_sets: Dict[str, PlotSet]):
+    def _draw_plot_sets(self, ax, plot_sets: Dict[str, PlotSet]):
         """
         Completely subclass the data rendering logic of the superclass()
         In this case we're not directly plotting photometric data,

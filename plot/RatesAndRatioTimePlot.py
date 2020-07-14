@@ -1,102 +1,110 @@
 from typing import Dict
-import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
-from plot import BasePlot, PlotData, PlotSet
+from plot.RateTimePlot import RateTimePlot
+from plot.PlotSet import PlotSet
 
 
-class RatesAndRatioTimePlot(BasePlot):
+class RatesAndRatioTimePlot(RateTimePlot):
     """
     Produces a 3 x Rate vs log(Delta-time) plots. Specifically for plotting hard / soft / ratio XRT/X-ray plots.
+
+    Adds the following plot_params to (RateTimePlot):
+        * y_label_hard_data, y_label_soft_data, y_label_ratio
+        * y_lim_ratio, y_ticks_ratio (existing y_lim and y_ticks params apply to hard/soft data)
     """
 
     def __init__(self, plot_params: Dict):
         super().__init__(plot_params)
+
+        # override the "default" default sizing
         self._default_x_size = 2
         self._default_y_size = 2
 
-        self._default_x_lim = (0.01, 100)
-        self._default_x_ticks = np.arange(0, 110, 10)
-        self._default_x_ticks_log = [0.1, 1, 10, 100]
-
+        self._default_y_label_hard_data = "Hard: 1.5 - 10 keV [s$^{-1}$]"
+        self._default_y_label_soft_data = "Soft: 0.3 - 1.5 keV [s$^{-1}$]"
+        self._default_y_label_ratio = "Ratio"
         self._default_y_lim_ratio = (-2, 21)
         self._default_y_ticks_ratio = [0, 10, 20]
         self._default_y_lim_ratio_log = (0.01, 21)
-
-        self._default_y_lim = (-2, 31)
-        self._default_y_ticks = [0, 10, 20, 30]
-        self._default_y_lim_log = (0.01, 41)
-
-        self._default_y_ticks_log = [0.1, 1, 10] # Rates and Ratios use the same log ticks/scale
+        self._default_y_ticks_ratio_log = [0.1, 1, 10]
         return
 
-    def _render_plot(self, plot_data: PlotData, title: str) -> plt.figure:
+    @property
+    def y_label_hard_data(self):
+        return self._param(f"y_label_hard_data", self._default_y_label_hard_data)
 
-        fig = plt.figure(figsize=(self._x_size, self._y_size), constrained_layout=True)
+    @property
+    def y_label_soft_data(self):
+        return self._param(f"y_label_soft_data", self._default_y_label_soft_data)
+
+    @property
+    def y_label_ratio(self):
+        return self._param("y_label_ratio", self._default_y_label_ratio)
+
+    @property
+    def y_lim_ratio(self):
+        return self._param("y_lim_ratio",
+                           self._default_y_lim_ratio_log if self.y_scale_log else self._default_y_lim_ratio)
+
+    @property
+    def y_ticks_ratio(self):
+        return self._param("y_ticks_ratio",
+                           self._default_y_ticks_ratio_log if self.y_scale_log else self._default_y_ticks_ratio)
+
+    @property
+    def y_shift(self):
+        # Never allow a y-shift to be applied.
+        return 0
+
+    def _create_ax(self, fig):
         gs = GridSpec(nrows=3, ncols=1, height_ratios=[3, 3, 2], figure=fig)
+        self._ax_ratio = fig.add_subplot(gs[2, 0])
+        self._ax_hard = fig.add_subplot(gs[0, 0], sharex=self._ax_ratio)
+        self._ax_soft = fig.add_subplot(gs[1, 0], sharex=self._ax_ratio)
 
-        x_lim = self._param("x_lim", (0.01, 100))
-        y_scale_log = self._param("y_scale_log", False)
-        x_scale_log = self._param("x_scale_log", False)
+        # Only this ax will have the title/legend added as appropriate by the super classes.
+        return self._ax_hard
 
-        for sub_plot_type in ["hardness_ratio", "soft_data", "hard_data"]:
-            if sub_plot_type == "hardness_ratio":
-                ax = fig.add_subplot(gs[2, 0])
-                ax.set_ylabel(self._param("y_label_ratio", "Ratio"))
-
-                if y_scale_log:
+    def _configure_ax(self, ax):
+        self._ax_hard.set_ylabel(self.y_label_hard_data)
+        self._ax_soft.set_ylabel(self.y_label_soft_data)
+        for ax in [self._ax_ratio, self._ax_hard, self._ax_soft]:
+            if ax is self._ax_ratio:
+                # Configure the ratio ax ...
+                if self.y_scale_log:
                     ax.set_yscale("log")
-                    ax.set(xlim=x_lim, ylim=self._param("y_lim_ratio", self._default_y_lim_ratio_log))
-                    ax.set_yticks(self._param("y_ticks_ratio", self._default_y_ticks_log), minor=False)
-                    ax.set_yticklabels(self._param("y_ticks_ratio", self._default_y_ticks_log), minor=False)
-                else:
-                    ax.set(xlim=x_lim, ylim=self._param("y_lim_rate", self._default_y_lim_ratio))
-                    ax.set_yticks(self._param("x_ticks_ratio", self._default_y_ticks_ratio), minor=False)
+                ax.set_ylabel(self.y_label_ratio)
+                ax.set(xlim=self.x_lim, ylim=self.y_lim_ratio)
+                ax.set_yticks(self.y_ticks_ratio, minor=False)
+                ax.set_yticklabels(self.y_ticks_ratio, minor=False)
 
-                # We are using a shared x-axis, so x-ticks/labels only on this bottom subplot.  Grids on all.
-                ax.set_xlabel(self._param("x_label", "$\\Delta t$ [days]"))
-                if x_scale_log:
+                # ... and the shared x-axis.
+                if self.x_scale_log:
                     ax.set_xscale("log")
-                    ax.set_xticks(self._param("x_ticks", self._default_x_ticks_log), minor=False)
-                    ax.set_xticklabels(self._param("x_ticks", self._default_x_ticks_log), minor=False)
-                else:
-                    ax.set_xticks(self._param("x_ticks", self._default_x_ticks), minor=False)
+                ax.set_xlabel(self.x_label)
+                ax.set_xticks(self.x_ticks, minor=False)
+                ax.set_xticklabels(self.x_ticks, minor=False)
             else:
-                if sub_plot_type == "hard_data":
-                    ax = fig.add_subplot(gs[0, 0], sharex=ax)
-                    ax.set_ylabel(self._param(f"y_label_{sub_plot_type}", "Hard: 1.5 - 10 keV [s$^{-1}$]"))
-                else:
-                    ax = fig.add_subplot(gs[1, 0], sharex=ax)
-                    ax.set_ylabel(self._param(f"y_label_{sub_plot_type}", "Soft: 0.3 - 1.5 keV [s$^{-1}$]"))
-
-                if y_scale_log:
+                # Configure the hard/soft ax
+                if self.y_scale_log:
                     ax.set_yscale("log")
-                    ax.set(xlim=x_lim, ylim=self._param("y_lim", self._default_y_lim_log))
-                    ax.set_yticks(self._param("y_ticks", self._default_y_ticks_log), minor=False)
-                    ax.set_yticklabels(self._param("y_ticks", self._default_y_ticks_log), minor=False)
-                else:
-                    ax.set(xlim=x_lim, ylim=self._param("y_lim", self._default_y_lim))
-                    ax.set_yticks(self._param("y_ticks", self._default_y_ticks), minor=False)
+                ax.set(xlim=self.x_lim, ylim=self.y_lim)
+                ax.set_yticks(self.y_ticks, minor=False)
+                ax.set_yticklabels(self.y_ticks, minor=False)
 
+            # Grids, where necessary, on all axes
             ax.grid(which='major', linestyle='-', linewidth=self._line_width, alpha=0.3)
-            if y_scale_log | x_scale_log:
+            if self.y_scale_log | self.x_scale_log:
                 ax.grid(which="minor", linestyle="-", linewidth=self._line_width, alpha=0.1)
+        return
 
-            # OK, now we can go through each band and derive information from it and plot its data
-            # Reverse the order of the bands so the labels match the vertical displacement of the curves
-            for plot_set_key in plot_data.plot_sets.keys():
-                if sub_plot_type in plot_set_key:
-                    ps = plot_data.plot_sets[plot_set_key]
-                    color = ps.color
-                    label = ps.label
-
-                    ax.errorbar(ps.x, ps.y, yerr=ps.y_err, label=label,
-                                fmt=",", color=color, fillstyle='full', markersize=self._marker_size, capsize=1,
-                                ecolor=color, elinewidth=self._line_width, alpha=0.5, zorder=1)
-
-            # Only show the title and legend/key once, in the top subplot.
-            if sub_plot_type == "hard_data":
-                ax.legend(loc=self._legend_loc)
-                if self._show_title and title is not None:
-                    ax.set_title(title)
-        return fig
+    def _draw_plot_set(self, ax, ix: int, ps: PlotSet):
+        # Work out what we are plotting here so we know which ax to plot it on.
+        # TODO: add properties to PlotSet which publish what type of data (band, hard/soft/PC/WT rate, ratio) carried.
+        if "hard_data" in ps.name:
+            super()._draw_plot_set(self._ax_hard, ix, ps)
+        elif "soft_data" in ps.name:
+            super()._draw_plot_set(self._ax_soft, ix, ps)
+        elif "hardness_ratio" in ps.name:
+            super()._draw_plot_set(self._ax_ratio, ix, ps)
+        return
