@@ -20,39 +20,39 @@ for data_source_key in settings["data_sources"]:
     for lc_key in ds_params["light_curves"]:
         lc_params = ds_params["light_curves"][lc_key]
 
+        # Each light_curve may have 1+ data_sets (equiv to bands or count types). Each a Dict under "set_params"
         if isinstance(ds, MagnitudeDataSource):
-            df = ds.query_magnitudes(lc_params['eruption_jd'], lc_params['query_params'])
-            if df is not None:
-                # Each light_curve may have 1+ data_sets (equiv to bands or count types). Each a Dict under "set_params"
-                data_sets_data = {}
-                for set_params in lc_params['data_sets']:
-                    data_set_key = set_params['set']
-                    print(f"\nAnalysing {data_source_key}/{lc_key}/data_sets['{data_set_key}'] band data")
-                    band_df = df.query(F"band=='{data_set_key}'").sort_values(by='day')
+            data_sets_data = {}
+            for set_params in lc_params['data_sets']:
+                data_set_key = set_params['set']
+                print(f"\nAnalysing {data_source_key}/{lc_key}/data_sets['{data_set_key}'] band data")
+                # TODO: band query/filter goes into config (as it already is for rate sources)
+                set_params["where"] = F"band=='{data_set_key}'"
+                band_df = ds.query(lc_params['eruption_jd'], lc_params['query_params'], set_params)
 
-                    if "copy_fits" in set_params:
-                        print(f"Copying the breaks/fits as already generated for {set_params['copy_fits']}")
-                        fits = StraightLineLogXFitSet.copy(
-                            light_curves[set_params['copy_fits']][data_set_key]['fits'],
-                            x_shift=set_params['fit_x_shift'], y_shift=set_params['fit_y_shift'])
-                    else:
-                        fits = StraightLineLogXFitSet.fit_to_data(band_df, "day", "mag", "mag_err", set_params['breaks'])
+                if "copy_fits" in set_params:
+                    print(f"Copying the breaks/fits as already generated for {set_params['copy_fits']}")
+                    fits = StraightLineLogXFitSet.copy(
+                        light_curves[set_params['copy_fits']][data_set_key]['fits'],
+                        x_shift=set_params['fit_x_shift'], y_shift=set_params['fit_y_shift'])
+                else:
+                    fits = StraightLineLogXFitSet.fit_to_data(band_df, "day", "mag", "mag_err", set_params['breaks'])
 
-                    # TODO: temporary way of telling downstream code what columns to use
-                    set_params["x_col"] = "day"
-                    set_params["y_col"] = "mag"
-                    set_params["y_err_col"] = "mag_err"
-                    data_sets_data[data_set_key] = {'df': band_df, 'fits': fits, 'params': set_params}
-                light_curves[F'{data_source_key}/{lc_key}'] = data_sets_data
+                # TODO: temporary way of telling downstream code what columns to use
+                set_params["x_col"] = "day"
+                set_params["y_col"] = "mag"
+                set_params["y_err_col"] = "mag_err"
+                data_sets_data[data_set_key] = {'df': band_df, 'fits': fits, 'params': set_params}
+            light_curves[F'{data_source_key}/{lc_key}'] = data_sets_data
         elif isinstance(ds, RateDataSource):
             data_set_data = {}
             for set_params in lc_params['data_sets']:
                 data_set_key = set_params['set']
 
                 print(f"\nAnalysing {data_source_key}/{lc_key}/data_sets['{data_set_key}'] rate data")
-                type_df = ds.query_rates(lc_params['eruption_jd'], lc_params['query_params'], set_params)
+                type_df = ds.query(lc_params['eruption_jd'], lc_params['query_params'], set_params)
                 if "breaks" in set_params and len(set_params["breaks"]) > 0:
-                    fits = StraightLineLogXFitSet.fit_to_data(type_df, "day", "rate", "rate_err", set_params['breaks'], constrain=True)
+                    fits = StraightLineLogXFitSet.fit_to_data(type_df, "day", "rate", "rate_err", set_params['breaks'])
                 else:
                     fits = None
 

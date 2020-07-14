@@ -9,9 +9,6 @@ class SchaeferMagnitudeDataSource(MagnitudeDataSource):
     Schaefer (2010) Comprehensive Photometric Histories of all Known Galactic RNe
     """
 
-    def _on_query_magnitudes(self) -> DataFrame:
-        return self._df
-
     def _ingest(self, source: str) -> DataFrame:
         """
         Ingest the data from the specified source and return it as a pandas DataFrame

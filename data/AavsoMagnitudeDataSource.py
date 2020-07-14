@@ -1,7 +1,4 @@
-import numpy as np
 import pandas as pd
-from pandas import DataFrame
-from data.DataSource import *
 from data.MagnitudeDataSource import *
 
 
@@ -9,12 +6,6 @@ class AavsoMagnitudeDataSource(MagnitudeDataSource):
     """
     Read and parse AAVSO Photometry Data files into pandas DataFrames
     """
-
-    def _on_query_magnitudes(self) -> DataFrame:
-        """
-        Return standard magnitude fields for use by a magnitude query.
-        """
-        return self._df
 
     def _ingest(self, source: str) -> DataFrame:
         """

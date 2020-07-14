@@ -9,19 +9,6 @@ class UvotFitsMagnitudeDataSource(MagnitudeDataSource):
     which have been produced by tht uvotsource command.
     """
 
-    def _on_query_magnitudes(self) -> DataFrame:
-        """
-        For querying, ensure the dataframe to be queries has these standard fields.
-            jd
-            mag
-            mag_err
-            band
-            observer_code
-            is_null_obs
-            is_saturated_obs
-        """
-        return self._df
-
     def _ingest(self, source: str) -> DataFrame:
         """
         Ingest the data from the specified source and return it as a pandas DataFrame

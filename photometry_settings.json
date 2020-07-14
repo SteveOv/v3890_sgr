@@ -9,8 +9,8 @@
                     "eruption_jd": 2458723.278,
                     "query_params": { "day_range": [0, 100] },
                     "data_sets": [
-                        {"set": "WT", "filter": "rate_type=='WT'", "color": "gray", "label": "WT", "breaks": []},
-                        {"set": "PC", "filter": "rate_type=='PC'", "color": "lightskyblue", "label": "PC ", "breaks": []}
+                        {"set": "WT", "where": "rate_type=='WT'", "color": "gray", "label": "WT", "breaks": []},
+                        {"set": "PC", "where": "rate_type=='PC'", "color": "lightskyblue", "label": "PC ", "breaks": []}
                     ]
                 }
             }
@@ -24,32 +24,32 @@
                     "eruption_jd": 2458723.278,
                     "query_params": { "day_range": [0, 100], "data_type": "hard" },
                     "data_sets": [
-                        {"set": "WT", "filter": "rate_type=='WT'", "color": "gray", "label": "WT", "breaks": []},
-                        {"set": "PC", "filter": "rate_type=='PC'", "color": "lightskyblue", "label": "PC", "breaks": []}
+                        {"set": "WT", "where": "rate_type=='WT'", "color": "gray", "label": "WT", "breaks": []},
+                        {"set": "PC", "where": "rate_type=='PC'", "color": "lightskyblue", "label": "PC", "breaks": []}
                     ]
                 },
                 "soft_data": {
                     "eruption_jd": 2458723.278,
                     "query_params": { "day_range": [0, 100], "data_type": "soft" },
                     "data_sets": [
-                        {"set": "WT", "filter": "rate_type=='WT'", "color": "gray", "label": "WT", "breaks": []},
-                        {"set": "PC", "filter": "rate_type=='PC'", "color": "lightskyblue", "label": "PC", "breaks": []}
+                        {"set": "WT", "where": "rate_type=='WT'", "color": "gray", "label": "WT", "breaks": []},
+                        {"set": "PC", "where": "rate_type=='PC'", "color": "lightskyblue", "label": "PC", "breaks": []}
                     ]
                 },
                 "hardness_ratio": {
                     "eruption_jd": 2458723.278,
                     "query_params": { "day_range": [0, 100], "data_type": "ratio" },
                     "data_sets": [
-                        {"set": "WT", "filter": "rate_type=='WT'", "color": "gray", "label": "WT", "breaks": []},
-                        {"set": "PC", "filter": "rate_type=='PC'", "color": "lightskyblue", "label": "PC", "breaks": []}
+                        {"set": "WT", "where": "rate_type=='WT'", "color": "gray", "label": "WT", "breaks": []},
+                        {"set": "PC", "where": "rate_type=='PC'", "color": "lightskyblue", "label": "PC", "breaks": []}
                     ]
                 },
                 "nominal-hard-soft": {
                     "eruption_jd": 2458723.278,
-                    "query_params": { "day_range": [0, 100], "filter": "(rate_type == 'WT') or (rate_type == 'PC' and rate <= 1.0)"},
+                    "query_params": { "day_range": [0, 100], "where": "((rate_type == 'WT') or (rate_type == 'PC' and rate <= 1.0)) and rate_err < rate/2"},
                     "data_sets": [
-                        {"set": "hard_data", "filter": "data_type=='hard'", "color": "darkcyan", "label": "Hard (1.5-10 keV)", "breaks": [2.6, 4.2, 9, 16.7, 38.7, 75]},
-                        {"set": "soft_data", "filter": "data_type=='soft'", "color": "cyan", "label": "Soft (0.3-1.5 keV)", "breaks": [4.6, 8.2, 15.017, 15.28, 19.48, 24.26, 75]}
+                        {"set": "hard_data", "where": "data_type=='hard'", "color": "darkcyan", "label": "Hard (1.5-10 keV)", "breaks": [1.0, 2.60, 2.72, 3.88, 20.5, 75]},
+                        {"set": "soft_data", "where": "data_type=='soft'", "color": "k", "label": "Soft (0.3-1.5 keV)", "breaks": [1.8, 4.0, 8.2, 15.017, 15.28, 19.48, 24.26, 75]}
                     ]
                 }
             }
@@ -289,21 +289,21 @@
         "2019 Eruption XRT plots": [
             {
                 "type": "RateTimePlot",
-                "file_name": "./output/V3890Sgr-2019-XRT-LC-linear-day-nominal.png",
+                "file_name": "./output/V3890Sgr-2019-XRT-LC-linear-rates-day-nominal.png",
                 "title": "The 2019 eruption of V3890 Sgr in\nSwift XRT ($t_{{e}}=2458723.278$)",
                 "params": {"show_title": true, "show_data": true, "legend_loc": "upper right", "x_scale_log": false},
                 "plot_sets": [{ "data_sets": "2019-XRT-Rates/nominal" }]
             },
             {
                 "type": "RateAndResidualsTimePlot",
-                "file_name": "./output/V3890Sgr-2019-XRT-LC-log(day)-single-nominal.png",
-                "title": "TThe 2019 eruption of V3890 Sgr in\nSwift XRT ($t_{{e}}=2458723.278$)",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true, "y_scale_log": true, "x_lim": [0.5, 100]},
+                "file_name": "./output/V3890Sgr-2019-XRT-LC-log(day)-residuals-nominal(ratio-data).png",
+                "title": "TThe 2019 eruption of V3890 Sgr in Swift XRT ($t_{{e}}=2458723.278$)",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true, "y_scale_log": true, "y_lim": [0.003, 30], "y_ticks": [0.01, 0.1, 1, 10], "x_lim": [0.5, 100]},
                 "plot_sets": [{"data_sets": "2019-XRT-Ratios/nominal-hard-soft"}]
             },
             {
                 "type": "RatesAndRatioTimePlot",
-                "file_name": "./output/V3890Sgr-2019-XRT-LC-log(day)-triple-ratios.png",
+                "file_name": "./output/V3890Sgr-2019-XRT-LC-log(day)-triple-ratios-nominal.png",
                 "title": "The Swift XRT X-ray Hard/Soft ratio for the 2019 eruption\nof V3890 Sgr ($t_{{e}}=2458723.278$)",
                 "params": {"show_title": true, "legend_loc": "upper left", "x_scale_log": true, "y_scale_log": true},
                 "plot_sets": [{"data_sets": "2019-XRT-Ratios/hard_data"}, {"data_sets": "2019-XRT-Ratios/soft_data"}, {"data_sets": "2019-XRT-Ratios/hardness_ratio"}]
