@@ -27,13 +27,13 @@ class XrtRatioDataSource(RateDataSource):
 
         # Now apply any query filters
         for query_key in query_params:
-            if query_key == "day_range":
+            if query_key == "filter":
+                # Generic filter/query expression in the form "field == value"
+                df = df.query(query_params["filter"])
+            elif query_key == "day_range":
                 day_range = query_params[query_key]
                 df = df.query(f"day >= {day_range[0]}").query(f"day <= {day_range[1]}")
                 print(f"\tafter filtering on {day_range[0]} <= day <= {day_range[1]}, we now have {len(df)} rows")
-
-                # TODO: temp - filter on count regimes where the two approaches are stronger
-                df = df.query("(rate_type == 'WT' and rate >= 1.0) or (rate_type == 'PC') and rate_err < rate")
 
         # If set_params supplied look for a filter value an then apply that
         if set_params is not None and "filter" in set_params:

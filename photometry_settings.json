@@ -46,10 +46,10 @@
                 },
                 "nominal-hard-soft": {
                     "eruption_jd": 2458723.278,
-                    "query_params": { "day_range": [0, 100] },
+                    "query_params": { "day_range": [0, 100], "filter": "(rate_type == 'WT') or (rate_type == 'PC' and rate <= 1.0)"},
                     "data_sets": [
                         {"set": "hard_data", "filter": "data_type=='hard'", "color": "darkcyan", "label": "Hard (1.5-10 keV)", "breaks": [2.6, 4.2, 9, 16.7, 38.7, 75]},
-                        {"set": "soft_data", "filter": "data_type=='soft'", "color": "cyan", "label": "Soft (0.3-1.5 keV)", "breaks": [4.6, 8.2, 15.017, 15.28, 18, 21.55, 24.33, 75]}
+                        {"set": "soft_data", "filter": "data_type=='soft'", "color": "cyan", "label": "Soft (0.3-1.5 keV)", "breaks": [4.6, 8.2, 15.017, 15.28, 19.48, 24.26, 75]}
                     ]
                 }
             }

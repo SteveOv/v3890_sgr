@@ -20,7 +20,10 @@ class MagnitudeDataSource(DataSource, ABC):
         df['log_day'] = np.log10(df.query("day>0")['day'])
 
         for query_key in query_params:
-            if query_key == "day_range":
+            if query_key == "filter":
+                # Generic filter/query expression in the form "field == value"
+                df = df.query(query_params["filter"])
+            elif query_key == "day_range":
                 day_range = query_params[query_key]
                 df = df.query(f"day >= {day_range[0]}").query(f"day <= {day_range[1]}")
                 print(f"\tafter filtering on {day_range[0]} <= day <= {day_range[1]}, we now have {len(df)} rows")

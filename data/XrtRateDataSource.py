@@ -24,7 +24,10 @@ class XrtRateDataSource(RateDataSource):
         # Now apply any query filters
         if query_params is not None:
             for query_key in query_params:
-                if query_key == "day_range":
+                if query_key == "filter":
+                    # Generic filter/query expression in the form "field == value"
+                    df = df.query(query_params["filter"])
+                elif query_key == "day_range":
                     day_range = query_params[query_key]
                     df = df.query(f"day >= {day_range[0]}").query(f"day <= {day_range[1]}")
                     print(f"\tafter filtering on {day_range[0]} <= day <= {day_range[1]}, we now have {len(df)} rows")
