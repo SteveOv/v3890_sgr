@@ -1,7 +1,12 @@
-from fitting.FitBase import *
-from fitting.FitSetBase import *
+from fitting.Fit import *
+
+from fitting.NullFit import *
+
+from fitting.FittedFit import *
 from fitting.StraightLineFit import *
 from fitting.StraightLineLogXFit import *
-from fitting.StraightLineLogXFitSet import *
+from fitting.StraightLineLogLogFit import *
+
+from fitting.FitSet import *
 from fitting.StraightLineLogXFitSet import *
 from fitting.StraightLineLogLogFitSet import *

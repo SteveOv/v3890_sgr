@@ -4,19 +4,19 @@ import numpy as np
 import uncertainties
 from uncertainties import ufloat
 from scipy.optimize import curve_fit
-from fitting import FitBase, StraightLineFit
+from fitting import Fit, FittedFit, StraightLineFit
 
 
-class StraightLineFit(FitBase, ABC):
+class StraightLineFit(FittedFit, ABC):
     """
     A straight line, linear least squares fit to a range of data.
     Currently this is abstract as we are only using subclasses.
     """
 
-    def __init__(self, id: int, range_from: float, range_to: float,
-                 x_endpoints: List[float], y_endpoints: List[uncertainties.UFloat],
+    def __init__(self, id: int, x_endpoints: List[float], y_endpoints: List[uncertainties.UFloat],
+                 range_from: float = None, range_to: float = None,
                  fit_params: (uncertainties.UFloat, uncertainties.UFloat) = None):
-        super().__init__(id, range_from, range_to, x_endpoints, y_endpoints)
+        super().__init__(id, x_endpoints, y_endpoints, range_from=range_from, range_to=range_to)
         self._fit_params = fit_params
 
     def __str__(self):
@@ -48,8 +48,8 @@ class StraightLineFit(FitBase, ABC):
         return self._fit_params is not None
 
     @classmethod
-    def copy(cls, src: FitBase, x_shift: float = 0, y_shift: float = 0, new_id: int = None) \
-            -> FitBase:
+    def copy(cls, src: Fit, x_shift: float = 0, y_shift: float = 0, new_id: int = None) \
+            -> Fit:
         """
         Makes a safe copy of this Fit instance (so the data really is a copy, not a reference)
         while optionally applying x/y shifts and a new id.
@@ -70,14 +70,14 @@ class StraightLineFit(FitBase, ABC):
         return cp
 
     @classmethod
-    def fit_to_data(
-            cls, id: int, xi: List[float], yi: List[float], dyi: List[float], range_from: float, range_to: float) \
-            -> FitBase:
+    def fit_to_data(cls, id: int, xi: List[float], yi: List[float],
+                    dxi: List[float] = None, dyi: List[float] = None,
+                    range_from: float = None, range_to: float = None) -> Fit:
         """
         Factory method to create a straight line Fit based on the passed data (xi, yi and delta yi)
-        over the requested range of xi.
+        over the requested range of xi.  dxi values not supported.
         """
-        fit = cls(id, range_from, range_to, [], [], None)
+        fit = cls(id, [], [], range_from=range_from, range_to=range_to, fit_params=None)
         if xi is not None and yi is not None and dyi is not None:
             lxi = len(xi)
             lyi = len(yi)
@@ -104,9 +104,9 @@ class StraightLineFit(FitBase, ABC):
                 # Don't use ufloats for the x/y_fit as we've no uncertainty for them and the will be used for plotting
                 # the slopes.  Uncertainties in the slopes are encapsulated in the slope and const values.
                 x_endpoints = [range_from, range_to]
-                y_endpoints = cls._y_from_straight_line_func(x_endpoints, *popt).tolist()
+                y_endpoints = cls._y_from_straight_line_func(x_endpoints, *popt)
 
-                fit = cls(id, range_from, range_to, x_endpoints, y_endpoints, fit_params)
+                fit = cls(id, x_endpoints, y_endpoints, range_from=range_from, range_to=range_to, fit_params=fit_params)
         return fit
 
     def draw_on_ax(self, ax, color: str, line_width: float = 0.5, label: str = None, y_shift: float = 0):
@@ -118,16 +118,25 @@ class StraightLineFit(FitBase, ABC):
 
     def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):
         """
-        Calculate the residuals - the y-difference between the y data points
+        Calculate the residuals - the y-difference between the y data points' nominal value
         and the slope as defined by this instance's slope and const
         """
-        if self.has_fit:
-            # Just use the nominal values of the slope for residuals.
-            residuals = (xi, np.subtract(yi, StraightLineFit._y_from_straight_line_func(
-                                                    xi, self.slope.nominal_value, self.const.nominal_value)).tolist())
+        res_xi = []
+        res_yi = []
+        if xi is not None and yi is not None and len(xi) == len(yi) > 0:
+            if self.has_fit:
+                # Get the subset of the data which is within this fit's range
+                in_range = self.is_in_range(xi)
+                res_xi = np.array(xi)[in_range]
+                temp_yi = np.array(yi)[in_range]
+
+                # Just use the nominal values of the slope for residuals.
+                s_nom = self.slope.nominal_value
+                c_nom = self.const.nominal_value
+                res_yi = np.subtract(temp_yi, self.__class__._y_from_straight_line_func(res_xi, s_nom, c_nom)).tolist()
         else:
-            residuals = ([], [])
-        return residuals
+            raise IndexError("The xi and yi Lists are not the same length")
+        return res_xi, res_yi
 
     def find_peak_y_value(self, is_minimum: bool = False) -> (float, uncertainties.UFloat):
         """

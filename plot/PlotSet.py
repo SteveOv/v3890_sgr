@@ -1,6 +1,6 @@
 from typing import Dict, List
 from pandas import DataFrame
-from fitting import FitSetBase
+from fitting import FitSet
 
 
 class PlotSet:
@@ -8,7 +8,7 @@ class PlotSet:
     The data and configuration driving the plotting of a single set of data (eg: band or filter)
     """
 
-    def __init__(self, name: str, df: DataFrame, params: Dict, fits: FitSetBase = None):
+    def __init__(self, name: str, df: DataFrame, params: Dict, fits: FitSet = None):
         self.__name = name
         self.__df = df
         self.__params = params
@@ -55,7 +55,7 @@ class PlotSet:
         return self.__df.copy()
 
     @property
-    def fits(self) -> FitSetBase:
+    def fits(self) -> FitSet:
         return self.__fits
 
     @property

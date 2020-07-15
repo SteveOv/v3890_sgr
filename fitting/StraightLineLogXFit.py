@@ -3,7 +3,7 @@ from typing import List, Union
 import uncertainties
 from uncertainties import ufloat
 from matplotlib.axes import Axes
-from fitting import FitBase, StraightLineFit
+from fitting import Fit, StraightLineFit
 
 
 class StraightLineLogXFit(StraightLineFit):
@@ -35,17 +35,19 @@ class StraightLineLogXFit(StraightLineFit):
         return law
 
     @classmethod
-    def fit_to_data(
-            cls, id: int, xi: List[float], yi: List[float], dyi: List[float], range_from: float, range_to: float) \
-            -> FitBase:
+    def fit_to_data(cls, id: int, xi: List[float], yi: List[float],
+                    dxi: List[float] = None, dyi: List[float] = None,
+                    range_from: float = None, range_to: float = None) -> Fit:
         """
         Factory method to create a Fit based on the passed data (xi, yi and delta yi) over the requested range of xi.
+        dxi data is ignored.
         """
         # Prior to fitting we need to convert the xi values to their log equivalent
         log_xi = np.log10(xi)
+        log_dxi = np.log10(dxi) if dxi is not None else None
         log_from = np.log10(range_from)
         log_to = np.log10(range_to)
-        fit = super().fit_to_data(id, log_xi, yi, dyi, log_from, log_to)
+        fit = super().fit_to_data(id, log_xi, yi, dxi=log_dxi, dyi=dyi, range_from=log_from, range_to=log_to)
 
         # Once the fit's been calculated with the log(x) values, revert the public/descriptive x values back to linear
         fit._range_from = range_from
@@ -56,7 +58,7 @@ class StraightLineLogXFit(StraightLineFit):
         return fit
 
     @classmethod
-    def copy(cls, src: FitBase, x_shift: float = 0, y_shift: float = 0, new_id: int = None) -> FitBase:
+    def copy(cls, src: Fit, x_shift: float = 0, y_shift: float = 0, new_id: int = None) -> Fit:
         """
         Makes a safe copy of this Fit instance (so the data really is a copy, not a reference)
         while optionally applying x/y shifts and a new id.

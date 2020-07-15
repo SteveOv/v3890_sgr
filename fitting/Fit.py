@@ -4,22 +4,22 @@ import numpy as np
 import uncertainties
 import copy
 from matplotlib.axes import Axes
-from fitting import FitBase
+from fitting import Fit
 
 
-class FitBase(ABC):
+class Fit(ABC):
     """
     Base class for a fit to a range of data
     """
 
-    def __init__(self, id: int, range_from: float, range_to: float,
-                 x_endpoints: List[float], y_endpoints: List[uncertainties.UFloat]):
+    def __init__(self, id: int, x_endpoints: List[float], y_endpoints: List[uncertainties.UFloat],
+                 range_from: float = None, range_to: float = None):
         self.__id = id
-        self._range_from = range_from
-        self._range_to = range_to
-
         self._x_endpoints = x_endpoints
         self._y_endpoints = y_endpoints
+        self._range_from = min(x_endpoints) if x_endpoints is not None and range_from is None else range_from
+        self._range_to = max(x_endpoints) if x_endpoints is not None and range_to is None else range_to
+        return
 
     def __str__(self):
         text = f"{type(self).__name__}[{self.id}] covering x in ({self.range_from}, {self.range_to})"
@@ -46,28 +46,18 @@ class FitBase(ABC):
         pass
 
     @classmethod
-    def copy(cls, src: FitBase, x_shift: float = 0, y_shift: float = 0, new_id: int = None) -> FitBase:
+    def copy(cls, src: Fit, x_shift: float = 0, y_shift: float = 0, new_id: int = None) -> Fit:
         """
         Make a copy of the source Fit, optionally applying a shift to the x and y values
-        and assigning a new subscript to its symbol. Must be overridden if subclass extends FitBase.
+        and assigning a new subscript to its symbol. Must be overridden if subclass extends Fit.
         """
-        if isinstance(src, FitBase):
+        if isinstance(src, Fit):
             cp = cls(src.id if new_id is None else new_id,
-                     np.add(src._range_from, x_shift), np.add(src._range_to, x_shift),
-                     np.add(copy.copy(src._x_endpoints), x_shift), np.add(copy.copy(src._y_endpoints), y_shift))
+                     np.add(copy.copy(src._x_endpoints), x_shift), np.add(copy.copy(src._y_endpoints), y_shift),
+                     range_from=np.add(src._range_from, x_shift), range_to=np.add(src._range_to, x_shift))
         else:
             cp = None
         return cp
-
-    @classmethod
-    @abstractmethod
-    def fit_to_data(
-            cls, id: int, xi: List[float], yi: List[float], dyi: List[float], from_xi: float, to_xi: float) \
-            -> FitBase:
-        """
-        Factory method to create a Fit based on the passed data (xi, yi and delta yi) over the requested range of xi.
-        """
-        pass
 
     @abstractmethod
     def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, label: str = None, y_shift: float = 0):

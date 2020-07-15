@@ -1,16 +1,14 @@
 from abc import ABC, abstractmethod
-from typing import List, Union
+from typing import List, Union, Tuple
 from pandas import DataFrame
 import copy
 import uncertainties
 import numpy as np
 from matplotlib.axes import Axes
-from matplotlib.lines import Line2D
-from fitting import FitSetBase
-from fitting.FitBase import FitBase
+from fitting import Fit, FitSet, FittedFit, NullFit
 
 
-class FitSetBase(ABC):
+class FitSet(ABC):
     """
     Base class for a set of fits to a range of data
     """
@@ -18,14 +16,14 @@ class FitSetBase(ABC):
     # TODO: Python 3 does support some form of generics so look at reworking this as a generic type.
     #       This should make the logic around the Fits factory easier, and we'll require less from any subclass.
 
-    def __init__(self, fits: List[FitBase], breaks: List[float]):
+    def __init__(self, fits: List[Fit], breaks: List[float]):
         self._fits = fits
         self._breaks = breaks
 
-    def __iter__(self) -> [FitBase]:
+    def __iter__(self) -> [Fit]:
         return self._fits.__iter__()
 
-    def __next__(self) -> FitBase:
+    def __next__(self) -> Fit:
         return self._fits.__next__()
 
     def __str__(self) -> str:
@@ -39,7 +37,7 @@ class FitSetBase(ABC):
         return self._breaks
 
     @classmethod
-    def copy(cls, source: FitSetBase, x_shift: float = 0, y_shift: float = 0) -> FitSetBase:
+    def copy(cls, source: FitSet, x_shift: float = 0, y_shift: float = 0) -> FitSet:
         """
         Creates a copy of this fit set and optionally applies a y axis offset to the contained fits
         """
@@ -53,25 +51,39 @@ class FitSetBase(ABC):
     @classmethod
     def fit_to_data(cls, df: DataFrame, x_col: str, y_col: str, y_err_col: str,
                     breaks: List[Union[float, str]], start_id: int = 0)\
-            -> FitSetBase:
+            -> FitSet:
         """
         Factory method for a fit set.  Will create a set of fits to the passed data (x, y and delta y)
         based on the list of breaks.  Each fit will be labelled with a subscript starting at start_id.
         """
         fits = []
-        ranges = cls._ranges_from_breaks(df[x_col], breaks)
-        for range in ranges:
-            from_xi = range[0]
-            to_xi = range[1]
+        ranges = cls._ranges_from_breaks(df[x_col], breaks, "def")
 
-            # Must have at least two data points to calculate the best fit line
-            range_df = df.query(F"{x_col}>={from_xi}").query(F"{x_col}<={to_xi}").sort_values(by=x_col)
-            if len(range_df) > 1:
-                fit = cls._on_new_fit(start_id, range_df[x_col], range_df[y_col], range_df[y_err_col], from_xi, to_xi)
-            else:
-                fit = cls._on_new_fit(start_id, [], [], [], from_xi, to_xi)
+        for rng in ranges:
+            fit = None
+            fit_type = rng[0].casefold()
+            from_xi = rng[1][0]
+            to_xi = rng[1][1]
 
-            fits.append(fit)
+            if fit_type == "def":
+                # Must have at least two data points to calculate the best fit line
+                range_df = df.query(F"{x_col}>={from_xi}").query(F"{x_col}<={to_xi}").sort_values(by=x_col)
+                if len(range_df) > 1:
+                    fit = cls._create_fitted_fit_on_data(
+                        start_id, range_df[x_col], range_df[y_col], range_df[y_err_col], from_xi, to_xi)
+                else:
+                    fit = NullFit(start_id, [], [], from_xi, to_xi)
+            elif str.isspace(fit_type) or fit_type.strip() == "null":
+                # A space(s) instructs us to skip a range: so we use a NullFit here.
+                fit = NullFit(start_id, [], [], from_xi, to_xi)
+            elif fit_type.strip() == "..." or fit_type.strip() == "interpolate":
+                # Interpolate between the surrounding ranges.
+                # TODO: add InterpolationFit type.  Must be able to find the x/y scale of the axes being plotted to.
+                #       Looks like Axes.get_yscale() -> str and Axes.get_xscale() -> str will be the source.
+                pass
+
+            if fit is not None:
+                fits.append(fit)
             start_id += 1
 
         fit_set = cls(fits, breaks)
@@ -86,7 +98,7 @@ class FitSetBase(ABC):
             label = None  # Make sure we only set the label once otherwise it will be duplicated in any legend
         return
 
-    def calculate_residuals(self, df: DataFrame, x_col: str, y_col: str) -> (List[float], List[float]):
+    def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):
         """
         Calculates the residuals for the passed data against the associated fits.  Specifically for
         'post processing' to derive residuals for these data against fits which were created from other data.
@@ -94,13 +106,14 @@ class FitSetBase(ABC):
         """
         x_res = []
         y_res = []
-        for fit in self:
-            if fit.has_fit:
-                df_fit = df.query(F"{x_col} >= {fit.range_from} and {x_col} <= {fit.range_to}")
-                x, y = fit.calculate_residuals(df_fit[x_col].to_list(), df_fit[y_col].to_list())
-                x_res += x
-                y_res += y
-
+        if xi is not None and yi is not None and len(xi) == len(yi) > 0:
+            for fit in self:
+                # The fit will know which (xi, yi) points are within its range.
+                xr, yr = fit.calculate_residuals(xi, yi)
+                x_res += xr
+                y_res += yr
+        else:
+            raise Warning("The ix or iy is None or len(ix) != len(iy).  No residuals calculated.")
         return x_res, y_res
 
     def find_peak_y_value(self, is_minimum: bool = False) -> (float, uncertainties.UFloat):
@@ -143,55 +156,76 @@ class FitSetBase(ABC):
 
     @classmethod
     @abstractmethod
-    def _on_new_fit(cls, id: int, xi: List[float], yi: List[float], dyi: List[float], from_xi: float, to_xi: float):
+    def _create_fitted_fit_on_data(
+            cls, id: int, xi: List[float], yi: List[float], dyi: List[float], from_xi: float, to_xi: float) \
+            -> FittedFit:
         """
         To be implemented by concrete subclasses which will know which Fit to create.
         """
         pass
 
     @classmethod
-    def _ranges_from_breaks(cls, xi: List[float], breaks: List[Union[float, str]] = None) -> [(float, float)]:
+    def _ranges_from_breaks(cls, xi: List[float], breaks: List[Union[float, str]] = None, default_fit: str = "def") \
+            -> List[Tuple[str, Tuple[float, float]]]:
         """
         Turn the passed break points (each a single xi value) into ranges over which fits can be calculated.
         The ranges extend between each break point and extend out to the min and max limits of the data.
 
         Example: if data covers xi values in the range of 0 to 10 and break points
-        are given as [3, 7], then the ranges calculated will be [(0, 3), (3, 7), (7, 10)]
+        are given as [3, 7], then the ranges calculated will be [ ("def", (0, 3)), ("def", (3, 7)), ("def", (7, 10))]
         There should always be 1 more range defined than there are break points
         """
+        # Turn the breaks into ranges.  Step through creating ranges from contiguous numeric breaks.
+        ranges = []
         if xi is not None and len(xi) > 0:
             min_xi = min(xi)
             max_xi = max(xi)
 
-            # Turn the breaks into ranges.  Step through creating ranges from contiguous numeric breaks.
-            ranges = []
             if breaks is not None:
-                for ix in np.arange(0, len(breaks) - 1):
+                for ix in np.arange(0, len(breaks)):
                     brk = breaks[ix]
-                    if isinstance(brk, str):  # Break is a string, which indicates an instruction
-                        print(F"{cls.__name__}: Encountered the instruction '{brk}' parsing breaks to ranges.")
-                        if str.isspace(brk):
-                            # A space(s) instructs us to skip a range: don't create a range over the surrounding values.
-                            # Also applies at extremes of breaks: stops creation of extra ranges where (xi) values
-                            # extend beyond the breaks specified.
-                            # So breaks [1, 2, " ", 3, 4] become ranges [(1, 2), (3, 4)]
-                            pass
-                        else:
-                            # Currently, no other instructions supported
-                            pass
+                    if isinstance(brk, str):
+                        # Break is a string, which indicates an instruction
+                        # We don't have an explicit range for these, so work it out based on what's before/after it.
+                        ranges.append((brk, FitSet._get_range_for_instruction(ix, breaks, min_xi, max_xi)))
                     else:  # OK it's numeric.
-                        # First item - see if we need to prepend a range to cover data preceding the first break.
+                        # First item - see if we need to prepend a range to cover any data preceding the first break.
                         if ix == 0 and min_xi < brk:
-                            ranges.append((min_xi, brk))
+                            ranges.append((default_fit, (min_xi, brk)))
 
                         if ix < (len(breaks) - 1):
                             # Not the last item, so what's coming up next?
                             if not isinstance(breaks[ix + 1], str):
                                 # Next break is also numeric, so we create a range
-                                ranges.append((brk, breaks[ix + 1]))
+                                ranges.append((default_fit, (brk, breaks[ix + 1])))
                         elif max_xi > brk:
-                            # Last item - see if we need to append a range to cover the data beyond the last break.
-                            ranges.append((brk, max_xi))
+                            # Last item - see if we need to append a range to cover any data beyond the last break.
+                            ranges.append((default_fit, (brk, max_xi)))
 
         return ranges
 
+    @classmethod
+    def _get_range_for_instruction(
+            cls, ix: int, breaks: List[Union[float, str]], min_xi: float, max_xi: float) -> (float, float):
+        from_xi = min_xi
+        to_xi = max_xi
+
+        # Backwards from here, looking for the preceding break value.
+        for iy in np.arange(ix - 1, -1, -1):
+            brk = breaks[iy]
+            if not isinstance(brk, str):
+                from_xi = brk
+                if to_xi < from_xi:
+                    to_xi = from_xi
+                break
+
+        # Forwards from here, looking for the next break value.
+        for iy in np.arange(ix + 1, len(breaks)):
+            brk = breaks[iy]
+            if not isinstance(brk, str):
+                to_xi = brk
+                if from_xi > to_xi:
+                    from_xi = to_xi
+                break
+
+        return from_xi, to_xi

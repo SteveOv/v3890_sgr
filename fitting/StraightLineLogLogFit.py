@@ -13,23 +13,23 @@ class StraightLineLogLogFit(StraightLineLogXFit):
     """
 
     @classmethod
-    def fit_to_data(
-            cls, id: int, xi: List[float], yi: List[float], dyi: List[float], range_from: float, range_to: float) \
-            -> FitBase:
+    def fit_to_data(cls, id: int, xi: List[float], yi: List[float],
+                    dxi: List[float] = None, dyi: List[float] = None,
+                    range_from: float = None, range_to: float = None) -> Fit:
         """
         Factory method to create a Fit based on the passed data (xi, yi and delta yi) over the requested range of xi.
         """
         # Prior to fitting we need to convert the yi/dyi values to their log equivalent (xi values done by super())
         log_yi = np.log10(yi)
         log_dyi = np.log10(dyi)
-        fit = super().fit_to_data(id, xi, log_yi, log_dyi, range_from, range_to)
+        fit = super().fit_to_data(id, xi, log_yi, dxi=dxi, dyi=log_dyi, range_from=range_from, range_to=range_to)
 
         # Leave the private _x/_y_endpoints at their log10 values as these are used when interacting with the fit, which
         # has been created in terms of log(y) v log(x), so any calculations/searches need to remain in these terms.
         return fit
 
     @classmethod
-    def copy(cls, src: FitBase, x_shift: float = 0, y_shift: float = 0, new_id: int = None) -> FitBase:
+    def copy(cls, src: Fit, x_shift: float = 0, y_shift: float = 0, new_id: int = None) -> Fit:
         """
         Makes a safe copy of this Fit instance (so the data really is a copy, not a reference)
         while optionally applying x/y shifts and a new id.

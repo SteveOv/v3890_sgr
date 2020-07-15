@@ -83,10 +83,8 @@ class RateAndResidualsTimePlot(RateTimePlot):
         # Super() looks after the main ax with the rate(& fit)/time plot
         super()._draw_plot_set(ax, ix, ps)
 
-        # now we plot the residuals to the additional ax
+        # now we calculate and plot the residuals to the additional ax
         if self.show_residuals and self._ax_res is not None:
-            # TODO: will need revisiting if the Log Fits are reworked to not take df
-            x_points, y_points = ps.fits.calculate_residuals(ps.df, "day", "rate")
-            self._ax_res.plot(
-                x_points, y_points, ".", color=ps.color, markersize=self._marker_size * 2, alpha=1, zorder=2)
+            x_res, y_res = ps.fits.calculate_residuals(ps.x, ps.y)
+            self._ax_res.plot(x_res, y_res, ".", color=ps.color, markersize=self._marker_size * 2, alpha=1, zorder=2)
         return
