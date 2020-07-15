@@ -48,9 +48,9 @@ do
     done
 
     # Copy the output and log file to local folder (overwriting existing)
-    #echo "Copying the output and log to ${SCRIPTDIR}"
-    #cp -f $OUTFILE "${SCRIPTDIR}"
-    #cp -f $LOGFILE "${SCRIPTDIR}"
+    echo "Copying the output and log to ${SCRIPTDIR}"
+    cp -f $OUTFILE "${SCRIPTDIR}"
+    cp -f $LOGFILE "${SCRIPTDIR}"
 done
 
 cd "${SCRIPTDIR}"

@@ -55,7 +55,7 @@
             }
         },
         "2019-UVOT": {
-            "file_spec": "/Users/steveo/Documents/V3890_Sgr_Data/Swift_UVOT/maghist_*.fits",
+            "file_spec": "./data/UVOT/maghist_*.fits",
             "description": "Data from Swift/UVOT.  Use my eruption JD = 2458723.278+/-0.256",
             "type": "UvotFitsMagnitudeDataSource",
             "light_curves": {
