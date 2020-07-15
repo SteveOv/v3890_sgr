@@ -45,6 +45,10 @@ class RateAndResidualsTimePlot(RateTimePlot):
     def y_ticks_residuals(self):
         return self._param("y_ticks_residuals", self._default_y_ticks_residuals)
 
+    @property
+    def y_tick_labels_residuals(self):
+        return self._param("y_tick_labels_residuals", self.y_ticks_residuals)
+
     def _create_ax(self, fig):
         """
         Create the main ax, for the rate/time light curve and then the optional 2nd ax below for the residuals.
@@ -68,10 +72,9 @@ class RateAndResidualsTimePlot(RateTimePlot):
         # but super() won't know about the 2nd, residuals axis so we set it up here
         if self.show_residuals and self._ax_res is not None:
             # Don't do anything with the x-axis - it's shared with the main ax so has already been set up
+            self._ax_res.set(ylim=self.y_lim_residuals, ylabel=self.y_label_residuals,
+                             yticks=self.y_ticks_residuals, yticklabels=self.y_tick_labels_residuals)
             self._ax_res.grid(which='major', linestyle='-', linewidth=self._line_width, alpha=0.3)
-            self._ax_res.set(ylim=self.y_lim_residuals)
-            self._ax_res.set_ylabel(self.y_label_residuals)
-            self._ax_res.set_yticks(self.y_ticks_residuals)
             if self._param("x_scale_log", self._default_x_scale_log):
                 self._ax_res.grid(which="minor", linestyle="-", linewidth=self._line_width, alpha=0.1)
         return

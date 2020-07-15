@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Union
 from pandas import DataFrame
 import copy
 import uncertainties
@@ -52,16 +52,14 @@ class FitSetBase(ABC):
 
     @classmethod
     def fit_to_data(cls, df: DataFrame, x_col: str, y_col: str, y_err_col: str,
-                    breaks: List[float], start_id: int = 0, constrain: bool = False)\
+                    breaks: List[Union[float, str]], start_id: int = 0)\
             -> FitSetBase:
         """
         Factory method for a fit set.  Will create a set of fits to the passed data (x, y and delta y)
         based on the list of breaks.  Each fit will be labelled with a subscript starting at start_id.
-        If constrain is True the ranges extend only between the outermost breaks.  If it's false and data exists
-        beyond the breaks, additional ranges will be defined before/after the outermost as needed to cover these data.
         """
         fits = []
-        ranges = cls._ranges_from_breaks(df[x_col], breaks, constrain)
+        ranges = cls._ranges_from_breaks(df[x_col], breaks)
         for range in ranges:
             from_xi = range[0]
             to_xi = range[1]
@@ -77,7 +75,6 @@ class FitSetBase(ABC):
             start_id += 1
 
         fit_set = cls(fits, breaks)
-        print(fit_set)
         return fit_set
 
     def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, label: str = None, y_shift: float = 0):
@@ -153,37 +150,48 @@ class FitSetBase(ABC):
         pass
 
     @classmethod
-    def _ranges_from_breaks(cls, xi: List[float], breaks: List[float] = None, constrain: bool = False) -> [(float, float)]:
+    def _ranges_from_breaks(cls, xi: List[float], breaks: List[Union[float, str]] = None) -> [(float, float)]:
         """
         Turn the passed break points (each a single xi value) into ranges over which fits can be calculated.
         The ranges extend between each break point and extend out to the min and max limits of the data.
 
         Example: if data covers xi values in the range of 0 to 10 and break points
-        are given as [3, 7], then the ranges calculated will be [[0, 3], [3, 7], [7, 10]]
+        are given as [3, 7], then the ranges calculated will be [(0, 3), (3, 7), (7, 10)]
         There should always be 1 more range defined than there are break points
         """
         if xi is not None and len(xi) > 0:
             min_xi = min(xi)
             max_xi = max(xi)
 
-            # If we have data, and we're told to extend the ranges to cover it all, make sure the breaks are present
-            # for the min/max values so that the resulting ranges extend to fully cover the data.
-            if not constrain:
-                if breaks is None or len(breaks) == 0:
-                    breaks = [min_xi]
-                elif min(breaks) > min_xi:
-                    breaks = np.append(breaks, min_xi)
+            # Turn the breaks into ranges.  Step through creating ranges from contiguous numeric breaks.
+            ranges = []
+            if breaks is not None:
+                for ix in np.arange(0, len(breaks) - 1):
+                    brk = breaks[ix]
+                    if isinstance(brk, str):  # Break is a string, which indicates an instruction
+                        print(F"{cls.__name__}: Encountered the instruction '{brk}' parsing breaks to ranges.")
+                        if str.isspace(brk):
+                            # A space(s) instructs us to skip a range: don't create a range over the surrounding values.
+                            # Also applies at extremes of breaks: stops creation of extra ranges where (xi) values
+                            # extend beyond the breaks specified.
+                            # So breaks [1, 2, " ", 3, 4] become ranges [(1, 2), (3, 4)]
+                            pass
+                        else:
+                            # Currently, no other instructions supported
+                            pass
+                    else:  # OK it's numeric.
+                        # First item - see if we need to prepend a range to cover data preceding the first break.
+                        if ix == 0 and min_xi < brk:
+                            ranges.append((min_xi, brk))
 
-                if max(breaks) < max_xi:
-                    breaks = np.append(breaks, max_xi)
-
-        # Now go through the list splitting into pairs (ranges).    Don't use ufloats for ranges
-        # as we've no uncertainty for them & they are not data, being used primarily for finding the fits.
-        ranges = []
-        if breaks is not None:
-            breaks = sorted(breaks)
-            for ix in np.arange(0, len(breaks) - 1):
-                ranges.append((breaks[ix], breaks[ix + 1]))
+                        if ix < (len(breaks) - 1):
+                            # Not the last item, so what's coming up next?
+                            if not isinstance(breaks[ix + 1], str):
+                                # Next break is also numeric, so we create a range
+                                ranges.append((brk, breaks[ix + 1]))
+                        elif max_xi > brk:
+                            # Last item - see if we need to append a range to cover the data beyond the last break.
+                            ranges.append((brk, max_xi))
 
         return ranges
 

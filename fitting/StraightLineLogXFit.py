@@ -42,7 +42,10 @@ class StraightLineLogXFit(StraightLineFit):
         Factory method to create a Fit based on the passed data (xi, yi and delta yi) over the requested range of xi.
         """
         # Prior to fitting we need to convert the xi values to their log equivalent
-        fit = super().fit_to_data(id, np.log10(xi), yi, dyi, np.log10(range_from), np.log10(range_to))
+        log_xi = np.log10(xi)
+        log_from = np.log10(range_from)
+        log_to = np.log10(range_to)
+        fit = super().fit_to_data(id, log_xi, yi, dyi, log_from, log_to)
 
         # Once the fit's been calculated with the log(x) values, revert the public/descriptive x values back to linear
         fit._range_from = range_from
@@ -89,10 +92,13 @@ class StraightLineLogXFit(StraightLineFit):
         Calculate the residuals - the y-difference between the y data points
         and the slope as defined by this instance's slope and const
         """
-        x, y = super().calculate_residuals(np.log10(xi), yi)
-        if x is not None:
-            x = np.power(10, x).tolist()
-        return x, y
+        log_xi = np.log10(xi)
+        log_res_x, res_y = super().calculate_residuals(log_xi, yi)
+        if log_res_x is not None:
+            res_x = np.power(10, log_res_x).tolist()
+        else:
+            res_x = None
+        return res_x, res_y
 
     def find_peak_y_value(self, is_minimum: bool = False) -> (float, uncertainties.UFloat):
         """

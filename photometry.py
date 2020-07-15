@@ -43,6 +43,7 @@ for data_source_key in settings["data_sources"]:
                 set_params["y_col"] = "mag"
                 set_params["y_err_col"] = "mag_err"
                 data_sets_data[data_set_key] = {'df': band_df, 'fits': fits, 'params': set_params}
+                print(fits)
             light_curves[F'{data_source_key}/{lc_key}'] = data_sets_data
         elif isinstance(ds, RateDataSource):
             data_set_data = {}
@@ -52,7 +53,7 @@ for data_source_key in settings["data_sources"]:
                 print(f"\nAnalysing {data_source_key}/{lc_key}/data_sets['{data_set_key}'] rate data")
                 type_df = ds.query(lc_params['eruption_jd'], lc_params['query_params'], set_params)
                 if "breaks" in set_params and len(set_params["breaks"]) > 0:
-                    fits = StraightLineLogXFitSet.fit_to_data(type_df, "day", "rate", "rate_err", set_params['breaks'])
+                    fits = StraightLineLogLogFitSet.fit_to_data(type_df, "day", "rate", "rate_err", set_params['breaks'])
                 else:
                     fits = None
 
@@ -61,6 +62,7 @@ for data_source_key in settings["data_sources"]:
                 set_params["y_col"] = "rate"
                 set_params["y_err_col"] = "rate_err"
                 data_set_data[data_set_key] = {'df': type_df, 'fits': fits, 'params': set_params}
+                print(fits)
             light_curves[F"{data_source_key}/{lc_key}"] = data_set_data
 
 

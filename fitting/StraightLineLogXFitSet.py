@@ -6,7 +6,7 @@ from fitting.StraightLineLogXFit import StraightLineLogXFit
 
 class StraightLineLogXFitSet(FitSetBase):
     """
-    A set of StraightLineLogLogFit types used to fit a range of data
+    A set of StraightLineLogXFit types used to fit a range of data
     It handles the fact that the x-axis is represented in log10(x) form
     """
 

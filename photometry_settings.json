@@ -46,10 +46,10 @@
                 },
                 "nominal-hard-soft": {
                     "eruption_jd": 2458723.278,
-                    "query_params": { "day_range": [0, 100], "where": "((rate_type == 'WT') or (rate_type == 'PC' and rate <= 1.0)) and rate_err < rate/2"},
+                    "query_params": { "day_range": [0, 100], "where": "((rate_type == 'WT') or (rate_type == 'PC' and rate <= 1.0)) and (rate >= 0) and (rate_err < rate/4)"},
                     "data_sets": [
-                        {"set": "hard_data", "where": "data_type=='hard'", "color": "darkcyan", "label": "Hard (1.5-10 keV)", "breaks": [1.0, 2.60, 2.72, 3.88, 20.5, 75]},
-                        {"set": "soft_data", "where": "data_type=='soft'", "color": "k", "label": "Soft (0.3-1.5 keV)", "breaks": [1.8, 4.0, 8.2, 15.017, 15.28, 19.48, 24.26, 75]}
+                        {"set": "hard_data", "where": "data_type=='hard'", "color": "lightslategray", "label": "Hard (1.5-10 keV)", "breaks": [0.78, 2.10, " ", 2.725, 4.05, 21.0, 75]},
+                        {"set": "soft_data", "where": "data_type=='soft'", "color": "k", "label": "Soft (0.3-1.5 keV)", "breaks": [2.5, 8.0, " ", 8.5, 15.01, 15.28, " ", 18.48, 25.20, 75]}
                     ]
                 }
             }
@@ -298,7 +298,9 @@
                 "type": "RateAndResidualsTimePlot",
                 "file_name": "./output/V3890Sgr-2019-XRT-LC-log(day)-residuals-nominal(ratio-data).png",
                 "title": "TThe 2019 eruption of V3890 Sgr in Swift XRT ($t_{{e}}=2458723.278$)",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true, "y_scale_log": true, "y_lim": [0.003, 30], "y_ticks": [0.01, 0.1, 1, 10], "x_lim": [0.5, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true,
+                    "y_scale_log": true, "y_lim": [0.01, 30], "y_ticks": [0.01, 0.1, 1, 10], "x_lim": [0.3, 100],
+                    "y_lim_residuals": [-1.1, 1.1], "y_ticks_residuals": [-1, 0, 1], "y_tick_labels_residuals": [-10, 0, 10]},
                 "plot_sets": [{"data_sets": "2019-XRT-Ratios/nominal-hard-soft"}]
             },
             {
