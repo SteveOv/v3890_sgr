@@ -254,7 +254,9 @@
                 "type": "MagnitudeTimePlot",
                 "file_name": "./output/V3890Sgr-2019-UV-V-B-LC-log(day)-single-nominal.png",
                 "title": "The 2019 eruption of V3890 Sgr in the\nV, B, UVW2 and UVM2 bands",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "x_scale_log": true, "x_size": 2, "y_size": 2, "y_lim": [5.8, 20.2], "y_shift": 1},
+                "params": {"show_title": true, "show_data": true, "show_fits": true,
+                    "show_epochs": true, "show_epoch_labels": false,
+                    "x_scale_log": true, "x_size": 2, "y_size": 2, "y_lim": [5.8, 20.2], "y_shift": 1},
                 "plot_sets": [
                     {"data_sets": "2019-AAVSO/nominal/V"},
                     {"data_sets": "2019-AAVSO/nominal/B"},
@@ -278,7 +280,10 @@
                 "type": "MagnitudeAndRateTimePlot",
                 "file_name": "./output/V3890Sgr-2019-ALL-log(day)-single-nominal.png",
                 "title": "The 2019 eruption of V3890 Sgr in the visual, UV and X-ray bands",
-                "params": {"show_title": true, "show_data": false, "show_fits": true, "x_scale_log": true, "x_lim": [0.05, 110], "y2_scale_log": true, "y2_lim": [0.03, 60], "y2_ticks": [0.1, 1, 10, 20, 30]},
+                "params": {
+                    "show_title": true, "show_data": false, "show_fits": true, "x_scale_log": true,
+                    "show_epochs": true, "show_epoch_labels": false,
+                    "x_lim": [0.05, 110], "y2_scale_log": true, "y2_lim": [0.03, 60], "y2_ticks": [0.1, 1, 10, 20, 30]},
                 "plot_sets": [
                     {"data_sets": "2019-AAVSO/nominal"},
                     {"data_sets": "2019-UVOT/nominal"},

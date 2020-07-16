@@ -9,10 +9,9 @@ class PlotHelper:
     """
 
     @classmethod
-    def create_plot_data_from_config(cls, plot_config: Dict, light_curves: Dict) -> PlotData:
+    def create_plot_data_from_config(cls, plot_config: Dict, light_curves: Dict, epochs: Dict = {}) -> PlotData:
         plot_set_configs = cls._read_param(plot_config, "plot_sets")
-        plot_epochs = cls._read_param(plot_config, "epochs", {})
-        return PlotData(plot_set_configs, light_curves, plot_epochs)
+        return PlotData(plot_set_configs, light_curves, epochs)
 
     @classmethod
     def plot_to_file(cls, plot_config: Dict, plot_data: PlotData):

@@ -4,6 +4,7 @@ import novae as rn
 from fitting import *
 from data import *
 from plot import *
+import spectra_lookup
 
 settings = json.load(open("./photometry_settings.json"))
 
@@ -73,10 +74,15 @@ print(F"****************************************************************")
 for plot_group_config in settings["plots"]:
     print(F"\nProcessing plot group: {plot_group_config}")
     for plot_config in settings["plots"][plot_group_config]:
-        plot_data = PlotHelper.create_plot_data_from_config(plot_config, light_curves)
+
+        # TODO; currently hard coded
+        eruption_jd = 2458723.278
+        epochs = spectra_lookup.get_spectra_epochs(eruption_jd)
+
+        plot_data = PlotHelper.create_plot_data_from_config(plot_config, light_curves, epochs)
         PlotHelper.plot_to_file(plot_config, plot_data)
 
-# TODO: work out the t0, t2 and t3 times for the V-band
+
 print(F"\n\n****************************************************************")
 print(F"Analysing combined Photometry to estimate distance to V3890 Sgr")
 print(F"****************************************************************")

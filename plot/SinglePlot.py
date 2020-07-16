@@ -138,12 +138,8 @@ class SinglePlot(BasePlot, ABC):
     def _draw_epochs(self, ax: Axes, epochs: Dict[str, float]):
         if epochs is not None and len(epochs) > 0:
             # Replace the minor x-axis ticks with the epochs specified.
-            ticks = list(epochs.values())
-            ax.set_xticks(ticks, minor=True)
-
-            if self.show_epoch_labels:
-                labels = list(epochs.keys())
-                ax.set_xticklabels(labels, minor=True)
+            ax.set_xticks(list(epochs.values()), minor=True)
+            ax.set_xticklabels(list(epochs.keys()) if self.show_epoch_labels else [], minor=True)
 
             # Labels, if shown, are rotated 90deg and within the axis.
             ax.tick_params(which='minor', axis='x', direction='inout', pad=-25, labelsize='x-small',
