@@ -94,8 +94,12 @@ class FitSet(ABC):
         Gets the FitSet to draw itself onto the passed matplotlib ax
         """
         for fit in self:
-            fit.draw_on_ax(ax, color, line_width=line_width, label=label, y_shift=y_shift)
-            label = None  # Make sure we only set the label once otherwise it will be duplicated in any legend
+            if isinstance(fit, FittedFit):
+                fit.draw_on_ax(ax, color, line_width=line_width, label=label, y_shift=y_shift)
+                label = None  # Make sure we only set the label once otherwise it will be duplicated in any legend
+            else:
+                # Don't associate the label with a non-fitted Fit so that it renders properly in the legend.
+                fit.draw_on_ax(ax, color, line_width=line_width, y_shift=y_shift)
         return
 
     def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):
