@@ -14,8 +14,10 @@ class UvotFitsMagnitudeDataSource(MagnitudeDataSource):
         Ingest the data from the specified source and return it as a pandas DataFrame
         Implements the abstract method in DataSource which is used to set up this instance's state.
         """
-        fits_field_names = ["MET", "MAG", "MAG_ERR", "FILTER", "SYS_ERR", "EXPOSURE", "SATURATED"]
-        output_col_names = ["jd", "mag", "mag_err", "band", "observer_code", "is_null_obs", "is_saturated_obs"]
+        fits_field_names = ["MET", "MAG", "MAG_ERR", "FILTER", "SYS_ERR", "EXPOSURE", "SATURATED",
+                            "AB_MAG", "AB_MAG_ERR", "FLUX_HZ", "FLUX_HZ_ERR"]
+        output_col_names = ["jd", "mag", "mag_err", "band", "observer_code", "is_null_obs", "is_saturated_obs",
+                            "ab_mag", "ab_mag_err", "flux_hz", "flux_hz_err"]
         rows = []
 
         fits_file_names = glob.glob(source)
@@ -30,13 +32,17 @@ class UvotFitsMagnitudeDataSource(MagnitudeDataSource):
                 for fits_row in t.iterrows(*fits_field_names):
                     jd = UvotFitsMagnitudeDataSource._met_to_jd(fits_row[0])
                     rows.append({
-                        output_col_names[0]: jd,
-                        output_col_names[1]: fits_row[1],
-                        output_col_names[2]: fits_row[2],
-                        output_col_names[3]: fits_row[3].strip(),
-                        output_col_names[4]: "",
-                        output_col_names[5]: fits_row[4],
-                        output_col_names[6]: fits_row[6]
+                        output_col_names[0]: jd,                    # jd : MET -> JD
+                        output_col_names[1]: fits_row[1],           # mag : MAG
+                        output_col_names[2]: fits_row[2],           # mag_err : MAG_ERR
+                        output_col_names[3]: fits_row[3].strip(),   # band : FILTER
+                        output_col_names[4]: "",                    # observer_code :
+                        output_col_names[5]: fits_row[4],           # is_null_obs : SYS_ERR
+                        output_col_names[6]: fits_row[6],           # is_saturated_obs : SATURATED
+                        output_col_names[7]: fits_row[7],           # ab_mag : AB_MAG
+                        output_col_names[8]: fits_row[8],           # ab_mag_err : AB_MAG_ERR
+                        output_col_names[9]: fits_row[9],           # flux_hz : FLUX_HZ
+                        output_col_names[10]: fits_row[10]          # flux_hz_err : FLUX_HZ_ERR
                     })
 
         return DataFrame.from_records(rows, columns=output_col_names)
