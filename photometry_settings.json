@@ -48,8 +48,8 @@
                     "eruption_jd": 2458723.278,
                     "query_params": { "day_range": [0, 100], "where": "((rate_type == 'WT') or (rate_type == 'PC' and rate <= 1.0)) and (rate >= 0) and (rate_err < rate/4)"},
                     "data_sets": [
-                        {"set": "hard_data", "where": "data_type=='hard'", "color": "lightslategray", "label": "Hard (1.5-10 keV)", "breaks": [0.78, 2.10, " ", 2.725, 4.05, 21.0, 75]},
-                        {"set": "soft_data", "where": "data_type=='soft'", "color": "k", "label": "Soft (0.3-1.5 keV)", "breaks": [2.5, 8.0, " ", 8.5, 15.01, 15.28, " ", 18.48, 25.20, 75]}
+                        {"set": "hard_data", "where": "data_type=='hard'", "color": "lightslategray", "label": "Hard (1.5-10 keV)", "breaks": [0.78, 2.10, "...", 2.725, 4.05, 21.0, 75]},
+                        {"set": "soft_data", "where": "data_type=='soft'", "color": "k", "label": "Soft (0.3-1.5 keV)", "breaks": [2.5, 8.0, "...", 8.5, 15.01, 15.28, "...", 18.48, 25.20, 75]}
                     ]
                 }
             }

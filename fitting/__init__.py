@@ -1,6 +1,7 @@
 from fitting.Fit import *
 
 from fitting.NullFit import *
+from fitting.InterpolatedFit import *
 
 from fitting.FittedFit import *
 from fitting.StraightLineFit import *

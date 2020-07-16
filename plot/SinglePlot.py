@@ -144,7 +144,7 @@ class SinglePlot(BasePlot, ABC):
             # Labels, if shown, are rotated 90deg and within the axis.
             ax.tick_params(which='minor', axis='x', direction='inout', pad=-25, labelsize='x-small',
                            labelcolor='gray', labelrotation=90)
-            ax.grid(which='minor', linestyle='--', linewidth=self._line_width, alpha=0.2)
+            ax.grid(which='minor', linestyle=':', linewidth=self._line_width, alpha=0.2)
         return
 
     def _define_data_label(self, label: str, shift_by: float = 0) -> str:

@@ -5,7 +5,7 @@ import copy
 import uncertainties
 import numpy as np
 from matplotlib.axes import Axes
-from fitting import Fit, FitSet, FittedFit, NullFit
+from fitting import Fit, FitSet, FittedFit, NullFit, InterpolatedFit
 
 
 class FitSet(ABC):
@@ -58,6 +58,7 @@ class FitSet(ABC):
         """
         fits = []
         ranges = cls._ranges_from_breaks(df[x_col], breaks, "def")
+        prior_fit = None
 
         for rng in ranges:
             fit = None
@@ -76,15 +77,20 @@ class FitSet(ABC):
             elif str.isspace(fit_type) or fit_type.strip() == "null":
                 # A space(s) instructs us to skip a range: so we use a NullFit here.
                 fit = NullFit(start_id, [], [], from_xi, to_xi)
-            elif fit_type.strip() == "..." or fit_type.strip() == "interpolate":
+            elif fit_type.strip() == "..." or fit_type.strip() == "interp":
                 # Interpolate between the surrounding ranges.
                 # TODO: add InterpolationFit type.  Must be able to find the x/y scale of the axes being plotted to.
                 #       Looks like Axes.get_yscale() -> str and Axes.get_xscale() -> str will be the source.
-                pass
+                fit = InterpolatedFit(start_id, range_from=from_xi, range_to=to_xi, prior_fit=prior_fit)
 
             if fit is not None:
                 fits.append(fit)
+
+            if prior_fit is not None and isinstance(prior_fit, InterpolatedFit):
+                prior_fit.next_fit = fit
+
             start_id += 1
+            prior_fit = fit
 
         fit_set = cls(fits, breaks)
         return fit_set
