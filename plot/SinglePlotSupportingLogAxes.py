@@ -1,6 +1,4 @@
-from abc import ABC
-from typing import Dict
-from plot.SinglePlot import SinglePlot
+from plot.SinglePlot import *
 
 
 class SinglePlotSupportingLogAxes(SinglePlot, ABC):
@@ -33,18 +31,18 @@ class SinglePlotSupportingLogAxes(SinglePlot, ABC):
         return self._x_axis_supports_log & self._param("x_scale_log", self._default_x_scale_log)
 
     @property
-    def x_lim(self):
+    def x_lim(self) -> List[float]:
         return self._param("x_lim", self._default_x_lim_log) if self.x_scale_log else super().x_lim
 
     @property
-    def x_ticks(self):
+    def x_ticks(self) -> List[float]:
         return self._param("x_ticks", self._default_x_ticks_log) if self.x_scale_log else super().x_ticks
 
     @property
     def y_scale_log(self) -> bool:
         return self._y_axis_supports_log & self._param("y_scale_log", self._default_y_scale_log)
 
-    def _configure_ax(self, ax):
+    def _configure_ax(self, ax: Axes):
         """
         Configure the ax, supporting the use of log scale on either the x or y (or both) axis
         """
@@ -53,13 +51,11 @@ class SinglePlotSupportingLogAxes(SinglePlot, ABC):
 
         if self.x_scale_log:
             ax.set_xscale("log")
-            ax.set_xticks(self._param("x_ticks", self._default_x_ticks_log), minor=False)
-            ax.set_xticklabels(self._param("x_ticks", self._default_x_ticks_log), minor=False)
-            ax.set(xlim=self._param("x_lim", self._default_x_lim_log))
+            ax.set(xlim=self.x_lim, xticks=self.x_ticks, xticklabels=self.x_ticks)
 
         if self.y_scale_log:
             ax.set_yscale("log")
 
         if self.x_scale_log | self.y_scale_log:
-            ax.grid(which="minor", linestyle="-", linewidth=self._line_width, alpha=0.1)
+            ax.grid(which="minor", linestyle="-", linewidth=self._line_width, alpha=0.2)
         return

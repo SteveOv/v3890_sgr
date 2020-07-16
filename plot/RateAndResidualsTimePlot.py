@@ -1,7 +1,5 @@
-from typing import Dict
 from matplotlib.gridspec import GridSpec
-from plot.RateTimePlot import RateTimePlot
-from plot.PlotSet import PlotSet
+from plot.RateTimePlot import *
 
 
 class RateAndResidualsTimePlot(RateTimePlot):
@@ -30,26 +28,26 @@ class RateAndResidualsTimePlot(RateTimePlot):
         return
 
     @property
-    def show_residuals(self):
+    def show_residuals(self) -> bool:
         return self._param("show_residuals", self._default_show_residuals)
 
     @property
-    def y_label_residuals(self):
+    def y_label_residuals(self) -> str:
         return self._param("y_label_residuals", self._default_y_label_residuals)
 
     @property
-    def y_lim_residuals(self):
+    def y_lim_residuals(self) -> List[float]:
         return self._param("y_lim_residuals", self._default_y_lim_residuals)
 
     @property
-    def y_ticks_residuals(self):
+    def y_ticks_residuals(self) -> List[float]:
         return self._param("y_ticks_residuals", self._default_y_ticks_residuals)
 
     @property
-    def y_tick_labels_residuals(self):
+    def y_tick_labels_residuals(self) -> str:
         return self._param("y_tick_labels_residuals", self.y_ticks_residuals)
 
-    def _create_ax(self, fig):
+    def _create_ax(self, fig: Figure) -> Axes:
         """
         Create the main ax, for the rate/time light curve and then the optional 2nd ax below for the residuals.
         """
@@ -65,7 +63,7 @@ class RateAndResidualsTimePlot(RateTimePlot):
         # Return the main ax so that super()'s Mag/time plotting can be carried out against it
         return self._ax_main
 
-    def _configure_ax(self, ax):
+    def _configure_ax(self, ax: Axes):
         # Default handling of the main ax ...
         super()._configure_ax(ax)
 
@@ -79,7 +77,7 @@ class RateAndResidualsTimePlot(RateTimePlot):
                 self._ax_res.grid(which="minor", linestyle="-", linewidth=self._line_width, alpha=0.1)
         return
 
-    def _draw_plot_set(self, ax, ix: int, ps: PlotSet):
+    def _draw_plot_set(self, ax: Axes, ix: int, ps: PlotSet):
         # Super() looks after the main ax with the rate(& fit)/time plot
         super()._draw_plot_set(ax, ix, ps)
 

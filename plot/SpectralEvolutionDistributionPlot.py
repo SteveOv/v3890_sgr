@@ -1,7 +1,4 @@
-from typing import Dict
-import numpy as np
-from pandas import DataFrame
-from plot import SinglePlotSupportingLogAxes, PlotSet
+from plot.SinglePlotSupportingLogAxes import *
 
 
 class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
@@ -42,7 +39,7 @@ class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
         self._default_y2_ticks_log = [1, 10, 100]
         return
 
-    def _configure_ax(self, ax):
+    def _configure_ax(self, ax: Axes):
         # Invert the y-axis for magnitudes
         ax.set(ylim=self._param("y_lim", self._default_y_lim))
         ax.invert_yaxis()
@@ -66,7 +63,7 @@ class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
         """
         return
 
-    def _draw_plot_sets(self, ax, plot_sets: Dict[str, PlotSet]):
+    def _draw_plot_sets(self, ax: Axes, plot_sets: Dict[str, PlotSet]):
         """
         Completely subclass the data rendering logic of the superclass()
         In this case we're not directly plotting photometric data,

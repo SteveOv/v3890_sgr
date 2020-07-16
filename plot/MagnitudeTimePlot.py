@@ -1,5 +1,4 @@
-from typing import Dict
-from plot import SinglePlotSupportingLogAxes
+from plot.SinglePlotSupportingLogAxes import *
 
 
 class MagnitudeTimePlot(SinglePlotSupportingLogAxes):
@@ -9,7 +8,6 @@ class MagnitudeTimePlot(SinglePlotSupportingLogAxes):
 
     The following plot params are supported (in addition to those of parent; SinglePlotSupportingLogAxes);
         * y_lim (5.8, 19) - set the limits of the y-axis
-        * y_shift (0) - value to shift successive print sets in the y-direction
     """
 
     def __init__(self, plot_params: Dict):
@@ -21,12 +19,16 @@ class MagnitudeTimePlot(SinglePlotSupportingLogAxes):
         self._default_y_lim = (5.8, 19)
         return
 
-    def _configure_ax(self, ax):
+    @property
+    def y_lim(self) -> List[float]:
+        return self._param("y_lim", self._default_y_lim)
+
+    def _configure_ax(self, ax: Axes):
         """
         Overriding the configuration of the target ax so we can invert the y-axis and set a limit on it
         """
         # Invert the y-axis for magnitudes - need to do this early.  Also put a limit on it (which super() does not).
-        ax.set(ylim=self._param("y_lim", self._default_y_lim))
+        ax.set(ylim=self.y_lim)
         ax.invert_yaxis()
         super()._configure_ax(ax)
         return

@@ -1,6 +1,5 @@
-from typing import Dict
 from matplotlib.gridspec import GridSpec
-from plot import MagnitudeTimePlot, PlotSet
+from plot.MagnitudeTimePlot import *
 
 
 class MagnitudeAndResidualsTimePlot(MagnitudeTimePlot):
@@ -29,22 +28,22 @@ class MagnitudeAndResidualsTimePlot(MagnitudeTimePlot):
         return
 
     @property
-    def show_residuals(self):
+    def show_residuals(self) -> bool:
         return self._param("show_residuals", self._default_show_residuals)
 
     @property
-    def y_label_residuals(self):
+    def y_label_residuals(self) -> str:
         return self._param("y_label_residuals", self._default_y_label_residuals)
 
     @property
-    def y_lim_residuals(self):
+    def y_lim_residuals(self) -> List[float]:
         return self._param("y_lim_residuals", self._default_y_lim_residuals)
 
     @property
-    def y_ticks_residuals(self):
+    def y_ticks_residuals(self) -> List[float]:
         return self._param("y_ticks_residuals", self._default_y_ticks_residuals)
 
-    def _create_ax(self, fig):
+    def _create_ax(self, fig: Figure) -> Axes:
         """
         Create the main ax, for the magnitude/time light curve and then the optional 2nd ax below for the residuals.
         Fully replace the super's implementation here as we need to use a GridSpec to manage the layout
@@ -61,7 +60,7 @@ class MagnitudeAndResidualsTimePlot(MagnitudeTimePlot):
         # Return the main ax so that super()'s Mag/time plotting can be carried out against it
         return self._ax_main
 
-    def _configure_ax(self, ax):
+    def _configure_ax(self, ax: Axes):
         # Default handling of the main ax ...
         super()._configure_ax(ax)
 
@@ -69,15 +68,13 @@ class MagnitudeAndResidualsTimePlot(MagnitudeTimePlot):
         if self.show_residuals and self._ax_res is not None:
             # Don't do anything with the x-axis - it's shared with the main ax so has already been set up
             self._ax_res.grid(which='major', linestyle='-', linewidth=self._line_width, alpha=0.3)
-            self._ax_res.set(ylim=self.y_lim_residuals)
-            self._ax_res.set_ylabel(self.y_label_residuals)
-            self._ax_res.set_yticks(self.y_ticks_residuals)
+            self._ax_res.set(ylim=self.y_lim_residuals, ylabel=self.y_label_residuals, yticks=self.y_ticks_residuals)
             self._ax_res.invert_yaxis()
             if self._param("x_scale_log", self._default_x_scale_log):
                 self._ax_res.grid(which="minor", linestyle="-", linewidth=self._line_width, alpha=0.1)
         return
 
-    def _draw_plot_set(self, ax, ix: int, ps: PlotSet):
+    def _draw_plot_set(self, ax: Axes, ix: int, ps: PlotSet):
         # Super() looks after the main ax with the magnitude/time plot
         super()._draw_plot_set(ax, ix, ps)
 

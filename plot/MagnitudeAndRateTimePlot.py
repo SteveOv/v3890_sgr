@@ -1,5 +1,4 @@
-from typing import Dict
-from plot import MagnitudeTimePlot, PlotSet
+from plot.MagnitudeTimePlot import *
 
 
 class MagnitudeAndRateTimePlot(MagnitudeTimePlot):
@@ -35,26 +34,26 @@ class MagnitudeAndRateTimePlot(MagnitudeTimePlot):
         return
 
     @property
-    def y2_legend_loc(self):
+    def y2_legend_loc(self) -> str:
         return self._param("y2_legend_loc", self._default_y2_legend_loc)
 
     @property
-    def y2_label(self):
+    def y2_label(self) -> str:
         return self._param("y2_label", self._default_y2_label)
 
     @property
-    def y2_lim(self):
+    def y2_lim(self) -> List[float]:
         return self._param("y2_lim", self._default_y2_lim_log if self.y2_scale_log else self._default_y2_lim)
 
     @property
-    def y2_ticks(self):
+    def y2_ticks(self) -> List[float]:
         return self._param("y2_ticks", self._default_y2_ticks_log if self.y2_scale_log else self._default_y2_ticks)
 
     @property
-    def y2_scale_log(self):
+    def y2_scale_log(self) -> bool:
         return self._param("y2_scale_log", self._default_y2_scale_log)
 
-    def _configure_ax(self, ax):
+    def _configure_ax(self, ax: Axes):
         # This looks after the shared x-axis and the primary y-axis
         super()._configure_ax(ax)
 
@@ -71,7 +70,7 @@ class MagnitudeAndRateTimePlot(MagnitudeTimePlot):
         self._ax2.set(ylim=self.y2_lim)
         return
 
-    def _draw_plot_set(self, ax, ix: int, ps: PlotSet):
+    def _draw_plot_set(self, ax: Axes, ix: int, ps: PlotSet):
         if ps.data_type == "band":
             # Magnitude data - plotted against the default y-axis
             super()._draw_plot_set(ax, ix, ps)
@@ -80,7 +79,7 @@ class MagnitudeAndRateTimePlot(MagnitudeTimePlot):
             super()._draw_plot_set(self._ax2, ix, ps)
         return
 
-    def _draw_plot_sets(self, ax, plot_sets: Dict[str, PlotSet]):
+    def _draw_plot_sets(self, ax: Axes, plot_sets: Dict[str, PlotSet]):
         super()._draw_plot_sets(ax, plot_sets)
 
         # Once all the plots have been made we can configure the additional legend for the y2 axis
@@ -88,7 +87,7 @@ class MagnitudeAndRateTimePlot(MagnitudeTimePlot):
             self._ax2.legend(loc=self.y2_legend_loc)
         return
 
-    def _define_data_label(self, label: str, y_shift: float = 0, is_rate=False):
+    def _define_data_label(self, label: str, y_shift: float = 0, is_rate=False) -> str:
         if is_rate:
             label = label + (F" (shifted {y_shift:+.1f} [rate])" if y_shift != 0 else "")
         else:

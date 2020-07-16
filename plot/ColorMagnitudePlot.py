@@ -1,7 +1,5 @@
-from typing import Dict
-import numpy as np
 from uncertainties import unumpy, ufloat_fromstr
-from plot import SinglePlot, PlotSet
+from plot.SinglePlot import *
 
 
 class ColorMagnitudePlot(SinglePlot):
@@ -28,7 +26,7 @@ class ColorMagnitudePlot(SinglePlot):
         self._max_delta_t = self._param("max_delta_t", 50)
         return
 
-    def _configure_ax(self, ax):
+    def _configure_ax(self, ax: Axes):
         """
         Overriding the configuration of the target ax so we can invert the y-axis and set a limit on it
         """
@@ -39,7 +37,7 @@ class ColorMagnitudePlot(SinglePlot):
         super()._configure_ax(ax)
         return
 
-    def _draw_plot_sets(self, ax, plot_sets: Dict[str, PlotSet]):
+    def _draw_plot_sets(self, ax: Axes, plot_sets: Dict[str, PlotSet]):
         """
         Completely subclass the data rendering logic of the superclass()
         In this case we're not directly plotting photometric data,

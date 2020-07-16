@@ -4,6 +4,7 @@ from pandas import DataFrame
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 from plot import PlotData
 
@@ -41,31 +42,31 @@ class BasePlot(ABC):
         return
 
     @property
-    def _print_dpi(self):
+    def _print_dpi(self) -> float:
         return self._DEFAULT_DPI
 
     @property
-    def _screen_dpi(self):
+    def _screen_dpi(self) -> float:
         return self._DEFAULT_DPI
 
     @property
-    def x_size(self):
+    def x_size(self) -> float:
         return self._param("x_size", self._default_x_size) * self._PLOT_SCALE_UNIT
 
     @property
-    def y_size(self):
+    def y_size(self) -> float:
         return self._param("y_size", self._default_y_size) * self._PLOT_SCALE_UNIT
 
     @property
-    def show_title(self):
+    def show_title(self) -> bool:
         return self._param("show_title", self._default_show_title)
 
     @property
-    def show_legend(self):
+    def show_legend(self) -> bool:
         return self._param("show_legend", self._default_show_legend)
 
     @property
-    def legend_loc(self):
+    def legend_loc(self) -> str:
         return self._param("legend_loc", self._default_legend_loc)
 
     @classmethod
@@ -107,7 +108,7 @@ class BasePlot(ABC):
         return
 
     @abstractmethod
-    def _draw_plot(self, plot_data: PlotData, title: str) -> plt.figure:
+    def _draw_plot(self, plot_data: PlotData, title: str) -> Figure:
         """
         Draw the requested plot returning a matplotlib figure which can be displayed or printed as required.
         """

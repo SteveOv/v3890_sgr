@@ -1,7 +1,5 @@
-from typing import Dict
 from matplotlib.gridspec import GridSpec
-from plot.RateTimePlot import RateTimePlot
-from plot.PlotSet import PlotSet
+from plot.RateTimePlot import *
 
 
 class RatesAndRatioTimePlot(RateTimePlot):
@@ -30,33 +28,33 @@ class RatesAndRatioTimePlot(RateTimePlot):
         return
 
     @property
-    def y_label_hard_data(self):
+    def y_label_hard_data(self) -> str:
         return self._param(f"y_label_hard_data", self._default_y_label_hard_data)
 
     @property
-    def y_label_soft_data(self):
+    def y_label_soft_data(self) -> str:
         return self._param(f"y_label_soft_data", self._default_y_label_soft_data)
 
     @property
-    def y_label_ratio(self):
+    def y_label_ratio(self) -> str:
         return self._param("y_label_ratio", self._default_y_label_ratio)
 
     @property
-    def y_lim_ratio(self):
+    def y_lim_ratio(self) -> List[float]:
         return self._param("y_lim_ratio",
                            self._default_y_lim_ratio_log if self.y_scale_log else self._default_y_lim_ratio)
 
     @property
-    def y_ticks_ratio(self):
+    def y_ticks_ratio(self) -> List[float]:
         return self._param("y_ticks_ratio",
                            self._default_y_ticks_ratio_log if self.y_scale_log else self._default_y_ticks_ratio)
 
     @property
-    def y_shift(self):
+    def y_shift(self) -> float:
         # Never allow a y-shift to be applied.
         return 0
 
-    def _create_ax(self, fig):
+    def _create_ax(self, fig: Figure) -> Axes:
         gs = GridSpec(nrows=3, ncols=1, height_ratios=[3, 3, 2], figure=fig)
         self._ax_ratio = fig.add_subplot(gs[2, 0])
         self._ax_hard = fig.add_subplot(gs[0, 0], sharex=self._ax_ratio)
@@ -65,7 +63,7 @@ class RatesAndRatioTimePlot(RateTimePlot):
         # Only this ax will have the title/legend added as appropriate by the super classes.
         return self._ax_hard
 
-    def _configure_ax(self, ax):
+    def _configure_ax(self, ax: Axes):
         self._ax_hard.set_ylabel(self.y_label_hard_data)
         self._ax_soft.set_ylabel(self.y_label_soft_data)
         for ax in [self._ax_ratio, self._ax_hard, self._ax_soft]:
@@ -74,23 +72,18 @@ class RatesAndRatioTimePlot(RateTimePlot):
                 if self.y_scale_log:
                     ax.set_yscale("log")
                 ax.set_ylabel(self.y_label_ratio)
-                ax.set(xlim=self.x_lim, ylim=self.y_lim_ratio)
-                ax.set_yticks(self.y_ticks_ratio, minor=False)
-                ax.set_yticklabels(self.y_ticks_ratio, minor=False)
+                ax.set(xlim=self.x_lim,
+                       ylim=self.y_lim_ratio, yticks=self.y_ticks_ratio, yticklabels=self.y_ticks_ratio)
 
                 # ... and the shared x-axis.
                 if self.x_scale_log:
                     ax.set_xscale("log")
-                ax.set_xlabel(self.x_label)
-                ax.set_xticks(self.x_ticks, minor=False)
-                ax.set_xticklabels(self.x_ticks, minor=False)
+                ax.set(xlabel=self.x_label, xticks=self.x_ticks, xticklabels=self.x_ticks)
             else:
                 # Configure the hard/soft ax
                 if self.y_scale_log:
                     ax.set_yscale("log")
-                ax.set(xlim=self.x_lim, ylim=self.y_lim)
-                ax.set_yticks(self.y_ticks, minor=False)
-                ax.set_yticklabels(self.y_ticks, minor=False)
+                ax.set(xlim=self.x_lim, ylim=self.y_lim, yticks=self.y_ticks, yticklabels=self.y_ticks)
 
             # Grids, where necessary, on all axes
             ax.grid(which='major', linestyle='-', linewidth=self._line_width, alpha=0.3)
@@ -98,7 +91,7 @@ class RatesAndRatioTimePlot(RateTimePlot):
                 ax.grid(which="minor", linestyle="-", linewidth=self._line_width, alpha=0.1)
         return
 
-    def _draw_plot_set(self, ax, ix: int, ps: PlotSet):
+    def _draw_plot_set(self, ax: Axes, ix: int, ps: PlotSet):
         # Work out what we are plotting here so we know which ax to plot it on.
         # TODO: add properties to PlotSet which publish what type of data (band, hard/soft/PC/WT rate, ratio) carried.
         if "hard_data" in ps.name:

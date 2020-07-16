@@ -1,5 +1,4 @@
-from typing import Dict
-from plot.SinglePlotSupportingLogAxes import SinglePlotSupportingLogAxes
+from plot.SinglePlotSupportingLogAxes import *
 
 
 class RateTimePlot(SinglePlotSupportingLogAxes):
@@ -26,21 +25,19 @@ class RateTimePlot(SinglePlotSupportingLogAxes):
         return
 
     @property
-    def y_lim(self):
+    def y_lim(self) -> List[float]:
         return self._param("y_lim", self._default_y_lim_log if self.y_scale_log else self._default_y_lim)
 
     @property
-    def y_ticks(self):
+    def y_ticks(self) -> List[float]:
         return self._param("y_ticks", self._default_y_ticks_log if self.y_scale_log else self._default_y_ticks)
 
-    def _configure_ax(self, ax):
+    def _configure_ax(self, ax: Axes):
         super()._configure_ax(ax)
 
         # Super supports setting the y-axis to log, but doesn't set a limit or ticks  as it doesn't know
         # what sort of data will be shown.  Here we know we are showing rates so we can default to reasonable values.
         if self.y_scale_log:
-            ax.set(ylim=self.y_lim)
-            ax.set_yticks(self.y_ticks, minor=False)
-            ax.set_yticklabels(self.y_ticks, minor=False)
+            ax.set(ylim=self.y_lim, yticks=self.y_ticks, yticklabels=self.y_ticks)
         return
 

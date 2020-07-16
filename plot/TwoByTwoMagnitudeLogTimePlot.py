@@ -1,7 +1,6 @@
-from typing import Dict
 import warnings
-import matplotlib.pyplot as plt
-from plot import MagnitudeTimePlot, PlotData, PlotSet
+from plot.PlotData import *
+from plot.MagnitudeTimePlot import *
 
 
 class TwoByTwoMagnitudeLogTimePlot(MagnitudeTimePlot):
@@ -22,15 +21,24 @@ class TwoByTwoMagnitudeLogTimePlot(MagnitudeTimePlot):
         return
 
     @property
-    def show_breaks(self):
+    def show_breaks(self) -> bool:
         return self._param("show_breaks", self._default_show_breaks)
 
     @property
-    def y_shift(self):
+    def show_epochs(self) -> bool:
+        # The breaks are presented as epochs on each set of axes.  Override any default behaviour.
+        return self.show_breaks
+
+    @property
+    def show_epoch_labels(self) -> bool:
+        return self.show_breaks
+
+    @property
+    def y_shift(self) -> float:
         # Never allow a y_shift to be set
         return 0
 
-    def _draw_plot(self, plot_data: PlotData, title: str = "Magnitude v $\\log($\\Delta t)$") -> plt.figure:
+    def _draw_plot(self, plot_data: PlotData, title: str = "Magnitude v $\\log($\\Delta t)$") -> Figure:
         """
         Produce a figure with up to 4 (2 x 2) Magnitude v log(time) plots, for each of the passed band data.
         """
@@ -53,20 +61,15 @@ class TwoByTwoMagnitudeLogTimePlot(MagnitudeTimePlot):
             ax.set_ylabel(self._param("y_label", F"{ps.label} Apparent magnitude [mag]"))
 
             # Get the super class to render the data.
-            # It knows how to render mags v days on linear or log x-scale and will optionally draw the fits.
+            # It knows how to render mags v days on linear or log x-scale and will optionally draw the fits if required.
             self._draw_plot_set(ax, 0, ps)
 
-            # Plotting breaks are specific to this type of plot, so we do that here.
+            # Plotting breaks are specific to this type of plot so we do that here by subverting epoch drawing.
             if self.show_breaks and ps.has_param("breaks"):
-                # Replace the minor x-axis ticks with the breaks specific to this plot set.
-                # Labels ar the values to 2 dp, rotated 90deg and within the axis.
-                ax.set_xticks(ps.param("breaks"), minor=True)
-                ax.set_xticklabels(["%.2f" % x for x in ps.param("breaks")], minor=True)
-                ax.tick_params(which='minor', axis='x', direction='inout', pad=-25, labelsize='x-small',
-                               labelcolor='gray', labelrotation=90)
-                ax.grid(which='minor', linestyle='--', linewidth=self._line_width, alpha=0.3)
+                epochs_from_breaks = dict(zip(["%.2f" % x for x in ps.param("breaks")], ps.param("breaks")))
+                self._draw_epochs(ax, epochs_from_breaks)
 
             ax_ix += 1
 
         plt.tight_layout(pad=2.8, h_pad=1.0, w_pad=1.0)
-        return
+        return fig
