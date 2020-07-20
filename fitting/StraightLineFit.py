@@ -75,14 +75,13 @@ class StraightLineFit(FittedFit, ABC):
                     range_from: float = None, range_to: float = None) -> Fit:
         """
         Factory method to create a straight line Fit based on the passed data (xi, yi and delta yi)
-        over the requested range of xi.  dxi values not supported.
+        over the requested range of xi.  If dyi is none an unweighted fit will be made.  dxi values not supported.
         """
         fit = cls(id, [], [], range_from=range_from, range_to=range_to, fit_params=None)
-        if xi is not None and yi is not None and dyi is not None:
+        if xi is not None and yi is not None:
             lxi = len(xi)
             lyi = len(yi)
-            ldyi = len(dyi)
-            if (0 < lxi == lyi) and ldyi == lyi:
+            if (0 < lxi == lyi) and (dyi is None or len(dyi) == lyi):
                 # When absolute_sigma=True the values passed to sigma are treated as absolute value of same units as yi
                 # and the variance of the popt params are in the diagonal of the returned pcov matrix. The sigmas of the
                 # fitting params are the sqrt() of these values. When absolute_sigma=False the sigma values are used as

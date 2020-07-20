@@ -49,12 +49,13 @@ class FitSet(ABC):
         return new_set
 
     @classmethod
-    def fit_to_data(cls, df: DataFrame, x_col: str, y_col: str, y_err_col: str,
-                    breaks: List[Union[float, str]], start_id: int = 0)\
+    def fit_to_data(cls, df: DataFrame, x_col: str, y_col: str, y_err_col: str = None,
+                    breaks: List[Union[float, str]] = [], start_id: int = 0)\
             -> FitSet:
         """
         Factory method for a fit set.  Will create a set of fits to the passed data (x, y and delta y)
-        based on the list of breaks.  Each fit will be labelled with a subscript starting at start_id.
+        based on the list of breaks.  Set y_err_col to None to omit sigma weighting from the fit.
+        Each fit will be labelled with a subscript starting at start_id.
         """
         fits = []
         ranges = cls._ranges_from_breaks(df[x_col], breaks, "def")
@@ -70,8 +71,9 @@ class FitSet(ABC):
                 # Must have at least two data points to calculate the best fit line
                 range_df = df.query(F"{x_col}>={from_xi}").query(F"{x_col}<={to_xi}").sort_values(by=x_col)
                 if len(range_df) > 1:
+                    dyi = range_df[y_err_col] if y_err_col is not None else None
                     fit = cls._create_fitted_fit_on_data(
-                        start_id, range_df[x_col], range_df[y_col], range_df[y_err_col], from_xi, to_xi)
+                        start_id, range_df[x_col], range_df[y_col], dyi, from_xi, to_xi)
                 else:
                     fit = NullFit(start_id, [], [], from_xi, to_xi)
             elif str.isspace(fit_type) or fit_type.strip() == "null":

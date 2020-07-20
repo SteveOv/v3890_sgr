@@ -53,8 +53,10 @@ for data_source_key in settings["data_sources"]:
 
                 print(f"\nAnalysing {data_source_key}/{lc_key}/data_sets['{data_set_key}'] rate data")
                 type_df = ds.query(lc_params['eruption_jd'], lc_params['query_params'], set_params)
+                # Use unweighted fitting for the XRT data
                 if "breaks" in set_params and len(set_params["breaks"]) > 0:
-                    fits = StraightLineLogLogFitSet.fit_to_data(type_df, "day", "rate", "rate_err", set_params['breaks'])
+                    fits = StraightLineLogLogFitSet.fit_to_data(type_df, "day", "rate",
+                                                                y_err_col=None, breaks=set_params['breaks'])
                 else:
                     fits = None
 

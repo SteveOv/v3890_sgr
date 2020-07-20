@@ -21,7 +21,7 @@ class StraightLineLogLogFit(StraightLineLogXFit):
         """
         # Prior to fitting we need to convert the yi/dyi values to their log equivalent (xi values done by super())
         log_yi = np.log10(yi)
-        log_dyi = np.log10(dyi)
+        log_dyi = np.log10(dyi) if dyi is not None else None
         fit = super().fit_to_data(id, xi, log_yi, dxi=dxi, dyi=log_dyi, range_from=range_from, range_to=range_to)
 
         # Leave the private _x/_y_endpoints at their log10 values as these are used when interacting with the fit, which
