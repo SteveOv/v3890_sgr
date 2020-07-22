@@ -51,7 +51,9 @@ class SinglePlotSupportingLogAxes(SinglePlot, ABC):
 
         if self.x_scale_log:
             ax.set_xscale("log")
-            ax.set(xlim=self.x_lim, xticks=self.x_ticks, xticklabels=self.x_ticks)
+            # These are set by super, but it seems we need to set them again after changing to log axis!
+            ax.set_xticks(self.x_ticks, minor=False)
+            ax.set_xticklabels(self.x_tick_labels, minor=False)
 
         if self.y_scale_log:
             ax.set_yscale("log")

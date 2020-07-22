@@ -63,6 +63,10 @@ class SinglePlot(BasePlot, ABC):
         return self._param("x_ticks", self._default_x_ticks)
 
     @property
+    def x_tick_labels(self) -> List[str]:
+        return self._param("x_tick_labels", self.x_ticks)
+
+    @property
     def y_label(self) -> str:
         return self._param("y_label", self._default_y_label)
 
@@ -106,6 +110,7 @@ class SinglePlot(BasePlot, ABC):
     def _configure_ax(self, ax: Axes):
         ax.set(xlim=self.x_lim, xlabel=self.x_label, ylabel=self.y_label)
         ax.set_xticks(self.x_ticks, minor=False)
+        ax.set_xticklabels(self.x_tick_labels, minor=False)
         ax.grid(which='major', linestyle='-', linewidth=self._line_width, alpha=0.3)
         return
 

@@ -1,53 +1,84 @@
+import math
+from data import MagnitudeDataSource
+from uncertainties import ufloat, ufloat_fromstr, UFloat
+import with_uncertainties as unc
 from plot.SinglePlotSupportingLogAxes import *
 
 
 class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
 
     def __init__(self, plot_params: Dict):
-        # Only x_axis is log-able.  The main y-axis will show magnitudes which is already log data. y2 will be log-able.
-        super().__init__(plot_params, x_axis_supports_log=True, y_axis_supports_log=False)
+        super().__init__(plot_params, x_axis_supports_log=True, y_axis_supports_log=True)
 
         # Override the most basic behaviour - we need a large plot with labelling of data points, so no legend
         self._default_x_size = 2
         self._default_y_size = 2
         self._default_show_legend = False
 
-        self._default_x_scale_log = True
-        self._default_x_axis = "frequency"
+        # log(luminosity) scale derived from the flux density and distance.
+        self._default_y_label = "$\\log(L_{\\nu})$ [Jy m$^2$]"
+        # super() doesn't restrict the y-axis, so we implement these properties here
+        self._default_y_lim_log = (5e38, 3e43)
+        self._default_y_ticks_log = [1e39, 1e40, 1e41, 1e42, 1e43]
+        self._default_y_tick_labels_log = ["39", "40", "41", "42", "43"]
 
-        self._default_y_label = "Apparent magnitude [mag]"
-        self._default_y_lim = (5.8, 17)
+        # x-axis always on a log scale - set the defaults for the super() to configure from
+        self._default_x_label = "$\\log(\\nu)$ [Hz]"
+        self._default_x_lim_log = (10**14.5, 10**15.3)
+        self._default_x_ticks_log = [10**14.6, 10**14.7, 10**14.8, 10**14.9, 10**15.0, 10**15.1, 10**15.2, 10**15.3]
+        self._default_x_tick_labels_log = ["14.6", "14.7", "14.8", "14.9", "15.0", "15.1", "15.2", "15.3"]
 
-        # x-axis can be set up for frequency (defaults to log scale) or wavelength (defaults to linear scale)
-        self._x_axis = self._param("x_axis", self._default_x_axis)
-        if self._x_axis == self._default_x_axis:
-            self._default_x_scale_log = True
-            self._default_x_label = "$\\log(\\nu)$ [Hz]"
-            self._default_x_lim_log = (np.log10(3.5e14), np.log10(2.0e15))
-            self._default_x_ticks_log = [14.6, 14.7, 14.8, 14.9, 15.0, 15.1, 15.2, 15.3]
-        else:
-            self._default_x_scale_log = False
-            self._default_x_lim = (100, 900)
-            self._default_x_ticks = np.arange(200, 900, 200)
-            self._default_x_label = "Wavelength [nm]"
-
-        # TODO - need to set up second y-axis as L_x
-        self._default_y2_label = "Count Rate (0.1 - 10 keV) [s$^{-1}$]"
+        # TODO: 2nd y-axis in magnitudes - same scale as y so we will need to convert
+        self._default_y2_label = "$\\text{m_V}$"
         self._default_y2_lim = [0, 25]
         self._default_y2_scale_log = False
         self._default_y2_lim_log = [0.01, 25]
         self._default_y2_ticks_log = [1, 10, 100]
         return
 
-    def _configure_ax(self, ax: Axes):
-        # Invert the y-axis for magnitudes
-        ax.set(ylim=self._param("y_lim", self._default_y_lim))
-        ax.invert_yaxis()
+    @property
+    def x_scale_log(self) -> bool:
+        return True     # Override Super(): Always log
 
-        # This looks after the shared x-axis and the primary y-axis
+    @property
+    def x_tick_labels(self) -> List[str]:
+        return self._param("x_tick_labels", self._default_x_tick_labels_log)
+
+    @property
+    def y_scale_log(self) -> bool:
+        return True     # Override Super(): Always log
+
+    @property
+    def y_lim(self) -> List[float]:
+        return self._param("y_lim", self._default_y_lim_log)
+
+    @property
+    def y_ticks(self) -> List[float]:
+        return self._param("y_ticks", self._default_y_ticks_log)
+
+    @property
+    def y_tick_labels(self) -> List[str]:
+        return self._param("y_tick_labels", self._default_y_tick_labels_log)
+
+    @property
+    def target_distance_parsecs(self) -> UFloat:
+        # Want a failure if the distance is not set correctly.
+        return ufloat_fromstr(self._param("distance_pc", None))
+
+    def _configure_ax(self, ax: Axes):
+        # This looks after the basic/common setup of the shared x-axis and the primary y-axis
         super()._configure_ax(ax)
 
-        # Now we set up the secondary y-axis
+        # Super doesn't put any restrictions on y-axis, but we need them here.
+        ax.set(xlim=self.x_lim, xticks=self.x_ticks, xticklabels=self.x_tick_labels)
+        ax.set_xticks([], minor=True)  # For some reason matplotlib will add in some minor ticks/labels - remove them
+        ax.set_yticks([], minor=True)
+        ax.set(ylim=self.y_lim, yticks=self.y_ticks, yticklabels=self.y_tick_labels)
+        ax.grid(which="minor", linestyle="none")
+        ax.grid(which="major", linestyle="none")
+
+        # Now we set up the secondary y-axis on magnitude scale
+        # TODO: will need to show values equivalent to the y-axis so maybe we use same scale but label differently
         """
         self._ax2 = ax.twinx()
         self._ax2.set_ylabel(self._param("y2_label", self._default_y2_label))
@@ -70,27 +101,22 @@ class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
         instead we'll do SED analysis and then plot the resulting data.
         """
         delta_ts = self._param("delta_t", [1, 2, 3, 5, 10, 20])
-        lambda_cs = self._param("lambda_c", {"I": 806, "R": 658, "V": 551, "B": 445, "UVM2": 224.6, "UVW2": 192.8})
-        nu_cs = self._param("nu_c", {"I": 3.72e14, "R": 4.556e14, "V": 5.441e14, "B": 6.737e14, "UVM2": 1.335e15, "UVW2": 1.555e15})
-        df = SpectralEvolutionDistributionPlot._perform_sed_analysis_magnitudes(plot_sets, lambda_cs, nu_cs, delta_ts)
+        nu_effs = self._param(
+            "nu_eff", {"I": 3.72e14, "R": 4.556e14, "V": 5.441e14, "B": 6.737e14, "UVM2": 1.335e15, "UVW2": 1.555e15})
 
-        x_axis_frequency = (self._x_axis == self._default_x_axis)
+        # This is an interim step - parses the source data and calculates flux & luminosity fields
+        df = self._perform_sed_analysis_fluxes(plot_sets, nu_effs, delta_ts)
+
         ix = 0
         for delta_t in sorted(delta_ts):
             # Plot the error bars of the points
-            if x_axis_frequency:
-                dt_df = df.query(f"delta_t == {delta_t}").sort_values(by="nu_c")
-                self._plot_df_to_error_bars_on_ax(ax, dt_df, "nu_c", "mag", "mag_err", "k", fmt=",")
-                self._plot_df_to_lines_on_ax(ax, dt_df, "nu_c", "mag", "k")
-                x_pos_eol = dt_df.iloc[-1, 2] + 0.01
+            dt_df = df.query(f"delta_t == {delta_t}").sort_values(by="nu_eff")
+            self._plot_df_to_error_bars_on_ax(ax, dt_df, "nu_eff", "L_nu", "L_nu_err", "k", fmt=",")
+            self._plot_df_to_lines_on_ax(ax, dt_df, "nu_eff", "L_nu", "k")
 
-            else:
-                dt_df = df.query(f"delta_t == {delta_t}").sort_values(by="lambda_c")
-                self._plot_df_to_error_bars_on_ax(ax, dt_df, "lambda_c", "mag", "mag_err", "k", fmt=",")
-                self._plot_df_to_lines_on_ax(ax, dt_df, "lambda_c", "mag", "k")
-                x_pos_eol = dt_df.iloc[-1, 1] + 10
-
-            y_pos = dt_df.iloc[-1, 5]
+            last_good_band = dt_df.query("L_nu>0").iloc[-1]
+            x_pos_eol = last_good_band["nu_eff"] + 10**13
+            y_pos = last_good_band["L_nu"]
             # TODO: specific to this plot, handle a crush
             if ix == 5:
                 y_pos += 0.2
@@ -101,18 +127,14 @@ class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
             ix += 1
 
         # Now annotate the bands - along the top for now
-        if x_axis_frequency:
-            for band in nu_cs:
-                ax.annotate(band, xycoords="data", xy=(np.log10(nu_cs[band]), 6.5), horizontalalignment="center")
-        else:
-            for band in lambda_cs:
-                x_pos = lambda_cs[band] + (20 if band == "UVM2" else 0)
-                ax.annotate(band, xycoords="data", xy=(x_pos, 6.5), horizontalalignment="center")
+        y_pos = self.y_ticks[-1]
+        for band in nu_effs:
+            ax.annotate(band, xycoords="data", xy=(nu_effs[band], y_pos), horizontalalignment="center")
+
         return
 
-    @classmethod
-    def _perform_sed_analysis_magnitudes(cls, plot_sets: Dict[str, PlotSet],
-                                         lambda_c_lookup: Dict, nu_c_lookup: Dict, delta_ts: Dict) -> DataFrame:
+    def _perform_sed_analysis_magnitudes(self, plot_sets: Dict[str, PlotSet],
+                                         nu_eff_lookup: Dict, delta_ts: Dict) -> DataFrame:
         rows = []
         for plot_set_key in plot_sets:
             plot_set = plot_sets[plot_set_key]
@@ -123,7 +145,7 @@ class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
             for delta_t in delta_ts:
                 mag = plot_set.fits.find_y_value(delta_t)
                 if mag is not None:
-                    rows.append({"band": band, "lambda_c": lambda_c_lookup[band], "nu_c": np.log10(nu_c_lookup[band]),
+                    rows.append({"band": band, "nu_eff": nu_eff_lookup[band],
                                  "label": label, "delta_t": delta_t, "mag": mag.nominal_value, "mag_err": mag.std_dev})
 
         if len(rows) > 0:
@@ -131,3 +153,33 @@ class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
         else:
             df = None
         return df
+
+    def _perform_sed_analysis_fluxes(self, plot_sets: Dict[str, PlotSet],
+                                     nu_eff_lookup: Dict, delta_ts: Dict) -> DataFrame:
+        df = self._perform_sed_analysis_magnitudes(plot_sets, nu_eff_lookup, delta_ts)
+
+        # If not already present, calculate flux density values for the retrieved data.
+        df[['flux_hz', "flux_hz_err"]] = df.apply(
+            lambda d: MagnitudeDataSource.flux_density_from_magnitude(d["mag"], d["mag_err"], d["band"]),
+            axis=1,
+            result_type="expand")
+
+        # Calculate the specific luminosity from the flux density
+        df[["L_nu", "L_nu_err"]] = df.apply(
+            lambda d: self._calculate_specific_luminosity(d["flux_hz"], d["flux_hz_err"]), axis=1, result_type="expand")
+        return df
+
+    def _calculate_specific_luminosity(self, flux, flux_err):
+        """
+        Calculate the specific luminosity based on the passed flux density and distance
+        using the relation: L_nu = 4pi * r^2 * F_nu
+        """
+        # Convert the configured distance from pc to m
+        r, r_err = unc.multiply(self.target_distance_parsecs.nominal_value, 3.086e16,
+                                self.target_distance_parsecs.std_dev, 0)
+
+        # Calculate the luminosity L_nu = 4pi * r^2 * F_nu
+        a, a_err = unc.multiply(flux, 4*math.pi, flux_err)
+        r2, r2_err = unc.power(r, 2, r_err)
+        l_nu, l_nu_err = unc.multiply(a, r2, a_err, r2_err)
+        return l_nu, l_nu_err

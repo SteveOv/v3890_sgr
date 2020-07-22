@@ -202,7 +202,7 @@
         "Combination Plots": [
             {
                 "type": "ColorMagnitudePlot",
-                "file_name": "./output/V3890Sgr-Color-mag.png",
+                "file_name": "./output/V3890Sgr-2019-Color-mag.png",
                 "title": "Color-magnitude plot of the 2019 eruption",
                 "params": {
                     "show_title": true, "x_lim": [-1.0, 1.0], "x_ticks": [-1.0, -0.5, 0, 0.5, 1.0], "y_lim": [-10, 0],
@@ -214,25 +214,11 @@
             },
             {
                 "type": "SpectralEvolutionDistributionPlot",
-                "file_name": "./output/V3890Sgr-SED-log(freq)-single.png",
+                "file_name": "./output/V3890Sgr-2019-SED-log(freq)-single.png",
                 "title": "The evolution of the SED of the 2019 eruption of V3890 Sgr",
                 "params": {
-                    "show_title": true, "x_axis": "frequency",
+                    "show_title": true, "distance_pc": "8754+/-868",
                     "nu_c": {"I": 3.72e14, "R": 4.556e14, "V": 5.441e14, "B": 6.737e14, "UVM2": 1.335e15, "UVW2": 1.555e15},
-                    "delta_t": [0.35, 1, 2, 3, 5, 10, 20, 30, 40]
-                },
-                "plot_sets": [
-                    {"data_sets": "2019-AAVSO/nominal"},
-                    {"data_sets": "2019-UVOT/nominal"}
-                ]
-            },
-            {
-                "type": "SpectralEvolutionDistributionPlot",
-                "file_name": "./output/V3890Sgr-SED-wavelength-single.png",
-                "title": "The evolution of the SED of the 2019 eruption of V3890 Sgr",
-                "params": {
-                    "show_title": true, "x_axis": "wavelength",
-                    "lambda_c": {"I": 806, "R": 658, "V": 551, "B": 445, "UVM2": 224.6, "UVW2": 192.8},
                     "delta_t": [0.35, 1, 2, 3, 5, 10, 20, 30, 40]
                 },
                 "plot_sets": [
