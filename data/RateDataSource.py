@@ -1,8 +1,8 @@
 import numpy as np
-from data.DataSource import *
+from data.PhotometryDataSource import *
 
 
-class RateDataSource(DataSource, ABC):
+class RateDataSource(PhotometryDataSource, ABC):
     """
     Abstract base class for Rate DataSources.
     """
