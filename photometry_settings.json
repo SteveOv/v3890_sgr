@@ -57,7 +57,7 @@
         "2019-UVOT": {
             "file_spec": "./data/UVOT/maghist_*.fits",
             "description": "Data from Swift/UVOT.  Use my eruption JD = 2458723.278+/-0.256",
-            "type": "UvotFitsMagnitudeDataSource",
+            "type": "UvotMagnitudeDataSource",
             "light_curves": {
                 "nominal": {
                     "eruption_jd": 2458723.278,

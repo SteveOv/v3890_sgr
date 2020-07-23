@@ -3,7 +3,7 @@ from astropy.table import Table
 from data.MagnitudeDataSource import *
 
 
-class UvotFitsMagnitudeDataSource(MagnitudeDataSource):
+class UvotMagnitudeDataSource(MagnitudeDataSource):
     """
     Read and parse Photometry Data files from UVOTA instrument in the for of fits files
     which have been produced by tht uvotsource command.
@@ -30,7 +30,7 @@ class UvotFitsMagnitudeDataSource(MagnitudeDataSource):
                 print(t.meta)
             else:
                 for fits_row in t.iterrows(*fits_field_names):
-                    jd = UvotFitsMagnitudeDataSource._met_to_jd(fits_row[0])
+                    jd = UvotMagnitudeDataSource._met_to_jd(fits_row[0])
                     rows.append({
                         output_col_names[0]: jd,                    # jd : MET -> JD
                         output_col_names[1]: fits_row[1],           # mag : MAG
