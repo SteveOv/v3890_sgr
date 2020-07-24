@@ -76,6 +76,8 @@ if len(fits_1) == len(fits_2) == len(fits_3) == 40:
             if is_blue[0]:
                 median_data = np.multiply(median_data, blue_gain)
                 median_hdr["MED-GAIN"] = blue_gain
+            else:
+                median_hdr["MED-GAIN"] = 0
 
         # Generate the name of the common output fits file.
         m_delta_t = np.mean(delta_t)

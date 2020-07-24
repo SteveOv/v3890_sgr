@@ -9,7 +9,7 @@ The Photometry data source hierarchy
             PhotometryDataSource
             ^                   ^
             |                   |
-    RateDataSource      MagnitudeDataSource
+    RateDataSource      MagnitudeDataSource         
             ^                   ^
             |                   |
     XrtRateDateSource       AavsoMagnitudeDataSource
@@ -28,3 +28,16 @@ from data.UvotMagnitudeDataSource import *
 from data.XrtRateDataSource import *
 from data.XrtRatioDataSource import *
 
+"""
+The Spectral data source hierarchy
+
+                DataSource
+                    ^
+                    |
+            SpectralDataSource
+                    ^
+                    |
+            FrodoSpecSpectralDataSource
+"""
+from data.SpectralDataSource import *
+from data.FrodoSpecSpectralDataSource import *
