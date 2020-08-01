@@ -6,6 +6,7 @@ import matplotlib.cm as cm
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.ticker import ScalarFormatter
+from astropy.units import Quantity
 
 
 def flux_array_to_square_grid(array: [], length_side: int = None) -> []:
@@ -47,15 +48,15 @@ def plot_fibre_heatmap_to_ax(fig: Figure, ax: Axes, flux_ratios: [float]):
     return
 
 
-def plot_spectrum_to_ax(ax: Axes, wavelength: [float], ss_spec_flux: [float], title: str,
-                        c_range: Tuple[float, float] = None, h_range: Tuple[float, float] = None,
-                        sky_flux: [float] = None, nss_spec_flux: [float] = None):
+def plot_spectrum_to_ax(ax: Axes, wavelength: [Quantity], ss_spec_flux: [Quantity], title: str,
+                        c_range: [Quantity] = None, h_range: [Quantity] = None,
+                        sky_flux: [Quantity] = None, nss_spec_flux: [Quantity] = None):
     ax.set_xlabel("Wavelength [Angstrom]")
     ax.set_ylabel("Arbitrary flux")
     ax.set_title(title)
-    x_tick_range = (min(wavelength), max(wavelength))
-    ax.set_xticks(np.arange(x_tick_range[0], x_tick_range[1]+1, 250), minor=False)
-    ax.set_xticks(np.arange(x_tick_range[0], x_tick_range[1]+1, 50), minor=True)
+    x_tick_range = ((min(wavelength)).value, (max(wavelength)).value)
+    ax.set_xticks(np.arange(x_tick_range[0], x_tick_range[1] + 1, 250), minor=False)
+    ax.set_xticks(np.linspace(x_tick_range[0], x_tick_range[1] + 1, 50), minor=True)
     color = "b" if x_tick_range[0] < 5000 else "r"
 
     if ss_spec_flux is not None and len(ss_spec_flux) == len(wavelength):
@@ -68,22 +69,23 @@ def plot_spectrum_to_ax(ax: Axes, wavelength: [float], ss_spec_flux: [float], ti
         ax.plot(wavelength, sky_flux, color="c", linestyle="-", linewidth=0.25, alpha=0.5)
 
     if c_range is not None:
-        ax.axvspan(xmin=c_range[0], xmax=c_range[1], color="c", alpha=0.05)
+        ax.axvspan(xmin=c_range.value[0], xmax=c_range.value[1], color="c", alpha=0.05)
 
     if h_range is not None:
-        ax.axvspan(xmin=h_range[0], xmax=h_range[1], color=color, alpha=0.05)
+        ax.axvspan(xmin=h_range.value[0], xmax=h_range.value[1], color=color, alpha=0.05)
     return
 
 
-def plot_rss_spectra(wavelength: [float, float], flux: [float, float], flux_ratios: [float], basename: str, sky_mask: [bool], spec_mask: [bool],
-                     c_range: Tuple[float, float], h_range: Tuple[float, float], output_dir: str, enhance: bool = True):
+def plot_rss_spectra(wavelength: Quantity, flux: Quantity, flux_ratios: [float], basename: str,
+                     sky_mask: [bool], spec_mask: [bool],
+                     c_range: [Quantity], h_range: [Quantity], output_dir: str, enhance: bool = True):
     fig = plt.figure(figsize=(12.8, 25.6), constrained_layout=True)
     ax = fig.add_subplot(1, 1, 1)
 
     ax.set_xlabel("Wavelength [Angstrom]")
     ax.set_ylabel("Arbitrary flux")
     ax.set_title(f"The RSS_NONSS FRODOSpec spectra in {basename}")
-    x_tick_range = (min(wavelength[0, :]), max(wavelength[0, :]))
+    x_tick_range = ((min(wavelength[0, :])).value, (max(wavelength[0, :])).value)
     ax.set_xticks(np.arange(x_tick_range[0], x_tick_range[1]+1, 250), minor=False)
     ax.set_xticks(np.arange(x_tick_range[0], x_tick_range[1]+1, 50), minor=True)
     ax.set(ylim=(-1000, 150000))
@@ -106,14 +108,15 @@ def plot_rss_spectra(wavelength: [float, float], flux: [float, float], flux_rati
 
         # Optionally, expand the vertical dynamic range before plotting.  Makes features easier to see lne features.
         y_pos = spec_ix * y_offset
-        plot_flux = np.power(flux[spec_ix, :].copy(), 2 if enhance else 1)
-        ax.plot(wavelength[spec_ix, :], np.add(plot_flux, y_pos), color=color, linestyle="-", linewidth=0.25)
-        ax.annotate(f"[{flux_ratios[spec_ix]:.2f}]", xy=(np.min(wavelength) - 50, y_pos), xycoords="data")
+        plot_flux = np.power(flux[spec_ix, :].value.copy(), 2 if enhance else 1)
+        plot_flux = np.add(plot_flux, y_pos)
+        ax.plot(wavelength[spec_ix, :], plot_flux, color=color, linestyle="-", linewidth=0.25)
+        ax.annotate(f"[{flux_ratios[spec_ix]:.2f}]", xy=(np.min(wavelength).value - 50, y_pos), xycoords="data")
 
     if c_range is not None:
-        ax.axvspan(xmin=c_range[0], xmax=c_range[1], color="c", alpha=0.05)
+        ax.axvspan(xmin=c_range.value[0], xmax=c_range.value[1], color="c", alpha=0.05)
     if h_range is not None:
-        ax.axvspan(xmin=h_range[0], xmax=h_range[1], color=spec_color, alpha=0.05)
+        ax.axvspan(xmin=h_range.value[0], xmax=h_range.value[1], color=spec_color, alpha=0.05)
 
     plt.savefig(f"{output_dir}/rss_nonss_{basename}.png", dpi=300)
     plt.close()

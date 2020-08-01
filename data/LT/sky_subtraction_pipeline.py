@@ -10,6 +10,7 @@ from data import FrodoSpecSpectralDataSource as FrodoSpecDS
 import plotting
 # noinspection PyUnresolvedReferences
 import spectrum
+from astropy import units
 
 
 def read_setting(group, name, default=None):
@@ -38,8 +39,8 @@ for spec_group in ["target_observation", "standard_observation"]:
 
         # For each NON-SS spectra we calculate the flux ratio between chosen high and low flux regions
         # The two ranges are chosen specifically to discriminate between an object and a "sky" spectrum
-        peak_range = spectrum.calc_wavelength_range(lambda_h_beta if is_blue else lambda_h_alpha, lambda_delta)
-        cont_range = spectrum.calc_wavelength_range(lambda_cont_blue if is_blue else lambda_cont_red, lambda_delta)
+        peak_range = spectrum.calc_wavelength_range(lambda_h_beta if is_blue else lambda_h_alpha, lambda_delta) * units.Unit("Angstrom")
+        cont_range = spectrum.calc_wavelength_range(lambda_cont_blue if is_blue else lambda_cont_red, lambda_delta) * units.Unit("Angstrom")
         num_spectra = len(wavelength)
         flux_ratios = np.zeros(num_spectra)
         for spec_ix in np.arange(0, num_spectra):
@@ -60,8 +61,8 @@ for spec_group in ["target_observation", "standard_observation"]:
         plotting.plot_histogram_to_ax(fig.add_subplot(gs[0, 0]), flux_ratios, is_blue)
         plotting.plot_fibre_heatmap_to_ax(fig, fig.add_subplot(gs[0, 1]), flux_ratios)
         try:
-            _, std_ss_wavelength, std_ss_flux = FrodoSpecDS.read_spec_into_arrays(str(fits_file_name), "SPEC_SS")
-            plotting.plot_spectrum_to_ax(fig.add_subplot(gs[1, :]), std_ss_wavelength[0, :], std_ss_flux[0, :],
+            ss_spec = FrodoSpecDS.read_spectrum(str(fits_file_name), "SPEC_SS")
+            plotting.plot_spectrum_to_ax(fig.add_subplot(gs[1, :]), ss_spec.spectral_axis, ss_spec.flux,
                                          "Standard pipeline sky subtracted spectrum", cont_range, peak_range)
         except KeyError:
             print("Missing SPEC_SS data")
@@ -119,4 +120,4 @@ for spec_group in ["target_observation", "standard_observation"]:
         plt.close()
 
         # Diagnostics - plot the spectra from every fibre (to a different file to the other plots - it's big!!)
-        #plotting.plot_rss_spectra(wavelength, non_ss_spectra, flux_ratios, basename, sky_spec_mask, obj_spec_mask, cont_range, peak_range, str(output_dir), enhance=False)
+        plotting.plot_rss_spectra(wavelength, non_ss_spectra, flux_ratios, basename, sky_spec_mask, obj_spec_mask, cont_range, peak_range, str(output_dir), enhance=False)

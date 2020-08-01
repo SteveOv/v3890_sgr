@@ -1,10 +1,14 @@
-from typing import List, Tuple, Any
+from typing import  Tuple, Any, Union
 import warnings
 import numpy as np
 from numpy import ndarray
 from astropy.io import fits
 from astropy.wcs import WCS
 from data.SpectralDataSource import *
+
+import specutils as sp
+from specutils import Spectrum1D, SpectrumCollection
+from astropy import units
 
 
 class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
@@ -16,58 +20,71 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
     """
 
     @classmethod
-    def read_spec_into_arrays(cls, filename: str, hdu_name: str) -> Tuple[Any, ndarray, ndarray]:
+    def read_spectra(cls, filename: str, hdu_name: str, selected_fibres: [] = None, header: bool = False) \
+            -> Union[SpectrumCollection, Tuple[Any, SpectrumCollection]]:
         """
-        Read the requested spectral data into separate arrays for wavelength and flux.
-        Returns the HDU header, wavelength ndarray, spectra ndarray
+        Read the requested spectral data into a specutils SpectrumCollection.  If a fibre mask supplied
+        only those spectra where the mask is true are returned, otherwise all spectra are returned.
+        Returns the SpectrumCollection and HDU header.
         """
-        flux, header = fits.getdata(filename, hdu_name, header=True)
-        n_axis1 = header["NAXIS1"]
-        n_axis2 = header["NAXIS2"]
-        header["CUNIT1"] = "Angstrom"
+        data, hdr = fits.getdata(filename, hdu_name, header=True)
+        hdr["CUNIT1"] = "Angstrom"          # It's actually "Angstroms" in the files
 
         # This decodes the headers which describe the spectral data
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            wcs = WCS(header)
+            wcs = WCS(hdr)
 
+        # Need to supply it with a spectral_axis it can work with
         # make index array - has to be the right size, as dictated by NAXIS1 x NAXIS2
         # from this the wcs (world coordinate system) can generate the wavelength axis.
+        # Even then, it's not right for specutils and we have to transpose it before setting as the spectral axis!
+        n_axis1 = hdr["NAXIS1"]
+        n_axis2 = hdr["NAXIS2"]
         axis1 = np.arange(n_axis1)[:, np.newaxis]
         axis2 = np.arange(n_axis2)[np.newaxis, :]
-        wavelength = wcs.wcs_pix2world(axis1, axis2, 0)
+        wavelengths = (wcs.wcs_pix2world(axis1, axis2, 0)[0]).transpose()
 
-        # Convert wavelength column vector[0] into the same form as the flux data
-        wavelength = wavelength[0].transpose()
-        return header, wavelength, flux
+        if selected_fibres is None:
+            flux = data * units.Unit("adu")
+            spectral_axis = wavelengths * units.Unit("Angstrom")
+        else:
+            selection_mask = np.zeros(data.shape[0], dtype=bool)
+            selection_mask.put(selected_fibres, True)
+            flux = data[selected_fibres] * units.Unit("adu")
+            spectral_axis = wavelengths[selected_fibres] * units.Unit("Angstrom")
 
-    @classmethod
-    def read_spec_into_long_list(cls, filename: str, hdu_name: str) -> Tuple[Any, List]:
-        """
-        Read the requested spectral data into a single "long" List[int, float, float] with columns
-            spec
-            wavelength
-            flux
-        Returns HDU header and the list
-        """
-        header, wavelength, flux = cls.read_spec_into_arrays(filename, hdu_name)
-        rows = []
-        wavelength_ixs = np.arange(flux.shape[1])
-        for spec_ix in np.arange(flux.shape[0]):
-            for wavelength_ix in wavelength_ixs:
-                rows.append([spec_ix, wavelength[spec_ix, wavelength_ix], flux[spec_ix, wavelength_ix]])
-
-        return header, rows
+        spectra = SpectrumCollection(flux=flux, spectral_axis=spectral_axis, wcs=wcs)
+        if header:
+            return spectra, hdr
+        else:
+            return spectra
 
     @classmethod
-    def read_spec_into_long_dataframe(cls, filename: str, hdu_name: str) -> Tuple[Any, DataFrame]:
+    def read_spectrum(cls, filename: str, hdu_name: str, fibre: int = 0, header: bool = False) \
+            -> Union[Spectrum1D, Tuple[Spectrum1D, Any]]:
         """
-        Read the requested spectral data into a single pandas DataFrame with columns
-            spec
-            wavelength
-            flux
-        Returns HDU header and the DataFrame (indexed on spec and wavelength)
+        Read the requested spectral data into a specutils Spectrum1D.  The fibre is used to specify
+        which member to return if the HDU contains multiple spectra (defaults to zero).
+        Returns the SpectrumCollection and HDU header.
         """
-        header, rows = cls.read_spec_into_long_list(filename, hdu_name)
-        df = DataFrame.from_records(rows, columns=["spec", "wavelength", "flux"])
-        return header, df
+        spectra, hdr = cls.read_spectra(filename, hdu_name, [fibre], header=True)
+        spectrum = cls._spectrum_from_spectrum_collection(spectra, 0)
+        if header:
+            return spectrum, hdr
+        else:
+            return spectrum
+
+    @classmethod
+    def read_spec_into_arrays(cls, filename: str, hdu_name: str) -> Tuple[Any, ndarray, ndarray]:
+        """
+        Read the requested spectral data into separate arrays for wavelength and flux.
+        Returns the HDU header, wavelength ndarray, spectra ndarray
+        TODO: deprecated
+        """
+        spectra, header = cls.read_spectra(filename, hdu_name, header=True)
+        return header, spectra.spectral_axis, spectra.flux
+
+    @classmethod
+    def _spectrum_from_spectrum_collection(cls, spectra: SpectrumCollection, ix: int = 0) -> Spectrum1D:
+        return Spectrum1D(spectral_axis=spectra.spectral_axis[ix, :], flux=spectra.flux[ix, :])
