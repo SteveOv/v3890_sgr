@@ -40,7 +40,7 @@ def plot_fibre_heatmap_to_ax(fig: Figure, ax: Axes, flux_ratios: [float]):
     c_map = cm.get_cmap("plasma")
     norm = matplotlib.colors.Normalize(vmin=0, vmax=100)
     flux_grid = flux_array_to_square_grid(flux_ratios)
-    ax.set_title(f"The heatmap of the non_ss_spectra ratio\nover the FRODOspec fibre array\n")
+    ax.set_title(f"The heatmap of the non_ss_spectra ratio\nover the FRODOSpec fibre array\n")
     ax.set(xlim=(0, 12), ylim=(0, 12), xticks=[0, 2, 4, 6, 8, 10, 12], xticklabels=[], yticks=[0, 2, 4, 6, 8, 10, 12])
     ax.imshow(flux_grid, cmap=c_map, norm=norm, origin="upper", aspect="equal", extent=(0, 12, 12, 0))
     fig.colorbar(cm.ScalarMappable(cmap=c_map, norm=norm), ax=[ax], orientation="vertical", fraction=0.2, pad=0.15)
@@ -50,7 +50,7 @@ def plot_fibre_heatmap_to_ax(fig: Figure, ax: Axes, flux_ratios: [float]):
 def plot_spectrum_to_ax(ax: Axes, wavelength: [float], ss_spec_flux: [float], title: str,
                         c_range: Tuple[float, float] = None, h_range: Tuple[float, float] = None,
                         sky_flux: [float] = None, nss_spec_flux: [float] = None):
-    ax.set_xlabel("Wavelength [angstrom]")
+    ax.set_xlabel("Wavelength [Angstrom]")
     ax.set_ylabel("Arbitrary flux")
     ax.set_title(title)
     x_tick_range = (min(wavelength), max(wavelength))
@@ -80,9 +80,9 @@ def plot_rss_spectra(wavelength: [float, float], flux: [float, float], flux_rati
     fig = plt.figure(figsize=(12.8, 25.6), constrained_layout=True)
     ax = fig.add_subplot(1, 1, 1)
 
-    ax.set_xlabel("Wavelength [angstrom]")
+    ax.set_xlabel("Wavelength [Angstrom]")
     ax.set_ylabel("Arbitrary flux")
-    ax.set_title(f"The RSS_NONSS spectra in {basename}")
+    ax.set_title(f"The RSS_NONSS FRODOSpec spectra in {basename}")
     x_tick_range = (min(wavelength[0, :]), max(wavelength[0, :]))
     ax.set_xticks(np.arange(x_tick_range[0], x_tick_range[1]+1, 250), minor=False)
     ax.set_xticks(np.arange(x_tick_range[0], x_tick_range[1]+1, 50), minor=True)

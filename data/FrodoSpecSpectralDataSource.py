@@ -21,10 +21,10 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
         Read the requested spectral data into separate arrays for wavelength and flux.
         Returns the HDU header, wavelength ndarray, spectra ndarray
         """
-        sp = fits.open(filename)
-        header = sp[hdu_name].header
+        flux, header = fits.getdata(filename, hdu_name, header=True)
         n_axis1 = header["NAXIS1"]
         n_axis2 = header["NAXIS2"]
+        header["CUNIT1"] = "Angstrom"
 
         # This decodes the headers which describe the spectral data
         with warnings.catch_warnings():
@@ -36,8 +36,6 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
         axis1 = np.arange(n_axis1)[:, np.newaxis]
         axis2 = np.arange(n_axis2)[np.newaxis, :]
         wavelength = wcs.wcs_pix2world(axis1, axis2, 0)
-
-        flux = sp[hdu_name].data
 
         # Convert wavelength column vector[0] into the same form as the flux data
         wavelength = wavelength[0].transpose()
