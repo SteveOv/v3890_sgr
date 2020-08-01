@@ -1,4 +1,5 @@
 from typing import List, Tuple, Any
+import warnings
 import numpy as np
 from numpy import ndarray
 from astropy.io import fits
@@ -26,7 +27,9 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
         n_axis2 = header["NAXIS2"]
 
         # This decodes the headers which describe the spectral data
-        wcs = WCS(header)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            wcs = WCS(header)
 
         # make index array - has to be the right size, as dictated by NAXIS1 x NAXIS2
         # from this the wcs (world coordinate system) can generate the wavelength axis.
