@@ -12,6 +12,8 @@ import plotting
 import spectrum
 from astropy import units
 
+from specutils import Spectrum1D, SpectrumCollection
+from specutils.manipulation import extract_region
 
 def read_setting(group, name, default=None):
     return group[name] if name in group else default
@@ -34,22 +36,21 @@ for spec_group in ["target_observation", "standard_observation"]:
         basename = PurePosixPath(fits_file_name.stem).stem
         sub_settings = group_settings["subtraction_settings"][basename]
 
-        header, wavelength, non_ss_spectra = FrodoSpecDS.read_spec_into_arrays(str(fits_file_name), "RSS_NONSS")
+        non_ss_spectra, header = FrodoSpecDS.read_spectra(fits_file_name, "RSS_NONSS", header=True)
         is_blue = "blue" in str.lower(header["CONFNAME"])
 
         # For each NON-SS spectra we calculate the flux ratio between chosen high and low flux regions
         # The two ranges are chosen specifically to discriminate between an object and a "sky" spectrum
-        peak_range = spectrum.calc_wavelength_range(lambda_h_beta if is_blue else lambda_h_alpha, lambda_delta) * units.Unit("Angstrom")
-        cont_range = spectrum.calc_wavelength_range(lambda_cont_blue if is_blue else lambda_cont_red, lambda_delta) * units.Unit("Angstrom")
-        num_spectra = len(wavelength)
+        peak_region = spectrum.create_spectral_region(lambda_h_beta if is_blue else lambda_h_alpha, lambda_delta)
+        cont_region = spectrum.create_spectral_region(lambda_cont_blue if is_blue else lambda_cont_red, lambda_delta)
+        num_spectra = non_ss_spectra.shape[0]
         flux_ratios = np.zeros(num_spectra)
         for spec_ix in np.arange(0, num_spectra):
-            wl_set = wavelength[spec_ix, :]
-            non_ss_spectrum = non_ss_spectra[spec_ix, :]
-            h_wavelength_sel = (wl_set >= peak_range[0]) & (wl_set <= peak_range[1])
-            c_wavelength_sel = (wl_set >= cont_range[0]) & (wl_set <= cont_range[1])
-            sum_h_sel = sum(non_ss_spectrum[h_wavelength_sel])
-            sum_c_sel = sum(non_ss_spectrum[c_wavelength_sel])
+            # Don't use specutils.extract_spectrum here as it's incredibly slow.
+            wl_set = non_ss_spectra.wavelength[spec_ix, :]
+            non_ss_spectrum = non_ss_spectra.flux[spec_ix, :]
+            h_wavelength_sel = (wl_set >= peak_region.lower) & (wl_set <= peak_region.upper)
+            c_wavelength_sel = (wl_set >= cont_region.lower) & (wl_set <= cont_region.upper)
             flux_ratios[spec_ix] = sum(non_ss_spectrum[h_wavelength_sel]) / sum(non_ss_spectrum[c_wavelength_sel])
 
         # Plot histogram and heat/fibre map of the ratios.  Also print the standard pipeline ss spectrum for reference.
@@ -62,8 +63,8 @@ for spec_group in ["target_observation", "standard_observation"]:
         plotting.plot_fibre_heatmap_to_ax(fig, fig.add_subplot(gs[0, 1]), flux_ratios)
         try:
             ss_spec = FrodoSpecDS.read_spectrum(str(fits_file_name), "SPEC_SS")
-            plotting.plot_spectrum_to_ax(fig.add_subplot(gs[1, :]), ss_spec.spectral_axis, ss_spec.flux,
-                                         "Standard pipeline sky subtracted spectrum", cont_range, peak_range)
+            plotting.plot_spectrum_to_ax(fig.add_subplot(gs[1, :]), ss_spec, "Standard pipeline sky subtracted spectrum",
+                                         cont_region, peak_region)
         except KeyError:
             print("Missing SPEC_SS data")
 
@@ -94,30 +95,29 @@ for spec_group in ["target_observation", "standard_observation"]:
         man_exclusion_mask[excluded_fibres] = False
         print(f"\tman_exclusion_mask={excluded_fibres}")
 
-        # Selecting which target_spectra to average for the object and sky spectra (referring to the exclusion masks)
+        # Selecting which obj_fluxes to average for the object and sky spectra (referring to the exclusion masks)
         sky_spec_mask = (flux_ratios <= sky_th) & (flux_ratios >= 1 / sky_th)
         sky_spec_mask = man_exclusion_mask & sky_spec_spike_mask & sky_spec_mask
         obj_spec_mask = man_exclusion_mask & obj_spec_spike_mask & (flux_ratios >= obj_th)
         print(F"\tsky fibres({np.count_nonzero(sky_spec_mask)})={np.where(sky_spec_mask == True)[0]}")
         print(F"\tobj fibres({np.count_nonzero(obj_spec_mask)})={np.where(obj_spec_mask == True)[0]}")
-        sky_spectra = non_ss_spectra[sky_spec_mask]
-        target_spectra = non_ss_spectra[obj_spec_mask]
+        sky_fluxes = non_ss_spectra.flux[sky_spec_mask]
+        obj_fluxes = non_ss_spectra.flux[obj_spec_mask]
 
         # TODO: spike removal - will potentially replace spike detection for at least the object spectrum
 
         # Sky subtraction; SS spectra is avg(object) - avg(sky) over all wavelengths
-        avg_sky_spectrum = np.mean(sky_spectra, axis=0)
-        avg_object_spectrum = np.mean(target_spectra, axis=0)
-        ss_spectrum = np.subtract(avg_object_spectrum, avg_sky_spectrum)
+        avg_sky_flux = np.mean(sky_fluxes, axis=0)
+        avg_obj_flux = np.mean(obj_fluxes, axis=0)
+        ss_obj_flux = np.subtract(avg_obj_flux, avg_sky_flux)
+        ss_spectrum = Spectrum1D(flux=ss_obj_flux, spectral_axis=non_ss_spectra.spectral_axis[0, :])
 
-
-        # Plot the resulting Sky Subtracted spectrum out to the same figure as the existing plts
-        plotting.plot_spectrum_to_ax(fig.add_subplot(gs[2, :]), wavelength[0, :], ss_spectrum,
-                                     "My pipeline sky subtracted spectrum", sky_flux=avg_sky_spectrum,
-                                     c_range=cont_range, h_range=peak_range)
+        # Plot the resulting Sky Subtracted spectrum out to the same figure as the existing plots
+        plotting.plot_spectrum_to_ax(fig.add_subplot(gs[2, :]), ss_spectrum, "My pipeline sky subtracted spectrum",
+                                     sky_flux=avg_sky_flux, c_range=cont_region, h_range=peak_region)
 
         plt.savefig(output_dir / (basename + ".png"), dpi=300)
         plt.close()
 
         # Diagnostics - plot the spectra from every fibre (to a different file to the other plots - it's big!!)
-        plotting.plot_rss_spectra(wavelength, non_ss_spectra, flux_ratios, basename, sky_spec_mask, obj_spec_mask, cont_range, peak_range, str(output_dir), enhance=False)
+        plotting.plot_rss_spectra(non_ss_spectra, flux_ratios, basename, sky_spec_mask, obj_spec_mask, cont_region, peak_region, output_dir, enhance=False)

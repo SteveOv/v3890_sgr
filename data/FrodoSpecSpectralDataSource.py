@@ -1,12 +1,10 @@
-from typing import  Tuple, Any, Union
+from typing import Tuple, Any, Union
+from pathlib import Path
 import warnings
 import numpy as np
-from numpy import ndarray
 from astropy.io import fits
 from astropy.wcs import WCS
 from data.SpectralDataSource import *
-
-import specutils as sp
 from specutils import Spectrum1D, SpectrumCollection
 from astropy import units
 
@@ -20,12 +18,12 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
     """
 
     @classmethod
-    def read_spectra(cls, filename: str, hdu_name: str, selected_fibres: [] = None, header: bool = False) \
+    def read_spectra(cls, filename: Union[str, Path], hdu_name: str, selected_fibres: [] = None, header: bool = False) \
             -> Union[SpectrumCollection, Tuple[Any, SpectrumCollection]]:
         """
         Read the requested spectral data into a specutils SpectrumCollection.  If a fibre mask supplied
         only those spectra where the mask is true are returned, otherwise all spectra are returned.
-        Returns the SpectrumCollection and HDU header.
+        Returns the SpectrumCollection and optionally the HDU header.
         """
         data, hdr = fits.getdata(filename, hdu_name, header=True)
         hdr["CUNIT1"] = "Angstrom"          # It's actually "Angstroms" in the files
@@ -61,30 +59,16 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
             return spectra
 
     @classmethod
-    def read_spectrum(cls, filename: str, hdu_name: str, fibre: int = 0, header: bool = False) \
+    def read_spectrum(cls, filename: Union[str, Path], hdu_name: str, fibre: int = 0, header: bool = False) \
             -> Union[Spectrum1D, Tuple[Spectrum1D, Any]]:
         """
         Read the requested spectral data into a specutils Spectrum1D.  The fibre is used to specify
         which member to return if the HDU contains multiple spectra (defaults to zero).
-        Returns the SpectrumCollection and HDU header.
+        Returns the SpectrumCollection and optionally the HDU header.
         """
         spectra, hdr = cls.read_spectra(filename, hdu_name, [fibre], header=True)
-        spectrum = cls._spectrum_from_spectrum_collection(spectra, 0)
+        spectrum = spectra[0, :]
         if header:
             return spectrum, hdr
         else:
             return spectrum
-
-    @classmethod
-    def read_spec_into_arrays(cls, filename: str, hdu_name: str) -> Tuple[Any, ndarray, ndarray]:
-        """
-        Read the requested spectral data into separate arrays for wavelength and flux.
-        Returns the HDU header, wavelength ndarray, spectra ndarray
-        TODO: deprecated
-        """
-        spectra, header = cls.read_spectra(filename, hdu_name, header=True)
-        return header, spectra.spectral_axis, spectra.flux
-
-    @classmethod
-    def _spectrum_from_spectrum_collection(cls, spectra: SpectrumCollection, ix: int = 0) -> Spectrum1D:
-        return Spectrum1D(spectral_axis=spectra.spectral_axis[ix, :], flux=spectra.flux[ix, :])
