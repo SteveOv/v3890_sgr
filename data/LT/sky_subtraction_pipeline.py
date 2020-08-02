@@ -13,7 +13,7 @@ import plotting
 # noinspection PyUnresolvedReferences
 import spectrum
 
-from specutils import Spectrum1D
+from specutils import Spectrum1D, SpectrumList
 
 def read_setting(group, name, default=None, printout=True):
     value = group[name] if name in group else default
@@ -23,7 +23,7 @@ def read_setting(group, name, default=None, printout=True):
 
 
 settings = json.load(open("spec_calibration.json"))
-for spec_set in ["standard_observation-Hilt102"]: # ["target_observation", "standard_observation-Hilt102"]:
+for spec_set in ["target_observation", "standard_observation-Hilt102"]:
     spec_set_settings = settings["sky_subtraction"][spec_set]
     lambda_h_alpha = read_setting(spec_set_settings, "lambda_line_red", 6563)
     lambda_cont_red = read_setting(spec_set_settings, "lambda_cont_red", 6000)
@@ -39,6 +39,7 @@ for spec_set in ["standard_observation-Hilt102"]: # ["target_observation", "stan
     for fits_group in spec_set_settings["subtraction_settings"]:
         print(f"\n\nProcessing fits group: {fits_group}\n--------------------------------------")
         fits_group_settings = spec_set_settings["subtraction_settings"][fits_group]
+        fits_group_ss_spectra = SpectrumList()
 
         for fits_file_name in spec_set_settings["subtraction_settings"][fits_group]:
             print(f"* Processing {spec_set} / subtraction_settings / {fits_group} / {fits_file_name}")
@@ -64,7 +65,7 @@ for spec_set in ["standard_observation-Hilt102"]: # ["target_observation", "stan
             min_flux_ratio = min(flux_ratios)
             max_flux_ratio = max(flux_ratios)
 
-            # Plot histogram and heat/fibre map of the ratios.  Also print the standard pipeline ss spectrum for reference.
+            # Plot histogram and heat/fibre map of ratios.  Also print the standard pipeline ss spectrum for reference.
             # matplotlib.use("Agg")  # Stop annoying popup when debugging plots being saved to file
             plt.rc("font", size=8)
             fig = plt.figure(figsize=(6.4, 9.6), constrained_layout=False)
@@ -137,3 +138,15 @@ for spec_set in ["standard_observation-Hilt102"]: # ["target_observation", "stan
             if plot_nss_spectra:
                 plotting.plot_rss_spectra(non_ss_spectra, flux_ratios, fits_file_name,
                                           sky_mask, obj_mask, cont_region, peak_region, output_dir, enhance=False)
+
+            fits_group_ss_spectra.append(ss_spectrum)
+
+        # Combine the spectra in the group
+        grp_spectra = SpectrumCollectionEx.from_spectra(fits_group_ss_spectra, fits_group)
+        grp_spectrum = Spectrum1D(flux=np.mean(grp_spectra.flux, axis=0), spectral_axis=grp_spectra.spectral_axis[0, :])
+        plt.rc("font", size=8)
+        fig = plt.figure(figsize=(6.4, 3.2), constrained_layout=False)
+        plotting.plot_spectrum_to_ax(fig.add_subplot(1, 1, 1), grp_spectrum,
+                                     f"My pipeline sky subtracted and combined spectrum for observations {fits_group}")
+        plt.savefig(output_dir / f"ss_{fits_group}.png", dpi=300)
+        plt.close()
