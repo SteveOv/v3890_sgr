@@ -120,6 +120,7 @@ def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename
     if h_range is not None:
         ax.axvspan(xmin=h_range.lower.value, xmax=h_range.upper.value, color=spec_color, alpha=0.05)
 
+    ax.grid(which="both", linestyle="-", linewidth=0.25, alpha=0.3)
     plt.savefig(f"{output_dir}/rss_nonss_{basename}.png", dpi=300)
     plt.close()
     return

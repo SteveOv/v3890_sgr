@@ -7,6 +7,7 @@ from astropy.wcs import WCS
 from data.SpectralDataSource import *
 from specutils import Spectrum1D, SpectrumCollection
 from astropy import units
+from data.SpectrumCollectionEx import SpectrumCollectionEx
 
 
 class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
@@ -18,8 +19,9 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
     """
 
     @classmethod
-    def read_spectra(cls, filename: Union[str, Path], hdu_name: str, selected_fibres: [] = None, header: bool = False) \
-            -> Union[SpectrumCollection, Tuple[Any, SpectrumCollection]]:
+    def read_spectra(cls, filename: Union[str, Path], hdu_name: str, selected_fibres: [] = None,
+                     header: bool = False, label: str = None) \
+            -> Union[SpectrumCollection, Tuple[Any, SpectrumCollectionEx]]:
         """
         Read the requested spectral data into a specutils SpectrumCollection.  If a fibre mask supplied
         only those spectra where the mask is true are returned, otherwise all spectra are returned.
@@ -52,7 +54,7 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
             flux = data[selected_fibres] * units.Unit("adu")
             spectral_axis = wavelengths[selected_fibres] * units.Unit("Angstrom")
 
-        spectra = SpectrumCollection(flux=flux, spectral_axis=spectral_axis, wcs=wcs)
+        spectra = SpectrumCollectionEx(flux=flux, spectral_axis=spectral_axis, wcs=wcs, label=label)
         if header:
             return spectra, hdr
         else:
