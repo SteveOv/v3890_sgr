@@ -28,11 +28,11 @@ def plot_histogram_to_ax(ax: Axes, flux_ratios: [float], is_blue: bool):
     """
     Produce a histogram showing the distribution of the non_ss_spectra ratios
     """
-    ax.set_title(f"Histogram of the H$\\{'beta' if is_blue else 'alpha'}$/continuum\nnon_ss_spectra ratio over the fibre array")
+    ax.set_title(f"Histogram of the H$\\{'beta' if is_blue else 'alpha'}$/continuum\nflux ratio over the fibre array")
     bin_edges = np.arange(0, 125, 5)
     ax.set_yscale("log")
     ax.yaxis.set_major_formatter(ScalarFormatter())
-    ax.set(ylabel="count", xlabel="non_ss_spectra ratio")
+    ax.set(ylabel="count", xlabel="flux ratio")
     ax.hist(flux_ratios, bins=bin_edges, align="mid", rwidth=0.8, density=False)
     ax.annotate(f"max={max(flux_ratios):.2f}\nmin={min(flux_ratios):.2f}", xy=(0.5, 0.85), xycoords="axes fraction")
     return
@@ -42,7 +42,7 @@ def plot_fibre_heatmap_to_ax(fig: Figure, ax: Axes, flux_ratios: [float]):
     c_map = cm.get_cmap("plasma")
     norm = matplotlib.colors.Normalize(vmin=0, vmax=100)
     flux_grid = flux_array_to_square_grid(flux_ratios)
-    ax.set_title(f"The heatmap of the non_ss_spectra ratio\nover the FRODOSpec fibre array\n")
+    ax.set_title(f"The heatmap of the flux ratio\nover the FRODOSpec fibre array\n")
     ax.set(xlim=(0, 12), ylim=(0, 12), xticks=[0, 2, 4, 6, 8, 10, 12], xticklabels=[], yticks=[0, 2, 4, 6, 8, 10, 12])
     ax.imshow(flux_grid, cmap=c_map, norm=norm, origin="upper", aspect="equal", extent=(0, 12, 12, 0))
     fig.colorbar(cm.ScalarMappable(cmap=c_map, norm=norm), ax=[ax], orientation="vertical", fraction=0.2, pad=0.15)
