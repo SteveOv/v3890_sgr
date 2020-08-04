@@ -1,4 +1,5 @@
 from typing import Tuple, List, Union
+import warnings
 from pathlib import Path
 import numpy as np
 import matplotlib
@@ -89,28 +90,38 @@ def plot_spectrum(spectrum: Spectrum1D, title: str, filename: Union[str, Path],
 
 
 def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename: str,
-                     sky_mask: [bool], spec_mask: [bool],
-                     c_range: SpectralRegion, h_range: SpectralRegion, output_dir: Union[str, Path], enhance: bool = True):
+                     sky_mask: [bool], spec_mask: [bool], c_range: SpectralRegion, h_range: SpectralRegion,
+                     output_dir: Union[str, Path], enhance: bool = True):
     fig = plt.figure(figsize=(12.8, 25.6), constrained_layout=True)
     ax = fig.add_subplot(1, 1, 1)
 
     ax.set_xlabel(f"Wavelength [{spectra.wavelength.unit}]")
     ax.set_ylabel(f"flux [{spectra.flux.unit}]")
-    ax.set_title(f"The RSS_NONSS FRODOSpec spectra in {basename}")
-    ax.set_xticks(_calculate_ticks(spectra.wavelength.value, 50), minor=False)
+    ax.set_title(f"The RSS_NONSS FRODOSpec spectra{' (enhanced vertically)' if enhance else ''} in {basename}")
+    ax.set_xticks(_calculate_ticks(spectra.wavelength.value, 100), minor=False)
     ax.set_xticks(_calculate_ticks(spectra.wavelength.value, 25), minor=True)
     ax.tick_params(axis="x", bottom=True, top=True, labelbottom=True, labeltop=True)
     ax.set(ylim=(-1000, 150000))
 
     num_spectra = spectra.shape[0]
     y_offset = 1000
-    note_x_pos = min(ax.get_xticks(minor=False)) - 50
+    is_blue = spectra.wavelength[0, 0].value < 4500
+
+    note_x_pos = min(ax.get_xticks(minor=False)) - (50 if is_blue else 85)
     ax.set_yticks(np.arange(0, num_spectra * y_offset, 2 * y_offset), minor=False)
     ax.set_yticklabels(np.arange(0, num_spectra, 2), minor=False)
 
-    spec_color = "b" if note_x_pos < 4500 else "r"
+    spec_color = "b" if is_blue else "r"
     spec_sel = np.where(spec_mask)[0]
     sky_sel = np.where(sky_mask)[0]
+
+    # Optionally, expand the vertical dynamic range before plotting.  Makes line/continuum features easier to see.
+    enhancement = 2 if is_blue else 1.5
+    with warnings.catch_warnings():
+        # numpy warns about the fractional power but still does the job.
+        warnings.simplefilter("ignore")
+        flux = np.float_power(spectra.flux.value.copy(), enhancement if enhance else 1)
+
     for spec_ix in np.arange(0, num_spectra):
         if spec_ix in spec_sel:
             color = spec_color
@@ -119,11 +130,9 @@ def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename
         else:
             color = "goldenrod"
 
-        # Optionally, expand the vertical dynamic range before plotting.  Makes features easier to see lne features.
+        # Now apply the vertical offset to distribute the spectra up the page
         y_pos = spec_ix * y_offset
-        plot_flux = np.power(spectra.flux[spec_ix, :].value.copy(), 2 if enhance else 1)
-        plot_flux = np.add(plot_flux, y_pos)
-        ax.plot(spectra.wavelength[spec_ix, :], plot_flux, color=color, linestyle="-", linewidth=0.25)
+        ax.plot(spectra.wavelength[spec_ix], np.add(flux[spec_ix], y_pos), color=color, linestyle="-", linewidth=0.25)
         ax.annotate(f"[{flux_ratios[spec_ix]:.2f}]", xy=(note_x_pos, y_pos), xycoords="data")
 
     if c_range is not None:
