@@ -1,5 +1,5 @@
 import warnings
-from typing import List, Type
+from typing import List, Union
 import numpy as np
 from specutils import Spectrum1D
 from astropy.io import fits
@@ -36,12 +36,15 @@ class Spectrum1DEx(Spectrum1D):
         return SpectralRegion(Quantity(lambda_from, units), Quantity(lambda_to, units))
 
     @classmethod
-    def spectral_regions_from_list(cls, lambda_list: List[List[float]], units: str = "Angstrom") \
+    def spectral_regions_from_list(cls, lambda_list: Union[List[List[float]], List[float]], units: str = "Angstrom") \
             -> List[SpectralRegion]:
-        region_list = []
-        for item in lambda_list:
-            if len(item) == 2:
-                region_list.append(cls.spectral_region_over(min(item), max(item), units))
+        if np.ndim(lambda_list) == 1:
+            region_list = cls.spectral_regions_from_list([lambda_list], units)
+        else:
+            region_list = []
+            for item in lambda_list:
+                if len(item) == 2:
+                    region_list.append(cls.spectral_region_over(min(item), max(item), units))
         return region_list
 
     def copy(self):
