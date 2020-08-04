@@ -55,10 +55,10 @@ def plot_spectrum_to_ax(ax: Axes, spectrum: Spectrum1D, title: str,
     ax.set_xlabel(f"Wavelength [{spectrum.wavelength.unit}]")
     ax.set_ylabel(f"flux [{spectrum.flux.unit}]")
     ax.set_title(title)
-    x_tick_range = ((min(spectrum.wavelength)).value, (max(spectrum.wavelength)).value)
-    ax.set_xticks(np.arange(x_tick_range[0], x_tick_range[1] + 1, 250), minor=False)
-    ax.set_xticks(np.linspace(x_tick_range[0], x_tick_range[1] + 1, 50), minor=True)
-    color = "b" if x_tick_range[0] < 5000 else "r"
+    ax.set_xticks(_calculate_ticks(spectrum.wavelength.value, 250), minor=False)
+    ax.set_xticks(_calculate_ticks(spectrum.wavelength.value, 50), minor=True)
+    ax.set_xticklabels(ax.get_xticks(minor=False))
+    color = "b" if min(ax.get_xticks(minor=True)) < 4500 else "r"
 
     wavelength = spectrum.wavelength
     ax.plot(wavelength, spectrum.flux, color=color, linestyle="-", linewidth=0.25)
@@ -77,6 +77,17 @@ def plot_spectrum_to_ax(ax: Axes, spectrum: Spectrum1D, title: str,
     return
 
 
+def plot_spectrum(spectrum: Spectrum1D, title: str, filename: Union[str, Path],
+                  c_range: SpectralRegion = None, h_range: SpectralRegion = None):
+    plt.rc("font", size=8)
+    fig = plt.figure(figsize=(6.4, 3.2), constrained_layout=True)
+    ax = fig.add_subplot(1, 1, 1)
+    plot_spectrum_to_ax(ax, spectrum, title, c_range=c_range, h_range=h_range)
+    plt.savefig(filename, dpi=300)
+    plt.close()
+    return
+
+
 def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename: str,
                      sky_mask: [bool], spec_mask: [bool],
                      c_range: SpectralRegion, h_range: SpectralRegion, output_dir: Union[str, Path], enhance: bool = True):
@@ -86,18 +97,18 @@ def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename
     ax.set_xlabel(f"Wavelength [{spectra.wavelength.unit}]")
     ax.set_ylabel(f"flux [{spectra.flux.unit}]")
     ax.set_title(f"The RSS_NONSS FRODOSpec spectra in {basename}")
-    x_tick_range = ((min(spectra.wavelength[0, :])).value, (max(spectra.wavelength[0, :])).value)
-    ax.set_xticks(np.arange(x_tick_range[0], x_tick_range[1]+1, 250), minor=False)
-    ax.set_xticks(np.arange(x_tick_range[0], x_tick_range[1]+1, 50), minor=True)
+    ax.set_xticks(_calculate_ticks(spectra.wavelength.value, 50), minor=False)
+    ax.set_xticks(_calculate_ticks(spectra.wavelength.value, 25), minor=True)
+    ax.tick_params(axis="x", bottom=True, top=True, labelbottom=True, labeltop=True)
     ax.set(ylim=(-1000, 150000))
 
     num_spectra = spectra.shape[0]
     y_offset = 1000
-    note_x_pos = min(x_tick_range) - 50
+    note_x_pos = min(ax.get_xticks(minor=True)) - 100
     ax.set_yticks(np.arange(0, num_spectra * y_offset, 2 * y_offset), minor=False)
     ax.set_yticklabels(np.arange(0, num_spectra, 2), minor=False)
 
-    spec_color = "b" if x_tick_range[0] < 5000 else "r"
+    spec_color = "b" if note_x_pos < 4500 else "r"
     spec_sel = np.where(spec_mask)[0]
     sky_sel = np.where(sky_mask)[0]
     for spec_ix in np.arange(0, num_spectra):
@@ -120,8 +131,16 @@ def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename
     if h_range is not None:
         ax.axvspan(xmin=h_range.lower.value, xmax=h_range.upper.value, color=spec_color, alpha=0.05)
 
-    ax.grid(which="both", linestyle="-", linewidth=0.25, alpha=0.3)
+    ax.grid(which="minor", linestyle="-", linewidth=0.25, alpha=0.3)
+    ax.grid(which="major", linestyle="-", linewidth=0.25, alpha=0.5)
     plt.savefig(f"{output_dir}/rss_nonss_{basename}.png", dpi=300)
     plt.close()
     return
 
+
+def _calculate_ticks(data: [float], interval: int) -> [float]:
+    flat = data.flatten()
+    tick_from = round(min(flat) / interval) * interval
+    tick_top = round(max(flat) / interval) * interval
+    ticks = np.arange(tick_from, tick_top + 1, interval)
+    return ticks

@@ -138,7 +138,7 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
             # Diagnostics - plot the spectra from every fibre (to a different file to the other plots - it's big!!)
             if plot_nss_spectra:
                 plotting.plot_rss_spectra(non_ss_spectra, flux_ratios, fits_file_name,
-                                          sky_mask, obj_mask, cont_region, peak_region, output_dir, enhance=False)
+                                          sky_mask, obj_mask, cont_region, peak_region, output_dir, enhance=is_blue)
 
             fits_group_ss_spectra.append(ss_spectrum)
 
@@ -146,16 +146,11 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
         image_file_name = output_dir / f"ss_{fits_group}.png"
         grp_spectra = SpectrumCollectionEx.from_spectra(fits_group_ss_spectra, fits_group)
         grp_spectrum = Spectrum1DEx(flux=np.mean(grp_spectra.flux, axis=0), spectral_axis=grp_spectra.spectral_axis[0, :])
-        plt.rc("font", size=8)
-        fig = plt.figure(figsize=(6.4, 3.2), constrained_layout=False)
-        plotting.plot_spectrum_to_ax(fig.add_subplot(1, 1, 1), grp_spectrum,
-                                     f"My pipeline sky subtracted and combined spectrum for observations {fits_group}")
-        plt.savefig(image_file_name, dpi=300)
-        plt.close()
-
-        image_data = np.fromfile(image_file_name)
+        plotting.plot_spectrum(grp_spectrum, filename=image_file_name,
+                               title=f"My pipeline sky subtracted and combined spectrum for observations {fits_group}")
 
         # Save to a new fits file
+        image_data = np.fromfile(image_file_name)
         new_file_name = output_dir / f"ss_{fits_group}.fits"
         prim_hdu = fits.PrimaryHDU(image_data)
         css_hdu = grp_spectrum.create_image_hdu("SPEC_CSS", header1)
