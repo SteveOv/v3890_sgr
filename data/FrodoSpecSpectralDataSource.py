@@ -1,13 +1,9 @@
 from typing import Tuple, Any, Union
 from pathlib import Path
-import warnings
-import numpy as np
-from astropy.io import fits
 from astropy.wcs import WCS
-from data.SpectralDataSource import *
-from specutils import Spectrum1D, SpectrumCollection
 from astropy import units
-from data.SpectrumCollectionEx import SpectrumCollectionEx
+from data.SpectralDataSource import *
+from data.spectrum import *
 
 
 class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
@@ -34,7 +30,7 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
         # wavelength/spectral_axis via the WCS or assigning it to SpecCollection fails (data/wavelengths must match)
         # For FRODO SPEC_SS:    NAXIS1 = #flux_readings, NAXIS2 = 1                     data={ndarray: (1, xxxx)}
         # For FRODO RSS_NONSS:  NAXIS1 = #flux_readings, NAXIS2 = fibre count (144)     data={ndarray: (144, xxxx)}
-        # For some og my fits:  NAXIS1 = #flux_reasings, NAXIS2 = <missing>             data={ndarray: (xxxx,)}
+        # For my early fits:    NAXIS1 = #flux_reasings, NAXIS2 = <missing>             data={ndarray: (xxxx,)}
         # For my SPEC_SS_MED:   NAXIS1 = #flux_readings, NAXIS2 = 1                     data={ndarray: (1, xxxx)}
         # Need to make sure we can cope with all of these! NAXIS1 = #flux/wavelength readings, NAXIS2 = #fibres/spectra
         n_axis1 = hdr["NAXIS1"]

@@ -1,19 +1,17 @@
-import os
 import pathlib
-from pathlib import PurePosixPath
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import json
-from data import FrodoSpecSpectralDataSource as FrodoSpecDS
-from data.SpectrumCollectionEx import SpectrumCollectionEx
-from specutils import SpectralRegion
+from astropy.io import fits
+from specutils import SpectrumList
+
 # noinspection PyUnresolvedReferences
 import plotting
-# noinspection PyUnresolvedReferences
-import spectrum
 
-from specutils import Spectrum1D, SpectrumList
+from data import FrodoSpecSpectralDataSource as FrodoSpecDS
+from data.spectrum import SpectrumCollectionEx, Spectrum1DEx
+
 
 def read_setting(group, name, default=None, printout=True):
     value = group[name] if name in group else default
@@ -30,7 +28,7 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
     lambda_h_beta = read_setting(spec_set_settings, "lambda_line_blue", 4861)
     lambda_cont_blue = read_setting(spec_set_settings, "lambda_cont_blue", 4000)
     lambda_delta = read_setting(spec_set_settings, "lambda_delta", 1000e3)
-    plot_nss_spectra = read_setting(spec_set_settings, "plot_nss_spectra", False)
+    plot_nss_spectra = read_setting(spec_set_settings, "plot_nss_spectra", True)
 
     source_dir = pathlib.Path.home() / read_setting(spec_set_settings, "source_dir", pathlib.Path().cwd())
     output_dir = pathlib.Path.home() / read_setting(spec_set_settings, "output_dir", pathlib.Path().cwd())
@@ -40,6 +38,7 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
         print(f"\n\nProcessing fits group: {fits_group}\n--------------------------------------")
         fits_group_settings = spec_set_settings["subtraction_settings"][fits_group]
         fits_group_ss_spectra = SpectrumList()
+        header1 = None
 
         for fits_file_name in spec_set_settings["subtraction_settings"][fits_group]:
             print(f"* Processing {spec_set} / subtraction_settings / {fits_group} / {fits_file_name}")
@@ -51,8 +50,8 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
 
             # For each NON-SS spectra we calculate the flux ratio between chosen high and low flux regions
             # The two ranges are chosen specifically to discriminate between an object and a "sky" spectrum
-            peak_region = spectrum.spectral_region_centred_on(lambda_h_beta if is_blue else lambda_h_alpha, lambda_delta)
-            cont_region = spectrum.spectral_region_centred_on(lambda_cont_blue if is_blue else lambda_cont_red, lambda_delta)
+            peak_region = Spectrum1DEx.spectral_region_centred_on(lambda_h_beta if is_blue else lambda_h_alpha, lambda_delta)
+            cont_region = Spectrum1DEx.spectral_region_centred_on(lambda_cont_blue if is_blue else lambda_cont_red, lambda_delta)
             num_spectra = non_ss_spectra.shape[0]
             flux_ratios = np.zeros(num_spectra)
             for spec_ix in np.arange(0, num_spectra):
@@ -74,9 +73,11 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
             plotting.plot_histogram_to_ax(fig.add_subplot(gs[0, 0]), flux_ratios, is_blue)
             plotting.plot_fibre_heatmap_to_ax(fig, fig.add_subplot(gs[0, 1]), flux_ratios)
             try:
-                ss_spec = FrodoSpecDS.read_spectrum(source_dir / fits_file_name, "SPEC_SS")
-                plotting.plot_spectrum_to_ax(fig.add_subplot(gs[1, :]), ss_spec, "Standard pipeline sky subtracted spectrum",
-                                             cont_region, peak_region)
+                ss_spec, _header = FrodoSpecDS.read_spectrum(source_dir / fits_file_name, "SPEC_SS", header=True)
+                if header1 is None:
+                    header1 = _header
+                plotting.plot_spectrum_to_ax(fig.add_subplot(gs[1, :]), ss_spec,
+                                             "Standard pipeline sky subtracted spectrum", cont_region, peak_region)
             except KeyError:
                 print("Missing SPEC_SS data")
 
@@ -92,12 +93,12 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
             sky_spike_mask = np.ones(num_spectra, dtype=bool)
             for spec_ix in np.arange(0, num_spectra):
                 if flux_ratios[spec_ix] <= sky_th \
-                        and len(spectrum.detect_spikes(non_ss_spectra[spec_ix, :], sky_spike_th, 0.66, 10)) > 0:
+                        and len(non_ss_spectra[spec_ix].detect_spikes(sky_spike_th, 0.66, 10)) > 0:
                     sky_spike_mask[spec_ix] = False
 
             print(f"\tsky_spike_mask = {np.where(sky_spike_mask == False)[0]}")
             sky_mask = (flux_ratios <= sky_th) & (flux_ratios >= 1 / sky_th) & man_exclusion_mask & sky_spike_mask
-            sky_spectra = non_ss_spectra.copy_from_spectrum_mask(sky_mask, "sky_spectra")
+            sky_spectra = non_ss_spectra.copy_by_spectrum_mask(sky_mask, "sky_spectra")
 
             #
             # Now we handle the object fibres
@@ -111,16 +112,16 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
                     if obj_spike_removal is not None:
                         # We are doing manual spike removal - so no masking
                         if f"{ix}" in obj_spike_removal:
-                            spikes_to_remove = spectrum.spectral_regions_from_list(obj_spike_removal[f"{ix}"])
+                            spikes_to_remove = Spectrum1DEx.spectral_regions_from_list(obj_spike_removal[f"{ix}"])
                             if len(spikes_to_remove) > 0:
-                                spectrum.remove_spikes(non_ss_spectra[ix], spikes_to_remove)
+                                non_ss_spectra[ix].remove_spikes(spikes_to_remove)
                     else:
-                        # No manual spike removal; auto-spike detection/masking (backwards compatible with existing config)
-                        obj_spike_mask[ix] = not (len(spectrum.detect_spikes(non_ss_spectra[ix, :], obj_spike_th)) > 0)
+                        # No manual spike removal; spike detection/masking (backwards compatible with existing config)
+                        obj_spike_mask[ix] = not (len(non_ss_spectra[ix].detect_spikes(obj_spike_th)) > 0)
             if obj_spike_removal is None:
                 print(f"\tobj_spike_mask = {np.where(obj_spike_mask == False)[0]}")
             obj_mask = (flux_ratios >= obj_th) & man_exclusion_mask & obj_spike_mask
-            obj_spectra = non_ss_spectra.copy_from_spectrum_mask(obj_mask, "obj_spectra")
+            obj_spectra = non_ss_spectra.copy_by_spectrum_mask(obj_mask, "obj_spectra")
 
             #
             # Sky subtraction; SS spectra is avg(object) - avg(sky) over all wavelengths (& plot resulting ss_spectrum)
@@ -128,7 +129,7 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
             avg_sky_flux = np.mean(sky_spectra.flux, axis=0)
             avg_obj_flux = np.mean(obj_spectra.flux, axis=0)
             ss_obj_flux = np.subtract(avg_obj_flux, avg_sky_flux)
-            ss_spectrum = Spectrum1D(flux=ss_obj_flux, spectral_axis=non_ss_spectra.spectral_axis[0, :])
+            ss_spectrum = Spectrum1DEx(flux=ss_obj_flux, spectral_axis=non_ss_spectra.spectral_axis[0])
             plotting.plot_spectrum_to_ax(fig.add_subplot(gs[2, :]), ss_spectrum, "My pipeline sky subtracted spectrum",
                                          sky_flux=avg_sky_flux, c_range=cont_region, h_range=peak_region)
             plt.savefig(output_dir / (fits_file_name + ".png"), dpi=300)
@@ -142,11 +143,23 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
             fits_group_ss_spectra.append(ss_spectrum)
 
         # Combine the spectra in the group
+        image_file_name = output_dir / f"ss_{fits_group}.png"
         grp_spectra = SpectrumCollectionEx.from_spectra(fits_group_ss_spectra, fits_group)
-        grp_spectrum = Spectrum1D(flux=np.mean(grp_spectra.flux, axis=0), spectral_axis=grp_spectra.spectral_axis[0, :])
+        grp_spectrum = Spectrum1DEx(flux=np.mean(grp_spectra.flux, axis=0), spectral_axis=grp_spectra.spectral_axis[0, :])
         plt.rc("font", size=8)
         fig = plt.figure(figsize=(6.4, 3.2), constrained_layout=False)
         plotting.plot_spectrum_to_ax(fig.add_subplot(1, 1, 1), grp_spectrum,
                                      f"My pipeline sky subtracted and combined spectrum for observations {fits_group}")
-        plt.savefig(output_dir / f"ss_{fits_group}.png", dpi=300)
+        plt.savefig(image_file_name, dpi=300)
         plt.close()
+
+        image_data = np.fromfile(image_file_name)
+
+        # Save to a new fits file
+        new_file_name = output_dir / f"ss_{fits_group}.fits"
+        prim_hdu = fits.PrimaryHDU(image_data)
+        css_hdu = grp_spectrum.create_image_hdu("SPEC_CSS", header1)
+        hdul = fits.HDUList([prim_hdu, css_hdu])
+        hdul.writeto(new_file_name, overwrite=True)
+
+
