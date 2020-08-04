@@ -104,7 +104,7 @@ def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename
 
     num_spectra = spectra.shape[0]
     y_offset = 1000
-    note_x_pos = min(ax.get_xticks(minor=True)) - 100
+    note_x_pos = min(ax.get_xticks(minor=False)) - 50
     ax.set_yticks(np.arange(0, num_spectra * y_offset, 2 * y_offset), minor=False)
     ax.set_yticklabels(np.arange(0, num_spectra, 2), minor=False)
 
