@@ -30,6 +30,11 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
     lambda_delta = read_setting(spec_set_settings, "lambda_delta", 1000e3)
     plot_rss_spectra = read_setting(spec_set_settings, "plot_rss_spectra", True)
     expand_rss_spectra = read_setting(spec_set_settings, "expand_rss_spectra", False)
+    # These are defaults which may be overridden on a fibre by fibre basis.
+    def_sky_th = read_setting(spec_set_settings, "sky_th", 3)
+    def_sky_spike_th = read_setting(spec_set_settings, "sky_spike_th", 100)
+    def_obj_th = read_setting(spec_set_settings, "obj_th", 30)
+    def_obj_spike_th = read_setting(spec_set_settings, "obj_spike_th", 100)
 
     source_dir = pathlib.Path.home() / read_setting(spec_set_settings, "source_dir", pathlib.Path().cwd())
     output_dir = pathlib.Path.home() / read_setting(spec_set_settings, "output_dir", pathlib.Path().cwd())
@@ -89,8 +94,8 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
             #
             # Handle the "sky" fibres - spike detection/exclusion, masking and final selection
             #
-            sky_th = read_setting(fits_settings, "sky_th", min_flux_ratio + 3)
-            sky_spike_th = read_setting(fits_settings, "sky_spike_th", 100)
+            sky_th = read_setting(fits_settings, "sky_th", def_sky_th)
+            sky_spike_th = read_setting(fits_settings, "sky_spike_th", def_sky_spike_th)
             sky_spike_mask = np.ones(num_spectra, dtype=bool)
             for spec_ix in np.arange(0, num_spectra):
                 if flux_ratios[spec_ix] <= sky_th \
@@ -104,9 +109,9 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
             #
             # Now we handle the object fibres
             #
-            obj_th = read_setting(fits_settings, "obj_th", max([sky_th, 30]))
+            obj_th = read_setting(fits_settings, "obj_th", def_obj_th)
             obj_spike_removal = read_setting(fits_settings, "spike_removal", None)
-            obj_spike_th = read_setting(fits_settings, "obj_spike_th", 100)
+            obj_spike_th = read_setting(fits_settings, "obj_spike_th", def_obj_spike_th)
             obj_spike_mask = np.ones(num_spectra, dtype=bool)
             for ix in np.arange(0, num_spectra):
                 if flux_ratios[ix] >= obj_th:
@@ -146,7 +151,7 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
         # Combine the spectra in the group
         image_file_name = output_dir / f"ss_{fits_group}.png"
         grp_spectra = SpectrumCollectionEx.from_spectra(fits_group_ss_spectra, fits_group)
-        grp_spectrum = Spectrum1DEx(flux=np.mean(grp_spectra.flux, axis=0), spectral_axis=grp_spectra.spectral_axis[0, :])
+        grp_spectrum = Spectrum1DEx(flux=np.mean(grp_spectra.flux, axis=0), spectral_axis=grp_spectra.spectral_axis[0])
         plotting.plot_spectrum(grp_spectrum, filename=image_file_name,
                                title=f"My pipeline sky subtracted and combined spectrum for observations {fits_group}")
 
