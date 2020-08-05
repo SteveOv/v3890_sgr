@@ -95,10 +95,9 @@ def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename
                      output_dir: Union[str, Path], expand_flux: bool = True):
     fig = plt.figure(figsize=(12.8, 25.6), constrained_layout=True)
     ax = fig.add_subplot(1, 1, 1)
-
+    ax.set_title(f"The RSS_NONSS FRODOSpec spectra in {basename}")
     ax.set_xlabel(f"Wavelength [{spectra.wavelength.unit}]")
-    ax.set_ylabel(f"flux [{spectra.flux.unit}]")
-    ax.set_title(f"The RSS_NONSS FRODOSpec spectra{' (expanded vertically)' if expand_flux else ''} in {basename}")
+
     ax.set_xticks(_calculate_ticks(spectra.wavelength.value, 100), minor=False)
     ax.set_xticks(_calculate_ticks(spectra.wavelength.value, 25), minor=True)
     ax.tick_params(axis="x", bottom=True, top=True, labelbottom=True, labeltop=True)
@@ -116,12 +115,23 @@ def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename
     spec_sel = np.where(spec_mask)[0]
     sky_sel = np.where(sky_mask)[0]
 
-    # Optionally, expand the vertical dynamic range before plotting.  Makes line/continuum features easier to see.
-    enhancement = 2 if is_blue else 1.5
+    flux_expansion = 1
+    if expand_flux:
+        # Optionally, expand the vertical dynamic range before plotting.  Makes line/continuum features easier to see.
+        # We derive an exponent to apply to the data of between 1 & 2 and inversely proportional to the strength of the
+        # flux ratios.  Don't use max(flux) here as that would respond to spikes.  Using the ratio is more controlled.
+        ratio_key = (np.max(flux_ratios) // 15) / 10
+        flux_expansion = np.max([1, 2 - ratio_key])
+
+    y_label = f"flux [{spectra.flux.unit}]"
+    y_label += f" (scaled as $y = f_{{\\lambda}}^{{{flux_expansion}}}$)" if flux_expansion != 1 else ""
+    print(f"\tplot_rss_spectra: " + y_label)
+    ax.set_ylabel(y_label)
+
     with warnings.catch_warnings():
-        # numpy warns about the fractional power but still does the job.
+        # Copy the flux applying any dynamic boost.  numpy warns about the fractional power but still does the job.
         warnings.simplefilter("ignore")
-        flux = np.float_power(spectra.flux.value.copy(), enhancement if expand_flux else 1)
+        flux = np.float_power(spectra.flux.value.copy(), flux_expansion)
 
     for spec_ix in np.arange(0, num_spectra):
         if spec_ix in spec_sel:
@@ -134,7 +144,7 @@ def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename
             color = "goldenrod"
             width = 0.25
 
-        # Now apply the vertical offset to distribute the spectra up the page
+        # Also apply the vertical offset to distribute the spectra up the page
         y_pos = spec_ix * y_offset
         ax.plot(spectra.wavelength[spec_ix], np.add(flux[spec_ix], y_pos), linestyle="-", color=color, linewidth=width)
         ax.annotate(f"[{flux_ratios[spec_ix]:.2f}]", xy=(note_x_pos, y_pos), xycoords="data")
