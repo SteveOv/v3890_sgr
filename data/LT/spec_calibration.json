@@ -246,41 +246,129 @@
       "expand_rss_spectra": true,
       "sky_th": 3.0,
       "sky_spike_th": 100,
-      "obj_th": 20,
+      "obj_th": 15,
       "obj_spike_th": 100,
       "source_dir": "Documents/V3890_Sgr_Data/LT_Spectra/JL19A06private2105703012reduced/",
       "output_dir": "Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/object",
       "subtraction_settings": {
-        "b_e_20190828_11": {
-          "b_e_20190828_11_1_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": [105]},
-          "b_e_20190828_11_2_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": [61, 63, 86]},
-          "b_e_20190828_11_3_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": [81]}
-        },
+
+
         "b_e_20190828_3": {
-          "b_e_20190828_3_1_1_2.fits.gz": {"sky_th": 3.0, "obj_th": 20, "sky_spike_th": 7, "excluded_fibres": []},
-          "b_e_20190828_3_2_1_2.fits.gz": {"sky_th": 3.0, "obj_th": 20, "sky_spike_th": 8, "excluded_fibres": [86]},
-          "b_e_20190828_3_3_1_2.fits.gz": {"sky_th": 3.0, "obj_th": 20, "sky_spike_th": 7, "excluded_fibres": [87, 90]}
+          "b_e_20190828_3_1_1_2.fits.gz": {
+            "excluded_fibres": [10,25,81,142],
+            "spike_removal": {
+            }},
+          "b_e_20190828_3_2_1_2.fits.gz": {
+            "excluded_fibres": [16,44,64,124],
+            "spike_removal": {
+              "80": [[4245,4247]],
+              "81": [[4244,4246]],
+              "86": [[4521,4523]],
+              "90": [[4903,4905]]
+            }},
+          "b_e_20190828_3_3_1_2.fits.gz": {
+            "excluded_fibres": [27],
+            "spike_removal": {
+              "81": [[4320,4321]],
+              "87": [[3925,3927]],
+              "90": [[4072,4075]]
+            }}
+        },
+        "b_e_20190828_11": {
+          "b_e_20190828_11_1_1_2.fits.gz": {
+            "excluded_fibres": [57,63,80,87,102,104,105],
+            "spike_removal": {
+              "86": [[4289,4291]],
+              "105": [[4659,4661]]
+            }},
+          "b_e_20190828_11_2_1_2.fits.gz": {
+            "excluded_fibres": [58,64],
+            "spike_removal": {
+              "61": [[4515,4517]],
+              "63": [[4619,4621]],
+              "86": [[4578,4580]]
+            }},
+          "b_e_20190828_11_3_1_2.fits.gz": {
+            "excluded_fibres": [57],
+            "spike_removal": {
+              "81": [[3997,3999]],
+              "87": [[4502,4504],[4965,4967]]
+            }}
         },
         "b_e_20190830_5": {
-          "b_e_20190830_5_1_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": []},
-          "b_e_20190830_5_2_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": []},
-          "b_e_20190830_5_3_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": []}
+          "b_e_20190830_5_1_1_2.fits.gz": {
+            "excluded_fibres": [],
+            "spike_removal": {
+            }},
+          "b_e_20190830_5_2_1_2.fits.gz": {
+            "excluded_fibres": [],
+            "spike_removal": {
+              "104": [[4736,4738]]
+            }},
+          "b_e_20190830_5_3_1_2.fits.gz": {
+            "excluded_fibres": [],
+            "spike_removal": {
+              "106": [[4255,4256]]
+            }}
         },
         "b_e_20190831_5": {
-          "b_e_20190831_5_1_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": [86, 104]},
-          "b_e_20190831_5_2_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": [87]},
-          "b_e_20190831_5_3_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": [104]}
+          "b_e_20190831_5_1_1_2.fits.gz": {
+            "excluded_fibres": [102],
+            "spike_removal": {
+              "86": [[4683,4685]],
+              "104": [[4419,4420]]
+            }},
+          "b_e_20190831_5_2_1_2.fits.gz": {
+            "excluded_fibres": [],
+            "spike_removal": {
+              "87": [[4477,4478]]
+            }},
+          "b_e_20190831_5_3_1_2.fits.gz": {
+            "excluded_fibres": [89],
+            "spike_removal": {
+              "104": [[4065,4066],[4129,4131]],
+              "105": [[4728,4729]]
+            }}
         },
         "b_e_20190831_11": {
-          "b_e_20190831_11_1_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": [126]},
-          "b_e_20190831_11_2_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": [113]},
-          "b_e_20190831_11_3_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": []}
+          "b_e_20190831_11_1_1_2.fits.gz": {
+            "excluded_fibres": [],
+            "spike_removal": {
+              "126": [[4385,4387]]
+            }},
+          "b_e_20190831_11_2_1_2.fits.gz": {
+            "excluded_fibres": [],
+            "spike_removal": {
+              "113": [[4267,4269]]
+            }},
+          "b_e_20190831_11_3_1_2.fits.gz": {
+            "excluded_fibres": [],
+            "spike_removal": {
+            }}
         },
         "b_e_20190901_5": {
-          "b_e_20190901_5_1_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": [35, 55]},
-          "b_e_20190901_5_2_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": [86, 87, 111, 119]},
-          "b_e_20190901_5_3_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": [87, 88, 103]}
+          "b_e_20190901_5_1_1_2.fits.gz": {
+            "excluded_fibres": [],
+            "spike_removal": {
+            }},
+          "b_e_20190901_5_2_1_2.fits.gz": {
+            "excluded_fibres": [],
+            "spike_removal": {
+              "86": [[3920,3922]],
+              "87": [[4296,4298]],
+              "111": [[4534,4536]]
+            }},
+          "b_e_20190901_5_3_1_2.fits.gz": {
+            "excluded_fibres": [],
+            "spike_removal": {
+              "87": [[4482,4484]],
+              "88": [[4482,4483]],
+              "103": [[3960,3962],[4610,4611]]
+            }}
         },
+
+
+
         "b_e_20190901_11": {
           "b_e_20190901_11_1_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": [125, 136]},
           "b_e_20190901_11_2_1_2.fits.gz": {"sky_th": 4.0, "obj_th": 20, "excluded_fibres": [126, 136]},
