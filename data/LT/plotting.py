@@ -11,6 +11,7 @@ from matplotlib.ticker import ScalarFormatter
 from astropy.units import Quantity
 from specutils import SpectralRegion, Spectrum1D, SpectrumCollection
 
+
 def flux_array_to_square_grid(array: [], length_side: int = None) -> []:
     """
     Will copy the passed array into a square 2d grid.  Alternate rows will be flipped so that the progressing
@@ -125,14 +126,17 @@ def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename
     for spec_ix in np.arange(0, num_spectra):
         if spec_ix in spec_sel:
             color = spec_color
+            width = 0.5
         elif spec_ix in sky_sel:
             color = "darkcyan"
+            width = 0.5
         else:
             color = "goldenrod"
+            width = 0.25
 
         # Now apply the vertical offset to distribute the spectra up the page
         y_pos = spec_ix * y_offset
-        ax.plot(spectra.wavelength[spec_ix], np.add(flux[spec_ix], y_pos), color=color, linestyle="-", linewidth=0.25)
+        ax.plot(spectra.wavelength[spec_ix], np.add(flux[spec_ix], y_pos), linestyle="-", color=color, linewidth=width)
         ax.annotate(f"[{flux_ratios[spec_ix]:.2f}]", xy=(note_x_pos, y_pos), xycoords="data")
 
     if c_range is not None:
