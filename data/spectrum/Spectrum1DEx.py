@@ -7,6 +7,10 @@ from astropy.units import Quantity
 from astropy.utils.exceptions import AstropyUserWarning
 from specutils import SpectralRegion
 
+CRED = '\033[91m'
+CGREEN = '\33[32m'
+CBLUE = '\33[34m'
+CEND = '\033[0m'
 
 class Spectrum1DEx(Spectrum1D):
     """
@@ -143,7 +147,7 @@ class Spectrum1DEx(Spectrum1D):
             # new_flux = np.linspace(flux[s], flux[e], modified_flux[s: e + 1].size)
             new_flux = np.linspace(flux[s].value, flux[e].value, flux[s:e+1].size, dtype=flux.dtype.type)
             old_flux = flux[s:e+1]
-            print(f"\tLinear interpolation({subregion.lower}, {subregion.upper}); replacing {old_flux} with {new_flux}")
+            print(f"\tLinear interpolation({subregion.lower}, {subregion.upper}); replacing {CBLUE}{np.round(old_flux, 1)}{CEND} with {CGREEN}{np.round(new_flux, 1)}{CEND}")
             flux[s:e+1] = Quantity(new_flux, flux.unit)
 
             # Add the uncertainty of the two linear interpolation endpoints in
