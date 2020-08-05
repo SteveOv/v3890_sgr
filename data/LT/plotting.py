@@ -92,13 +92,13 @@ def plot_spectrum(spectrum: Spectrum1D, title: str, filename: Union[str, Path],
 
 def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename: str,
                      sky_mask: [bool], spec_mask: [bool], c_range: SpectralRegion, h_range: SpectralRegion,
-                     output_dir: Union[str, Path], enhance: bool = True):
+                     output_dir: Union[str, Path], expand_flux: bool = True):
     fig = plt.figure(figsize=(12.8, 25.6), constrained_layout=True)
     ax = fig.add_subplot(1, 1, 1)
 
     ax.set_xlabel(f"Wavelength [{spectra.wavelength.unit}]")
     ax.set_ylabel(f"flux [{spectra.flux.unit}]")
-    ax.set_title(f"The RSS_NONSS FRODOSpec spectra{' (enhanced vertically)' if enhance else ''} in {basename}")
+    ax.set_title(f"The RSS_NONSS FRODOSpec spectra{' (expanded vertically)' if expand_flux else ''} in {basename}")
     ax.set_xticks(_calculate_ticks(spectra.wavelength.value, 100), minor=False)
     ax.set_xticks(_calculate_ticks(spectra.wavelength.value, 25), minor=True)
     ax.tick_params(axis="x", bottom=True, top=True, labelbottom=True, labeltop=True)
@@ -121,7 +121,7 @@ def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename
     with warnings.catch_warnings():
         # numpy warns about the fractional power but still does the job.
         warnings.simplefilter("ignore")
-        flux = np.float_power(spectra.flux.value.copy(), enhancement if enhance else 1)
+        flux = np.float_power(spectra.flux.value.copy(), enhancement if expand_flux else 1)
 
     for spec_ix in np.arange(0, num_spectra):
         if spec_ix in spec_sel:

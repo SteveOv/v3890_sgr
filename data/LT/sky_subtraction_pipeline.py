@@ -28,7 +28,8 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
     lambda_h_beta = read_setting(spec_set_settings, "lambda_line_blue", 4861)
     lambda_cont_blue = read_setting(spec_set_settings, "lambda_cont_blue", 4000)
     lambda_delta = read_setting(spec_set_settings, "lambda_delta", 1000e3)
-    plot_nss_spectra = read_setting(spec_set_settings, "plot_nss_spectra", True)
+    plot_rss_spectra = read_setting(spec_set_settings, "plot_rss_spectra", True)
+    expand_rss_spectra = read_setting(spec_set_settings, "expand_rss_spectra", False)
 
     source_dir = pathlib.Path.home() / read_setting(spec_set_settings, "source_dir", pathlib.Path().cwd())
     output_dir = pathlib.Path.home() / read_setting(spec_set_settings, "output_dir", pathlib.Path().cwd())
@@ -136,9 +137,9 @@ for spec_set in ["target_observation", "standard_observation-Hilt102"]:
             plt.close()
 
             # Diagnostics - plot the spectra from every fibre (to a different file to the other plots - it's big!!)
-            if plot_nss_spectra:
+            if plot_rss_spectra:
                 plotting.plot_rss_spectra(non_ss_spectra, flux_ratios, fits_file_name,
-                                          sky_mask, obj_mask, cont_region, peak_region, output_dir, enhance=is_blue)
+                                          sky_mask, obj_mask, cont_region, peak_region, output_dir, expand_rss_spectra)
 
             fits_group_ss_spectra.append(ss_spectrum)
 
