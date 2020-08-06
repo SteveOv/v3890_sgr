@@ -21,7 +21,7 @@ def read_setting(group, name, default=None, printout=True):
 
 
 settings = json.load(open("spec_calibration.json"))
-for spec_set in ["target_observation", "standard_observation-Hilt102"]:
+for spec_set in ["target_observation-red", "target_observation-blue", "standard_observation-Hilt102"]:
     spec_set_settings = settings["sky_subtraction"][spec_set]
     lambda_h_alpha = read_setting(spec_set_settings, "lambda_line_red", 6563)
     lambda_cont_red = read_setting(spec_set_settings, "lambda_cont_red", 6000)
