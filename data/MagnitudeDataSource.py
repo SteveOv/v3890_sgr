@@ -17,7 +17,7 @@ class MagnitudeDataSource(PhotometryDataSource, ABC):
         Return standard magnitude fields for use by a magnitude query.
         """
         # Make sure we are working with a copy of the underlying data - we don't want to change the source
-        df = self._df.copy()
+        df = self._data.copy()
 
         # Apply any filters; the two on mag_err exclude those rows where mag_err is NaN and 0 (both no use to us)
         df = df.query("mag_err == mag_err").query("mag_err > 0").query("is_null_obs == False")

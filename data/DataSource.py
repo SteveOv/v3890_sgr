@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Type
+from typing import Dict, Type, Union
 from pandas import DataFrame
+from data.spectrum import *
 
 
 class DataSource(ABC):
@@ -11,8 +12,11 @@ class DataSource(ABC):
 
     def __init__(self, source: str):
         print(F"\n{self.__class__.__name__}: Ingesting/parsing data from '{source}' ...")
-        self._df = self._ingest(source)
-        print(F"\t... ingested {len(self._df)} row(s).")
+        self._data = self._ingest(source)
+        if isinstance(self._data, DataFrame):
+            print(F"\t... ingested {len(self._data)} row(s).")
+        elif isinstance(self._data, Spectrum1DEx):
+            print(F"\t... ingested {self._data.flux.shape[0]} spectral readings over {self._data.spectral_axis}.")
         return
 
     @classmethod
@@ -26,7 +30,7 @@ class DataSource(ABC):
         return data_source
 
     @abstractmethod
-    def _ingest(self, source: str) -> DataFrame:
+    def _ingest(self, source: str) -> Union[DataFrame, Spectrum1DEx]:
         """
         Ingest the data from the specified source and return it as a pandas DataFrame.
         """

@@ -1,19 +1,22 @@
 import json
 import matplotlib
 import matplotlib.pyplot as plt
-from data.FrodoSpecSpectralDataSource import *
+from data.DataSource import *
+from data.CalibratedSpectralDataSource import *
 from plot import *
 
 # Placeholder for pulling together all of the spectroscopy tasks
 
 # Test code - will be replaced with a specific data source once spectral pipeline completed.
-spec_be, header = FrodoSpecSpectralDataSource.read_spectrum(
-    "/Users/steveo/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/calibrated/cal_b_e_20190828_3.fits",
-    "PRIMARY", header=True)
+ds_be = DataSource.create("CalibratedSpectralDataSource",
+            "/Users/steveo/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/calibrated/cal_b_e_20190828_3.fits")
 
-spec_re = FrodoSpecSpectralDataSource.read_spectrum(
-    "/Users/steveo/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/calibrated/cal_r_e_20190828_3.fits",
-    "PRIMARY")
+ds_re = DataSource.create("CalibratedSpectralDataSource",
+            "/Users/steveo/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/calibrated/cal_r_e_20190828_3.fits")
+
+spec_be = ds_be.query()
+spec_re = ds_re.query()
+header = ds_be.header
 
 fig = plt.figure(figsize=[6.4, 3.2], constrained_layout=True)
 ax = fig.add_subplot(1, 1, 1)

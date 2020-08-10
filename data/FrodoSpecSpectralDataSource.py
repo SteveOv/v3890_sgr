@@ -13,7 +13,6 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
     specifying the HDU and other parameters.  It is expected there will be concrete classes that derive
     from this that will wrap these methods to handle ingest/publishing data from specific HDUs.
     """
-
     @classmethod
     def read_spectra(cls, filename: Union[str, Path], hdu_name: str = None, selected_fibres: [] = None,
                      header: bool = False, label: str = None) \

@@ -9,7 +9,7 @@ class RateDataSource(PhotometryDataSource, ABC):
 
     def _on_query(self, eruption_jd) -> DataFrame:
         # Make sure we work with a copy - we don't want to modify the underlying data
-        df = self._df.copy()
+        df = self._data.copy()
         df = df.query("rate_err == rate_err").query("rate_err > 0")
         print(f"\tafter filtering out rate_err is NaN or 0, {len(df)} rows left")
 

@@ -38,6 +38,11 @@ The Spectral data source hierarchy
                     ^
                     |
             FrodoSpecSpectralDataSource
+                    ^
+                    |
+            CalibratedSpectralDataSource
 """
 from data.SpectralDataSource import *
 from data.FrodoSpecSpectralDataSource import *
+from data.CalibratedSpectralDataSource import *
+
