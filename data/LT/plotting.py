@@ -120,8 +120,8 @@ def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename
         # Optionally, expand the vertical dynamic range before plotting.  Makes line/continuum features easier to see.
         # We derive an exponent to apply to the data of between 1 & 2 and inversely proportional to the strength of the
         # flux ratios.  Don't use max(flux) here as that would respond to spikes.  Using the ratio is more controlled.
-        ratio_key = (np.max(flux_ratios) // 15) / 10
-        flux_expansion = np.max([1, 2 - ratio_key])
+        ratio_key = (np.max(flux_ratios) // 15) / 5
+        flux_expansion = np.max([1, 1.5 - ratio_key])
 
     y_label = f"flux [{spectra.flux.unit}]"
     y_label += f" (scaled as $y = f_{{\\lambda}}^{{{flux_expansion}}}$)" if flux_expansion != 1 else ""
