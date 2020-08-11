@@ -1,5 +1,5 @@
 import warnings
-from typing import List, Union
+from typing import List, Union, Tuple
 import numpy as np
 from specutils import Spectrum1D
 from astropy.io import fits
@@ -16,6 +16,14 @@ class Spectrum1DEx(Spectrum1D):
     """
     Extends specutils Spectrum1D.  Supports generating fits HDU from the spectral data.
     """
+
+    @property
+    def min_wavelength(self) -> Quantity:
+        return Quantity(min(self.wavelength.value), unit=self.wavelength.unit)
+
+    @property
+    def max_wavelength(self) -> Quantity:
+        return Quantity(max(self.wavelength.value), unit=self.wavelength.unit)
 
     @classmethod
     def from_spectrum1d(cls, spec1d: Spectrum1D):

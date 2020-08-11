@@ -1,5 +1,5 @@
 import warnings
-from typing import List, Type
+from typing import List, Type, Tuple
 import numpy as np
 from specutils import SpectrumCollection, Spectrum1D
 from astropy.units import Quantity
@@ -24,6 +24,14 @@ class SpectrumCollectionEx(SpectrumCollection):
     @label.setter
     def label(self, value):
         self._label = value
+
+    @property
+    def min_wavelength(self) -> Quantity:
+        return Quantity((min(s.min_wavelength.value) for s in self), unit=self.wavelength.unit)
+
+    @property
+    def max_wavelength(self) -> Quantity:
+        return Quantity((max(s.max_wavelength.value) for s in self), unit=self.wavelength.unit)
 
     def __getitem__(self, key):
         """
