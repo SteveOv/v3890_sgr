@@ -1,11 +1,12 @@
 from uncertainties import unumpy, ufloat_fromstr
-from plot.SinglePlot import *
+from plot.BasePlot import *
+from plot.PlotSet import *
 
 
-class ColorMagnitudePlot(SinglePlot):
+class ColorMagnitudePlot(BasePlot):
     """
-    This is a color-magnitude plot.  It is based on SinglePlot as it doesn't need log support on either axis.
-
+    This is a color-magnitude plot.  It is based on BasePlot as it isn't plotting against time
+    and doesn't need log support on either axis.
     TODO: WIP as there is still hard coded implementation in here.
     """
 
@@ -37,12 +38,13 @@ class ColorMagnitudePlot(SinglePlot):
         super()._configure_ax(ax)
         return
 
-    def _draw_plot_sets(self, ax: Axes, plot_sets: Dict[str, PlotSet]):
+    def _draw_plot_data(self, ax: Axes, **kwargs):
         """
-        Completely subclass the data rendering logic of the superclass()
-        In this case we're not directly plotting photometric data,
-        instead we'll do SED analysis and then plot the resulting data.
+        Hook into the BasePlot plot processing to enable this type to draw to the plot Axes
         """
+        plot_data = kwargs["plot_data"]
+        plot_sets = plot_data.plot_sets
+
         # we are interested in the B and V band data (TODO: remove hard coding later)
         b_set = plot_sets["2019-AAVSO/nominal/B"]
         v_set = plot_sets["2019-AAVSO/nominal/V"]

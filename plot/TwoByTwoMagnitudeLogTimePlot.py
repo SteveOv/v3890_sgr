@@ -38,10 +38,12 @@ class TwoByTwoMagnitudeLogTimePlot(MagnitudeTimePlot):
         # Never allow a y_shift to be set
         return 0
 
-    def _draw_plot(self, plot_data: PlotData, title: str = "Magnitude v $\\log($\\Delta t)$") -> Figure:
+    def _draw_plot(self, title: str = "Magnitude v $\\log($\\Delta t)$", **kwargs) -> Figure:
         """
         Produce a figure with up to 4 (2 x 2) Magnitude v log(time) plots, for each of the passed band data.
         """
+        plot_data = kwargs["plot_data"]
+
         # TODO: look at creating the axes on the fly as this approach is hard coded to 4 axes always
         fig, axes = plt.subplots(2, 2, figsize=(self.x_size, self.y_size))
         if self.show_title and title is not None:

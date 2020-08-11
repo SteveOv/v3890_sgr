@@ -1,7 +1,7 @@
-from plot.SinglePlotSupportingLogAxes import *
+from plot.TimePlotSupportingLogAxes import *
 
 
-class MagnitudeTimePlot(SinglePlotSupportingLogAxes):
+class MagnitudeTimePlot(TimePlotSupportingLogAxes):
     """
     Produces a Magnitude vs Delta-time plot for 1 or more bands on a single axis.
     The y-axis is inverted to match the needs of a magnitude scale.  Y-axis not "log-able" - mags already logs.

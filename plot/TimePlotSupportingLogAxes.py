@@ -1,9 +1,9 @@
-from plot.SinglePlot import *
+from plot.TimePlot import *
 
 
-class SinglePlotSupportingLogAxes(SinglePlot, ABC):
+class TimePlotSupportingLogAxes(TimePlot, ABC):
     """
-    Extends SinglePlot adding support for plot_params to configure the use of log x and/or y axes.
+    Extends TimePlot adding support for plot_params to configure the use of log x and/or y axes.
     Subclasses can set the x/y_axis_supports_log param on __init__() to control whether an axis may be so configured.
 
     Adds support for the config settings;

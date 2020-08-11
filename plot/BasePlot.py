@@ -6,7 +6,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
-from plot import PlotData
 
 
 class BasePlot(ABC):
@@ -21,6 +20,9 @@ class BasePlot(ABC):
         * show_title (True)
         * show_legend (True)
         * legend_loc ("upper right")
+        * x_label/y_label - set the label of the relevant axis
+        * x_lim - set the limits of the x-axis
+        * x_ticks - the tick values/labels to display
     """
     _DEFAULT_DPI = 300
     _PLOT_SCALE_UNIT = 3.2
@@ -39,6 +41,12 @@ class BasePlot(ABC):
         self._default_legend_loc = "upper right"
 
         self._default_x_size = self._default_y_size = 1
+
+        self._default_x_label = "x data"
+        self._default_x_lim = (-1, 100)
+        self._default_x_ticks = np.arange(10, 100, 10)
+
+        self._default_y_label = "y data"
         return
 
     @property
@@ -69,6 +77,26 @@ class BasePlot(ABC):
     def legend_loc(self) -> str:
         return self._param("legend_loc", self._default_legend_loc)
 
+    @property
+    def x_label(self) -> str:
+        return self._param("x_label", self._default_x_label)
+
+    @property
+    def x_lim(self) -> List[float]:
+        return self._param("x_lim", self._default_x_lim)
+
+    @property
+    def x_ticks(self) -> List[float]:
+        return self._param("x_ticks", self._default_x_ticks)
+
+    @property
+    def x_tick_labels(self) -> List[str]:
+        return self._param("x_tick_labels", self.x_ticks)
+
+    @property
+    def y_label(self) -> str:
+        return self._param("y_label", self._default_y_label)
+
     @classmethod
     def create(cls, type_name: str, plot_params: Dict) -> Type["BasePlot"]:
         """
@@ -79,42 +107,96 @@ class BasePlot(ABC):
         plot = ctor(plot_params)
         return plot
 
-    def plot_to_file(self, plot_data: PlotData, file_name: str, title: str = None):
+    def plot_to_file(self, file_name: str, title: str, **kwargs):
         """
-        Convenience method to create, plot, save and close a MagnitudeLogTimeOnSingleAxisPlot
+        Convenience method to create, plot, save and close a plot based on this type.
         """
-        self._initialize_plot_for_file(title)
+        self._log(F"Preparing '{title}' for printing to file.".replace("\n", ""))
+        matplotlib.use("Agg")
+        plt.ioff()
+        plt.rc("font", size=8)
 
-        fig = self._draw_plot(plot_data, title)
+        fig = self._draw_plot(title, **kwargs)
         if fig is not None:
-            self._save_current_plot_to_file(file_name)
+            self._log(f"Saving current plot to file '{file_name}'.")
+            plt.savefig(file_name, dpi=self._print_dpi)
             plt.close(fig)
         else:
             self._log("No figure generated.  Nothing to write to file.")
         return
 
-    def plot_to_screen(self, plot_data: PlotData, title: str = None):
+    def plot_to_screen(self, title: str, **kwargs):
         """
-        Convenience method to create, plot, save and close a MagnitudeLogTimeOnSingleAxisPlot
+        Convenience method to create, plot, show to screen and close a plot based on this type.
         """
-        self._initialize_plot_for_screen(title)
+        print(F"Preparing '{title}' for printing to screen.".replace("\n", ""))
+        matplotlib.use("TkAgg")
+        plt.rc("font", size=8)
 
-        fig = self._draw_plot(plot_data, title)
+        fig = self._draw_plot(title, **kwargs)
         if fig is not None:
-            self._show_current_plot_on_screen()
+            self._log("Sending current plot to the screen.")
+            plt.show(dpi=self._screen_dpi)
             plt.close(fig)
         else:
             self._log("No figure generated.  Nothing to write to display.")
         return
 
-    @abstractmethod
-    def _draw_plot(self, plot_data: PlotData, title: str) -> Figure:
+    def _draw_plot(self, title: str, **kwargs) -> Figure:
         """
-        Draw the requested plot returning a matplotlib figure which can be displayed or printed as required.
+        The main routine for drawing the plot as a whole.  Invokes the hooks for creating figure, ax and drawing to it.
+        Where possible, avoid overriding this, instead override the hooks/methods it calls (below).
+        """
+        # Make it possible for subtype to override creating the figure and axis
+        fig = self._create_fig()
+        ax = self._create_ax(fig)
+
+        if self.show_title and title is not None:
+            ax.set_title(title)
+
+        # Make it possible for subtype to override the config of the axis
+        self._configure_ax(ax)
+
+        # The hook for the specific subtype to plot its data to the Axes
+        self._draw_plot_data(ax, **kwargs)
+
+        if self.show_legend:
+            ax.legend(loc=self.legend_loc)
+        return fig
+
+    def _create_fig(self) -> Figure:
+        """
+        Create the figure onto which the Axes and plot are to be drawn
+        """
+        return plt.figure(figsize=(self.x_size, self.y_size), constrained_layout=True)
+
+    def _create_ax(self, fig: plt.figure):
+        """
+        Create the Axes onto which the plotted data will be drawn.
+        """
+        return fig.add_subplot(1, 1, 1)
+
+    def _configure_ax(self, ax: Axes):
+        """
+        Configure the Axes onto which the plotted data will be drawn.
+        """
+        ax.set(xlim=self.x_lim, xlabel=self.x_label, ylabel=self.y_label)
+        ax.set_xticks(self.x_ticks, minor=False)
+        ax.set_xticklabels(self.x_tick_labels, minor=False)
+        ax.grid(which='major', linestyle='-', linewidth=self._line_width, alpha=0.3)
+        return
+
+    @abstractmethod
+    def _draw_plot_data(self, ax: Axes, **kwargs):
+        """
+        The method, to be overridden by subclasses, for plotting their data to the passes Axes
         """
         pass
 
     def _log(self, text):
+        """
+        Log some text to the console.
+        """
         print(f"{self.__class__.__name__}: " + text)
         return
 
@@ -137,29 +219,6 @@ class BasePlot(ABC):
             if issubclass(subclass, BasePlot):
                 sc_dict.update(subclass._get_subclasses())
         return sc_dict
-
-    def _initialize_plot_for_file(self, title: str):
-        self._log(F"Preparing '{title}' for printing to file.".replace("\n", ""))
-        matplotlib.use("Agg")
-        plt.ioff()
-        plt.rc("font", size=8)
-        return
-
-    def _initialize_plot_for_screen(self, title: str, backend: str = "TkAgg"):
-        print(F"Preparing '{title}' for printing to screen.".replace("\n", ""))
-        matplotlib.use(backend)
-        plt.rc("font", size=8)
-        return
-
-    def _save_current_plot_to_file(self, file_name: str):
-        print(f"{self.__class__.__name__} sending current plot to file '{file_name}'.")
-        plt.savefig(file_name, dpi=self._print_dpi)
-        return
-
-    def _show_current_plot_on_screen(self):
-        print(f"{self.__class__.__name__} sending current plot to the screen.")
-        plt.show(dpi=self._screen_dpi)
-        return
 
     def _param(self, key: str, default=None):
         """

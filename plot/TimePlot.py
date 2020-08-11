@@ -2,16 +2,13 @@ from plot.PlotData import *
 from plot.BasePlot import *
 
 
-class SinglePlot(BasePlot, ABC):
+class TimePlot(BasePlot, ABC):
     """
-    Produces a data vs Delta-time plot for 1+ PlotSets on a single axis, optionally overlaying with fitted lines.
+    Produces a data vs time plot for 1+ sets of data on a single axis, optionally overlaying with fitted lines.
     The following plot params are supported (in addition to the standard params defined by BasePlot);
         * show_data (True) - plot the raw data
         * show_fits (False) - draw the line fits
         * show_epochs / show_epoch_labels (False/False) - controls drawing of epoch lines & labels on x-axis
-        * x_label/y_label - set the label of the relevant axis
-        * x_lim - set the limits of the x-axis
-        * x_ticks - the tick values/labels to display
         * y_shift (0) - optional shift in the y-axis for each subsequent data_set
     For each PlotSet the following rate_params are supported:
         * color
@@ -26,11 +23,6 @@ class SinglePlot(BasePlot, ABC):
         self._default_show_epochs = False
         self._default_show_epoch_labels = False
 
-        self._default_x_label = "x data"
-        self._default_x_lim = (-1, 100)
-        self._default_x_ticks = np.arange(10, 100, 10)
-
-        self._default_y_label = "y data"
         self._default_y_shift = 0
         return
 
@@ -51,44 +43,14 @@ class SinglePlot(BasePlot, ABC):
         return self._param("show_epoch_labels", self._default_show_epoch_labels)
 
     @property
-    def x_label(self) -> str:
-        return self._param("x_label", self._default_x_label)
-
-    @property
-    def x_lim(self) -> List[float]:
-        return self._param("x_lim", self._default_x_lim)
-
-    @property
-    def x_ticks(self) -> List[float]:
-        return self._param("x_ticks", self._default_x_ticks)
-
-    @property
-    def x_tick_labels(self) -> List[str]:
-        return self._param("x_tick_labels", self.x_ticks)
-
-    @property
-    def y_label(self) -> str:
-        return self._param("y_label", self._default_y_label)
-
-    @property
     def y_shift(self) -> float:
         return self._param("y_shift", self._default_y_shift)
 
-    def _draw_plot(self, plot_data: PlotData, title: str) -> Figure:
+    def _draw_plot_data(self, ax: Axes, **kwargs):
         """
-        Override of the abstract _draw_plot() on BasePlot. The main routine for drawing the plot as a whole.
-        Invokes the hooks for creating figure, ax and drawing to it.
-        Where possible, avoid overriding this, instead override the hooks/methods it calls (below).
+        Override of the BasePlot abstract method where we actually get to draw data onto the Axes.
         """
-        # Make it possible for subtype to override creating the figure and axis
-        fig = self._create_fig()
-        ax = self._create_ax(fig)
-
-        if self.show_title and title is not None:
-            ax.set_title(title)
-
-        # Make it possible for subtype to override the config of the axis
-        self._configure_ax(ax)
+        plot_data = kwargs["plot_data"]
 
         # Potential hooks for the subtype to plot each data type
         self._draw_plot_sets(ax, plot_data.plot_sets)
@@ -96,22 +58,6 @@ class SinglePlot(BasePlot, ABC):
         # Potential hook for subtype to choose whether/how to render epoch data
         if self.show_epochs:
             self._draw_epochs(ax, plot_data.epochs)
-
-        if self.show_legend:
-            ax.legend(loc=self.legend_loc)
-        return fig
-
-    def _create_fig(self) -> Figure:
-        return plt.figure(figsize=(self.x_size, self.y_size), constrained_layout=True)
-
-    def _create_ax(self, fig: plt.figure):
-        return fig.add_subplot(1, 1, 1)
-
-    def _configure_ax(self, ax: Axes):
-        ax.set(xlim=self.x_lim, xlabel=self.x_label, ylabel=self.y_label)
-        ax.set_xticks(self.x_ticks, minor=False)
-        ax.set_xticklabels(self.x_tick_labels, minor=False)
-        ax.grid(which='major', linestyle='-', linewidth=self._line_width, alpha=0.3)
         return
 
     def _draw_plot_sets(self, ax: Axes, plot_sets: Dict[str, PlotSet]):

@@ -2,10 +2,10 @@ import math
 from data import MagnitudeDataSource
 from uncertainties import ufloat, ufloat_fromstr, UFloat
 import with_uncertainties as unc
-from plot.SinglePlotSupportingLogAxes import *
+from plot.TimePlotSupportingLogAxes import *
 
 
-class SpectralEvolutionDistributionPlot(SinglePlotSupportingLogAxes):
+class SpectralEvolutionDistributionPlot(TimePlotSupportingLogAxes):
 
     def __init__(self, plot_params: Dict):
         super().__init__(plot_params, x_axis_supports_log=True, y_axis_supports_log=True)

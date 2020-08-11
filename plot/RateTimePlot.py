@@ -1,7 +1,7 @@
-from plot.SinglePlotSupportingLogAxes import *
+from plot.TimePlotSupportingLogAxes import *
 
 
-class RateTimePlot(SinglePlotSupportingLogAxes):
+class RateTimePlot(TimePlotSupportingLogAxes):
     """
     Produces a Rate vs Delta-time plot for 1 or more bands on a single axis.  Both axes support log scaling.
 

@@ -82,7 +82,7 @@ for plot_group_config in settings["plots"]:
         epochs = spectra_lookup.get_spectra_epochs(eruption_jd)
 
         plot_data = PlotHelper.create_plot_data_from_config(plot_config, light_curves, epochs)
-        PlotHelper.plot_to_file(plot_config, plot_data)
+        PlotHelper.plot_to_file(plot_config, plot_data=plot_data)
 
 
 print(F"\n\n****************************************************************")
