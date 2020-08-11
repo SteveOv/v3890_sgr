@@ -63,7 +63,7 @@ class RatesAndRatioTimePlot(RateTimePlot):
         # Only this ax will have the title/legend added as appropriate by the super classes.
         return self._ax_hard
 
-    def _configure_ax(self, ax: Axes):
+    def _configure_ax(self, ax: Axes, **kwargs):
         self._ax_hard.set_ylabel(self.y_label_hard_data)
         self._ax_soft.set_ylabel(self.y_label_soft_data)
         for ax in [self._ax_ratio, self._ax_hard, self._ax_soft]:

@@ -23,14 +23,14 @@ class MagnitudeTimePlot(TimePlotSupportingLogAxes):
     def y_lim(self) -> List[float]:
         return self._param("y_lim", self._default_y_lim)
 
-    def _configure_ax(self, ax: Axes):
+    def _configure_ax(self, ax: Axes, **kwargs):
         """
         Overriding the configuration of the target ax so we can invert the y-axis and set a limit on it
         """
         # Invert the y-axis for magnitudes - need to do this early.  Also put a limit on it (which super() does not).
         ax.set(ylim=self.y_lim)
         ax.invert_yaxis()
-        super()._configure_ax(ax)
+        super()._configure_ax(ax, **kwargs)
         return
 
     def _define_data_label(self, label: str, y_shift: float = 0):

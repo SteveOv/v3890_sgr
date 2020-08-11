@@ -53,9 +53,9 @@ class MagnitudeAndRateTimePlot(MagnitudeTimePlot):
     def y2_scale_log(self) -> bool:
         return self._param("y2_scale_log", self._default_y2_scale_log)
 
-    def _configure_ax(self, ax: Axes):
+    def _configure_ax(self, ax: Axes, **kwargs):
         # This looks after the shared x-axis and the primary y-axis
-        super()._configure_ax(ax)
+        super()._configure_ax(ax, **kwargs)
 
         # Now we set up the secondary y-axis
         self._ax2 = ax.twinx()

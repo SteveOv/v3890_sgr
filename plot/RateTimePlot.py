@@ -32,8 +32,8 @@ class RateTimePlot(TimePlotSupportingLogAxes):
     def y_ticks(self) -> List[float]:
         return self._param("y_ticks", self._default_y_ticks_log if self.y_scale_log else self._default_y_ticks)
 
-    def _configure_ax(self, ax: Axes):
-        super()._configure_ax(ax)
+    def _configure_ax(self, ax: Axes, **kwargs):
+        super()._configure_ax(ax, **kwargs)
 
         # Super supports setting the y-axis to log, but doesn't set a limit or ticks  as it doesn't know
         # what sort of data will be shown.  Here we know we are showing rates so we can default to reasonable values.

@@ -42,12 +42,12 @@ class TimePlotSupportingLogAxes(TimePlot, ABC):
     def y_scale_log(self) -> bool:
         return self._y_axis_supports_log & self._param("y_scale_log", self._default_y_scale_log)
 
-    def _configure_ax(self, ax: Axes):
+    def _configure_ax(self, ax: Axes, **kwargs):
         """
         Configure the ax, supporting the use of log scale on either the x or y (or both) axis
         """
         # Get the super class to do the basic config.  We'll override if any log axes specified.
-        super()._configure_ax(ax)
+        super()._configure_ax(ax, **kwargs)
 
         if self.x_scale_log:
             ax.set_xscale("log")

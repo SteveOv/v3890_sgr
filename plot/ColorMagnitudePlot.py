@@ -27,7 +27,7 @@ class ColorMagnitudePlot(BasePlot):
         self._max_delta_t = self._param("max_delta_t", 50)
         return
 
-    def _configure_ax(self, ax: Axes):
+    def _configure_ax(self, ax: Axes, **kwargs):
         """
         Overriding the configuration of the target ax so we can invert the y-axis and set a limit on it
         """
@@ -35,7 +35,7 @@ class ColorMagnitudePlot(BasePlot):
         ax.set(ylim=self._param("y_lim", self._default_y_lim))
         ax.invert_yaxis()
 
-        super()._configure_ax(ax)
+        super()._configure_ax(ax, **kwargs)
         return
 
     def _draw_plot_data(self, ax: Axes, **kwargs):

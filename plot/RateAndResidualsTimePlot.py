@@ -63,9 +63,9 @@ class RateAndResidualsTimePlot(RateTimePlot):
         # Return the main ax so that super()'s Mag/time plotting can be carried out against it
         return self._ax_main
 
-    def _configure_ax(self, ax: Axes):
+    def _configure_ax(self, ax: Axes, **kwargs):
         # Default handling of the main ax ...
-        super()._configure_ax(ax)
+        super()._configure_ax(ax, **kwargs)
 
         # but super() won't know about the 2nd, residuals axis so we set it up here
         if self.show_residuals and self._ax_res is not None:

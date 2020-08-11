@@ -54,10 +54,6 @@ class BasePlot(ABC):
         return self._DEFAULT_DPI
 
     @property
-    def _screen_dpi(self) -> float:
-        return self._DEFAULT_DPI
-
-    @property
     def x_size(self) -> float:
         return self._param("x_size", self._default_x_size) * self._PLOT_SCALE_UNIT
 
@@ -136,7 +132,7 @@ class BasePlot(ABC):
         fig = self._draw_plot(title, **kwargs)
         if fig is not None:
             self._log("Sending current plot to the screen.")
-            plt.show(dpi=self._screen_dpi)
+            plt.show()
             plt.close(fig)
         else:
             self._log("No figure generated.  Nothing to write to display.")
@@ -155,7 +151,7 @@ class BasePlot(ABC):
             ax.set_title(title)
 
         # Make it possible for subtype to override the config of the axis
-        self._configure_ax(ax)
+        self._configure_ax(ax, **kwargs)
 
         # The hook for the specific subtype to plot its data to the Axes
         self._draw_plot_data(ax, **kwargs)
@@ -176,7 +172,7 @@ class BasePlot(ABC):
         """
         return fig.add_subplot(1, 1, 1)
 
-    def _configure_ax(self, ax: Axes):
+    def _configure_ax(self, ax: Axes, **kwargs):
         """
         Configure the Axes onto which the plotted data will be drawn.
         """

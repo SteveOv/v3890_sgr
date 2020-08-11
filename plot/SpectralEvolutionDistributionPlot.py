@@ -65,9 +65,9 @@ class SpectralEvolutionDistributionPlot(TimePlotSupportingLogAxes):
         # Want a failure if the distance is not set correctly.
         return ufloat_fromstr(self._param("distance_pc", None))
 
-    def _configure_ax(self, ax: Axes):
+    def _configure_ax(self, ax: Axes, **kwargs):
         # This looks after the basic/common setup of the shared x-axis and the primary y-axis
-        super()._configure_ax(ax)
+        super()._configure_ax(ax, **kwargs)
 
         # Super doesn't put any restrictions on y-axis, but we need them here.
         ax.set(xlim=self.x_lim, xticks=self.x_ticks, xticklabels=self.x_tick_labels)
