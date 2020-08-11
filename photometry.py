@@ -6,7 +6,7 @@ from data import *
 from plot import *
 import spectra_lookup
 
-settings = json.load(open("settings.json"))
+settings = json.load(open("photometry.json"))
 
 print(F"\n****************************************************************")
 print(F"Ingesting, parsing and fitting data of RNe V3890 Sgr")
