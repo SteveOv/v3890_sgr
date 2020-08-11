@@ -48,8 +48,8 @@
                     "eruption_jd": 2458723.278,
                     "query_params": { "day_range": [0, 100], "where": "((rate_type == 'WT') or (rate_type == 'PC' and rate <= 1.0)) and (rate >= 0)"},
                     "data_sets": [
-                        {"set": "hard_data", "where": "data_type=='hard'", "color": "lightslategray", "label": "Hard (1.5-10 keV)", "breaks": [0.78, 1.70, "...", 2.725, 5.4, 75]},
-                        {"set": "soft_data", "where": "data_type=='soft'", "color": "k", "label": "Soft (0.3-1.5 keV)", "breaks": [1.05, 15.015, 15.28, "...", 18.48, 24.637, 75]}
+                        {"set": "hard_data", "where": "data_type=='hard'", "color": "lightslategray", "label": "Hard (1.5-10 keV)", "breaks": [1.28, 2.20, "...", 3.225, 5.9, 75.5]},
+                        {"set": "soft_data", "where": "data_type=='soft'", "color": "k", "label": "Soft (0.3-1.5 keV)", "breaks": [1.38, 15.515, 15.78, "...", 18.98, 25.137, 75.5]}
                     ]
                 }
             }
@@ -289,7 +289,7 @@
                 "type": "RateAndResidualsTimePlot",
                 "file_name": "./output/V3890Sgr-2019-XRT-LC-log(day)-residuals-nominal(ratio-data).png",
                 "title": "TThe 2019 eruption of V3890 Sgr in Swift XRT ($t_{{e}}=2458723.278$)",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true,
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true, "legend_loc": "upper left",
                     "y_scale_log": true, "y_lim": [0.01, 30], "y_ticks": [0.01, 0.1, 1, 10], "x_lim": [0.3, 100],
                     "y_lim_residuals": [-1.1, 1.1], "y_ticks_residuals": [-1, 0, 1], "y_tick_labels_residuals": [-10, 0, 10]},
                 "plot_sets": [{"data_sets": "2019-XRT-Ratios/nominal-hard-soft"}]

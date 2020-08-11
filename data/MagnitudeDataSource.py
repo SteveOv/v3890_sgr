@@ -1,6 +1,7 @@
 import numpy as np
 import with_uncertainties as unc
 from data.PhotometryDataSource import *
+from utility import timing as tm
 
 
 class MagnitudeDataSource(PhotometryDataSource, ABC):
@@ -24,7 +25,7 @@ class MagnitudeDataSource(PhotometryDataSource, ABC):
         print(f"\tafter filtering on mag_err is NaN or 0 and is_null_obs == True, {len(df)} rows left")
 
         # We create day and log(day) field, relative to passed eruption jd
-        df['day'] = np.subtract(df['jd'], eruption_jd)
+        df['day'] = tm.delta_t_from_jd(df['jd'], eruption_jd)
         df['log_day'] = np.log10(df.query("day>0")['day'])
 
         """ Currently not required (also, this is quite slow)

@@ -31,7 +31,7 @@ class XrtRateDataSource(RateDataSource):
                     csv.write(F"'{rate_type}'\t{line}")
 
         csv.seek(0)
-        file_column_names = ["rate_type", "jd", "jd_plus_err", "jd_minus_err", "rate", "rate_plus_err",
+        file_column_names = ["rate_type", "mjd", "mjd_plus_err", "mjd_minus_err", "rate", "rate_plus_err",
                              "rate_minus_err", "bg_rate", "bg_err", "frac_exp", "obs_id"]
         df = pd.read_csv(csv,
                          header=0, delimiter="\t", index_col=None, comment="!", skip_blank_lines=True, quotechar="'")

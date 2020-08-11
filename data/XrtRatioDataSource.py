@@ -38,6 +38,6 @@ class XrtRatioDataSource(RateDataSource):
         df = pd.read_csv(csv,
                          header=0, delimiter="\t", index_col=None, comment="!", skip_blank_lines=True, quotechar="'")
         csv.close()
-        df.columns = ["rate_type", "data_type", "jd", "jd_plus_err", "jd_minus_err", "rate", "rate_err", "obs_id"]
+        df.columns = ["rate_type", "data_type", "mjd", "mjd_plus_err", "mjd_minus_err", "rate", "rate_err", "obs_id"]
         return df
 

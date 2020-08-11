@@ -1,5 +1,5 @@
-import numpy as np
 from data.PhotometryDataSource import *
+from utility import timing as tm
 
 
 class RateDataSource(PhotometryDataSource, ABC):
@@ -14,6 +14,11 @@ class RateDataSource(PhotometryDataSource, ABC):
         print(f"\tafter filtering out rate_err is NaN or 0, {len(df)} rows left")
 
         # We create the standard day and day_err fields, relative to passed eruption jd
-        df["day"] = np.subtract(np.add(df["jd"], 2400000), eruption_jd)
-        df["day_err"] = df["jd_plus_err"]
+        if "jd" in df.columns:
+            df["day"] = tm.delta_t_from_jd(df["jd"], eruption_jd)
+            df["day_err"] = df["jd_plus_err"]
+        elif "mjd" in df.columns:
+            df["day"] = tm.delta_t_from_jd(tm.jd_from_mjd(df["mjd"]), eruption_jd)
+            df["day_err"] = df["mjd_plus_err"]
+
         return df
