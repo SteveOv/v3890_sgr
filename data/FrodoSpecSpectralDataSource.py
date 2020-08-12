@@ -74,7 +74,7 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
             spectral_axis - the 2d ndarray containing the complementary spectral/wavelength axis data.
             wcs - the WCS used when parsing the data
         """
-
+        filename = cls._canonicalize_filename(filename)
         if hdu_name is not None:
             flux, hdr = fits.getdata(filename, extname=hdu_name, header=True)
         else:

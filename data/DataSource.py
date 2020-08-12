@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import Dict, Type, Union
 from pandas import DataFrame
 from data.spectrum import *
@@ -28,6 +29,23 @@ class DataSource(ABC):
         ctor = cls._get_subclass_hierarchy()[type_name.casefold()]
         data_source = ctor(source)
         return data_source
+
+    @classmethod
+    def create_from_config(cls, config: Dict, default_type_name: str = None) -> Type["DataSource"]:
+        if "type" in config:
+            type_name = config["type"]
+        elif default_type_name is not None:
+            type_name = default_type_name
+        else:
+            raise KeyError("No type specified")
+
+        if "file_spec" in config:
+            source = config["file_spec"]
+        elif "source" in config:
+            source = config["source"]
+        else:
+            raise KeyError("No source specified")
+        return cls.create(type_name, source)
 
     @abstractmethod
     def _ingest(self, source: str) -> Union[DataFrame, Spectrum1DEx]:
@@ -59,3 +77,12 @@ class DataSource(ABC):
             if issubclass(subclass, DataSource):
                 sc_dict.update(subclass._get_subclasses())
         return sc_dict
+
+    @classmethod
+    def _canonicalize_filename(cls, filename: Union[str, Path]) -> Path:
+        if isinstance(filename, str):
+            filename = Path(filename)
+        filename = filename.expanduser()
+        if not filename.is_absolute():
+            filename = filename.resolve()
+        return filename

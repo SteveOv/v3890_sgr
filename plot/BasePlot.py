@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Type, List
+from pathlib import Path
+from typing import Dict, Type, List, Union
 from pandas import DataFrame
 import numpy as np
 import matplotlib
@@ -103,7 +104,7 @@ class BasePlot(ABC):
         plot = ctor(plot_params)
         return plot
 
-    def plot_to_file(self, file_name: str, title: str, **kwargs):
+    def plot_to_file(self, file_name: Union[str, Path], title: str, **kwargs):
         """
         Convenience method to create, plot, save and close a plot based on this type.
         """
@@ -115,6 +116,13 @@ class BasePlot(ABC):
         fig = self._draw_plot(title, **kwargs)
         if fig is not None:
             self._log(f"Saving current plot to file '{file_name}'.")
+
+            # Make sure the folder exists for the output.
+            if not isinstance(file_name, Path):
+                file_name = Path(file_name)
+                if not file_name.parent.exists():
+                    file_name.parent.mkdir(parents=True, exist_ok=True)
+
             plt.savefig(file_name, dpi=self._print_dpi)
             plt.close(fig)
         else:
