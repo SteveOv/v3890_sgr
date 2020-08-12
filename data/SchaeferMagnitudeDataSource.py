@@ -22,6 +22,7 @@ class SchaeferMagnitudeDataSource(MagnitudeDataSource):
             is_saturated_obs
         """
         # Read the file in.  We use a UFloat to parse the magnitude field
+        source = self.__class__._canonicalize_filename(source)
         df = pd.read_csv(source, skiprows=lambda x: x in [0, 1, 2, 4], header=0, delimiter="\t", index_col=None,
                          converters={"Magnitude": SchaeferMagnitudeDataSource._to_ufloat})
 

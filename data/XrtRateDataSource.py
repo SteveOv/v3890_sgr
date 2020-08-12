@@ -19,6 +19,7 @@ class XrtRateDataSource(RateDataSource):
         # an additional column at the start of each row from which the data can be ingested into a DataFrame.
         pattern = re.compile(r"\s*!\s*([A-Za-z]*)\s*data\s*$")
         csv = StringIO()
+        source = self.__class__._canonicalize_filename(source)
         with open(source, "r") as f:
             rate_type = None
             for line in f:

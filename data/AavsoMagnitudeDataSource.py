@@ -19,6 +19,7 @@ class AavsoMagnitudeDataSource(MagnitudeDataSource):
             is_null_obs
             is_saturated_obs
         """
+        source = self.__class__._canonicalize_filename(source)
         df = pd.read_csv(source, header=0, index_col=None)
 
         # Standardise column names as lower case without spaces - makes them easier to work with.

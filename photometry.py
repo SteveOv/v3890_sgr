@@ -14,10 +14,7 @@ print(F"****************************************************************")
 light_curves = {}
 for data_source_key in settings["data_sources"]:
     ds_params = settings["data_sources"][data_source_key]
-    ds_type = ds_params["type"]
-    file_spec = ds_params["file_spec"]
-
-    ds = DataSource.create(ds_type, file_spec)
+    ds = DataSource.create_from_config(ds_params)
     for lc_key in ds_params["light_curves"]:
         lc_params = ds_params["light_curves"][lc_key]
 

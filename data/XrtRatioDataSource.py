@@ -19,6 +19,7 @@ class XrtRatioDataSource(RateDataSource):
         # an additional column at the start of each row from which the data can be ingested into a DataFrame.
         pattern = re.compile(r"!\s*([A-Za-z]*)\s*--\s*(soft data|hard data|hardness ratio)")
         csv = StringIO()
+        source = self.__class__._canonicalize_filename(source)
         with open(source, "r") as f:
             rate_type = None
             data_type = None
