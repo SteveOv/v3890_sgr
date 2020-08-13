@@ -157,9 +157,10 @@ for plot_group_config in settings["plots"]:
 
         # Pass on some calculated parameters to the plots - these are from the nominal fits (which is run last)
         plot_config["params"]["eruption_jd"] = eruption_jd = 2458723.278
-        plot_config["params"]["E(B-V)"] = str(E_BV)
-        plot_config["params"]["A_V"] = str(A_V)
-        plot_config["params"]["distance_pc"] = str(d)
+        plot_config["params"]["E(B-V)"] = E_BV
+        plot_config["params"]["A_V"] = A_V
+        plot_config["params"]["distance_pc"] = d
+        plot_config["params"]["mu"] = mu
         epochs = spectra_lookup.get_spectra_epochs(eruption_jd)
 
         plot_data = PlotHelper.create_plot_data_from_config(plot_config, light_curves, epochs)

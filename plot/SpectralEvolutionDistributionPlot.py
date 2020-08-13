@@ -74,7 +74,7 @@ class SpectralEvolutionDistributionPlot(TimePlotSupportingLogAxes):
     @property
     def target_distance_parsecs(self) -> UFloat:
         # Want a failure if the distance is not set correctly.
-        return ufloat_fromstr(self._param("distance_pc", None))
+        return self._param("distance_pc", None)
 
     def _configure_ax(self, ax: Axes, **kwargs):
         # This looks after the basic/common setup of the shared x-axis and the primary y-axis
