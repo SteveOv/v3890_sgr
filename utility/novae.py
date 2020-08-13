@@ -2,7 +2,7 @@ import numpy as np
 
 # Gives us numeric values with built in support for uncertainties
 import uncertainties
-from uncertainties import ufloat, ufloat_fromstr
+from uncertainties import ufloat
 
 
 def absolute_magnitude_from_t2(t2):
