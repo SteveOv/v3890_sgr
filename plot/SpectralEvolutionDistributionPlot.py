@@ -29,15 +29,20 @@ class SpectralEvolutionDistributionPlot(TimePlotSupportingLogAxes):
         # log(luminosity) scale derived from the flux density and distance.
         self._default_y_label = "$\\log(L_{\\nu})$ [Jy m$^2$]"
         # super() doesn't restrict the y-axis, so we implement these properties here
-        self._default_y_lim_log = (1e38, 3e43)
-        self._default_y_ticks_log = [1e39, 1e40, 1e41, 1e42, 1e43]
-        self._default_y_tick_labels_log = ["39", "40", "41", "42", "43"]
+        self._default_y_lim_log = (1e38, 3e44)
+        self._default_y_ticks_log = [1e39, 1e40, 1e41, 1e42, 1e43, 1e44]
+        self._default_y_tick_labels_log = ["39", "40", "41", "42", "43", "44"]
 
         # x-axis always on a log scale - set the defaults for the super() to configure from
         self._default_x_label = "$\\log(\\nu)$ [Hz]"
         self._default_x_lim_log = (10**14.5, 10**15.3)
         self._default_x_ticks_log = [10**14.6, 10**14.7, 10**14.8, 10**14.9, 10**15.0, 10**15.1, 10**15.2, 10**15.3]
         self._default_x_tick_labels_log = ["14.6", "14.7", "14.8", "14.9", "15.0", "15.1", "15.2", "15.3"]
+
+        self._default_lambda_eff = {"I": 7970e-10, "R": 6380e-10, "V": 5450e-10, "B": 4360e-10, "UVM2": 2221e-10, "UVW2": 1991e-10}
+
+        # From Schlegel et al. (1998) Table 6, pp 551 A/A_V values for CTIO B, V, R & I filters (CCD Cousins)
+        self._default_relative_extinction_coeffs = {"I": 0.601, "R": 0.807, "V": 0.992, "B": 1.324}
 
         # TODO: 2nd y-axis in magnitudes - same scale as y so we will need to convert
         self._default_y2_label = "$\\text{m_V}$"
@@ -76,6 +81,21 @@ class SpectralEvolutionDistributionPlot(TimePlotSupportingLogAxes):
         # Want a failure if the distance is not set correctly.
         return self._param("distance_pc", None)
 
+    @property
+    def color_excess(self) -> UFloat:
+        return self._param("E(B-V)", None)
+
+    @property
+    def lambda_eff(self) -> Dict[str, float]:
+        return self._param("lambda_eff", self._default_lambda_eff)
+
+    @property
+    def relative_extinction_coeffs(self) -> Dict[str, float]:
+        """
+        Extinction in various bands as expressed by r_e = A/E(B-V).  So A = r_e * E(B-V)
+        """
+        return self._param("relative_extinction_coeffs", self._default_relative_extinction_coeffs)
+
     def _configure_ax(self, ax: Axes, **kwargs):
         # This looks after the basic/common setup of the shared x-axis and the primary y-axis
         super()._configure_ax(ax, **kwargs)
@@ -112,16 +132,14 @@ class SpectralEvolutionDistributionPlot(TimePlotSupportingLogAxes):
         instead we'll do SED analysis and then plot the resulting data.
         """
         delta_ts = self._param("delta_t", [1, 2, 3, 5, 10, 20])
-        nu_effs = self._param(
-            "nu_eff", {"I": 3.72e14, "R": 4.556e14, "V": 5.441e14, "B": 6.737e14, "UVM2": 1.335e15, "UVW2": 1.555e15})
-
-        r_m, r_m_err = unc.multiply(self.target_distance_parsecs.nominal_value, 3.086e16,
-                                    self.target_distance_parsecs.std_dev, 0)
+        nu_eff = self.__class__._calculate_effective_frequencies(self.lambda_eff)
+        ext_corrections = self.__class__._calculate_extinction_corrections(self.relative_extinction_coeffs, self.color_excess, R_V=3.1)
+        r_m, r_m_err = unc.multiply(self.target_distance_parsecs.nominal_value, 3.086e16, self.target_distance_parsecs.std_dev, 0)
 
         # This is an interim step - parses the source data and calculates flux & luminosity fields
         # We don't include the distance uncertainty in the calculations as it's systematic.
         # Instead we'll work it out once and present it separately.
-        df = self.__class__._calculate_sed_data(plot_sets, nu_effs, delta_ts, r_m, distance_m_err=0)
+        df = self.__class__._calculate_sed_data(plot_sets, delta_ts, nu_eff, ext_corrections, r_m, distance_m_err=0)
 
         ix = 0
         for delta_t in sorted(delta_ts):
@@ -133,9 +151,9 @@ class SpectralEvolutionDistributionPlot(TimePlotSupportingLogAxes):
             last_good_band = dt_df.query("L_nu>0").iloc[-1]
             x_pos_eol = last_good_band["nu_eff"] + 10**13
             y_pos = last_good_band["L_nu"]
-            # TODO: specific to this plot, handle a crush
+            # Specific to this plot, handle a crush
             if ix == 5:
-                y_pos -= 3e39
+                y_pos -= 7e39
 
             # Annotate the Delta t at the right end of each line
             label = f"$\\Delta t={delta_t:.2f}$" if delta_t != int(delta_t) else f"$\\Delta t={delta_t}$"
@@ -144,33 +162,32 @@ class SpectralEvolutionDistributionPlot(TimePlotSupportingLogAxes):
 
         # Now annotate the bands - along the top for now
         y_pos = self.y_ticks[-1]
-        for band in nu_effs:
-            ax.annotate(band, xycoords="data", xy=(nu_effs[band], y_pos), horizontalalignment="center")
+        for band in nu_eff:
+            ax.annotate(band, xycoords="data", xy=(nu_eff[band], y_pos), horizontalalignment="center")
 
         # Add a single point, but with the distance uncertainty so that we have a representation
         # of the systematic distance error.  Get a flux density for a luminosity of 10^39.
         # Then put it back into the luminosity calculation, but with the distance uncertainty and plot the result.
-        x_pos = nu_effs["I"]
-        y_pos = 2e38
+        x_pos = nu_eff["I"]
+        y_pos = 8e38
         f_nu, f_nu_err = unc.divide(y_pos, 4 * math.pi * np.power(r_m, 2))
         lum_nu, lum_nu_err = \
             self.__class__._calculate_specific_luminosity_for_flux_and_distance(f_nu, f_nu_err, r_m, r_m_err)
         self._plot_points_to_error_bars_on_ax(ax, [x_pos], [lum_nu], [lum_nu_err], "k", fmt=",")
-        ax.annotate("Distance uncertainty", xycoords="data", xy=(x_pos + 10**13, y_pos - 2e37))
+        ax.annotate("Distance uncertainty", xycoords="data", xy=(x_pos + 10**13, 4e38))
         return
 
     @classmethod
-    def _calculate_sed_data(cls, plot_sets: Dict[str, PlotSet],
-                            nu_eff_lookup: Dict, delta_ts: Dict,
+    def _calculate_sed_data(cls, plot_sets: Dict[str, PlotSet], delta_ts: Dict,
+                            nu_eff_lookup: Dict, extinction_corrections: Dict,
                             distance_m: float, distance_m_err: float=0) -> DataFrame:
 
-        df = cls._get_magnitudes_from_photometric_fits(plot_sets, nu_eff_lookup, delta_ts)
+        # Generate the dataframe with bands, and (extinction corrected) magnitudes at the requested times
+        df = cls._get_magnitudes_from_photometric_fits(plot_sets, nu_eff_lookup, extinction_corrections, delta_ts)
 
-        # TODO: extinction correction.
-
-        # Calculate flux density values for the retrieved data.
+        # Calculate flux density values for the retrieved, corrected magnitudes.
         df[['flux_hz', "flux_hz_err"]] = df.apply(
-            lambda d: cls._calculate_flux_density_for_magnitude_and_band(d["mag"], d["mag_err"], d["band"]),
+            lambda d: cls._calculate_flux_density_for_magnitude_and_band(d["cor_mag"], d["cor_mag_err"], d["band"]),
             axis=1,
             result_type="expand")
 
@@ -182,7 +199,11 @@ class SpectralEvolutionDistributionPlot(TimePlotSupportingLogAxes):
 
     @classmethod
     def _get_magnitudes_from_photometric_fits(cls, plot_sets: Dict[str, PlotSet],
-                                              nu_eff_lookup: Dict, delta_ts: Dict) -> DataFrame:
+                                              nu_eff_lookup: Dict, ext_corrections: Dict, delta_ts: Dict) -> DataFrame:
+        """
+        Generates a data frame from the passed plot_set fitted lightcurves,
+        containing the magnitudes and extinction magnitudes for the bands and times requested.
+        """
         rows = []
         for plot_set_key in plot_sets:
             plot_set = plot_sets[plot_set_key]
@@ -193,8 +214,18 @@ class SpectralEvolutionDistributionPlot(TimePlotSupportingLogAxes):
             for delta_t in delta_ts:
                 mag = plot_set.fits.find_y_value(delta_t)
                 if mag is not None:
+
+                    # Calculate the corrected mag too - subtract the extinction correction.
+                    if band in ext_corrections:
+                        cor_mag = mag - ext_corrections[band]
+                    else:
+                        # Not a band we have corrections for (UV bands) so copy it over
+                        cor_mag = mag
+
                     rows.append({"band": band, "nu_eff": nu_eff_lookup[band],
-                                 "label": label, "delta_t": delta_t, "mag": mag.nominal_value, "mag_err": mag.std_dev})
+                                 "label": label, "delta_t": delta_t,
+                                 "mag": mag.nominal_value, "mag_err": mag.std_dev,
+                                 "cor_mag": cor_mag.nominal_value, "cor_mag_err": cor_mag.std_dev})
 
         if len(rows) > 0:
             df = DataFrame.from_records(rows, columns=rows[0].keys())
@@ -205,15 +236,21 @@ class SpectralEvolutionDistributionPlot(TimePlotSupportingLogAxes):
     @classmethod
     def _calculate_flux_density_for_magnitude_and_band(cls, mag, mag_err, band):
         """
-        Calculate the flux density from the passed magnitude.
+        Calculate the flux density [Jy] from the passed magnitude.
         """
         #
-        # f_nu = 10 ^ 0.4(8.9 - m_AB)
+        # Based on the standard definition of the magnitude system, where monochromatic flux (in erg/s/cm^2/Hz)
+        # gives magnitude (Oke, 1974)
+        #               m_AB = -2.5 log(f_nu) - 48.60
+        # therefore
+        #               f_nu = 10^(-0.4(m_AB + 48.60))
+        # if you work through that 1 Jy = 10^-23, so f_nu [Jy] = f_nu/10^-23, you get
+        #               f_nu = 10^(0.4(8.9-m_AB)) Jy
         #
-        # Based on the relation: m_AB = -2.5 log(f_nu) + 8.9
-        # https://www.astro.ljmu.ac.uk/~ikb/convert-units/node1.html
-        #
-        m_ab, m_ab_err = unc.add(mag, cls._mag_ab_correction_factor[band], mag_err, 0)
+        #m_ab, m_ab_err = unc.add(mag, cls._mag_ab_correction_factor[band], mag_err, 0)
+        m_ab = mag
+        m_ab_err = mag_err
+
         m_int, m_int_err = unc.subtract(8.9, m_ab, 0, m_ab_err)
         exponent, exponent_err = unc.multiply(0.4, m_int, 0, m_int_err)
         f_nu, f_nu_err = unc.power(10, exponent, 0, exponent_err)
@@ -230,3 +267,24 @@ class SpectralEvolutionDistributionPlot(TimePlotSupportingLogAxes):
         r2, r2_err = unc.power(distance_m, 2, distance_m_err, 0)
         l_nu, l_nu_err = unc.multiply(a, r2, a_err, r2_err)
         return l_nu, l_nu_err
+
+    @classmethod
+    def _calculate_effective_frequencies(cls, lambda_eff: Dict[str, float]) -> Dict[str, float]:
+        """
+        Calculate central frequency from wavelengths based on; c= lambda * freq --> freq = c / lambda
+        """
+        nu_eff = {}
+        for key in lambda_eff:
+            nu_eff[key] = 2.998e8 / lambda_eff[key]
+        return nu_eff
+
+    @classmethod
+    def _calculate_extinction_corrections(cls, coeffs: Dict[str, float], color_excess: UFloat, R_V: float = 3.1):
+        """
+        The extincion correction in magnitudes [as from Schaefer (2010) Section 17]) for each band
+                A = [A/A(V)] * R_V * E(B-V)
+        """
+        extinction_for_bands = {}
+        for band in coeffs:
+            extinction_for_bands[band] = coeffs[band] * R_V * color_excess
+        return extinction_for_bands
