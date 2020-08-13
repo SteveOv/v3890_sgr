@@ -1,7 +1,5 @@
-import numpy as np
-import with_uncertainties as unc
 from data.PhotometryDataSource import *
-from utility import timing as tm
+from utility import timing as tm, math_uncertainties as unc
 
 
 class MagnitudeDataSource(PhotometryDataSource, ABC):

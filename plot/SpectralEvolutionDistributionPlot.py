@@ -1,6 +1,6 @@
 import math
-from uncertainties import ufloat, ufloat_fromstr, UFloat
-import with_uncertainties as unc
+from uncertainties import ufloat_fromstr, UFloat
+from utility import math_uncertainties as unc
 from plot.TimePlotSupportingLogAxes import *
 
 
