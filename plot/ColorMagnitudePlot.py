@@ -18,13 +18,13 @@ class ColorMagnitudePlot(BasePlot):
         self._default_x_lim = (-1, 1)
         self._default_x_ticks = [-1.0, -0.5, 0, 0.5, 1]
 
-        self._default_y_label = "$m_V$"
+        self._default_y_label = "$M_V$"
         self._default_y_lim = (-10, 0)
         self._default_y_ticks = [-10, -8, -6, -4, -2, 0]
 
         # Compulsory - want a failure if these are not set
         self._default_mu = self._default_color_excess = None
-        self._default_max_delta_t = 50
+        self._default_max_delta_t = 70
         return
 
     @property
@@ -79,7 +79,7 @@ class ColorMagnitudePlot(BasePlot):
     def _calculate_color_magnitude_values(cls, b_set: FitSet, v_set: FitSet,
                                           delta_ts: [float], color_excess: UFloat, mu: UFloat):
         """
-        Calcualte the (intrinsic)color v (absolute)magnitude data based on the passed
+        Calculate the (intrinsic)color v (absolute)magnitude data based on the passed
         fitted lightcurves (for apparent mags), time points, colour excess and distance modulus values.
         """
         # Loop through time, sampling the apparent mag of the fit for each set
@@ -93,6 +93,6 @@ class ColorMagnitudePlot(BasePlot):
             V = v_set.find_y_value(delta_t)
             if B is not None and V is not None:
                 observed_color = B - V
-                intrinsic_color.append(color_excess + observed_color)
+                intrinsic_color.append(observed_color - color_excess)
                 abs_mag.append(V - mu)
         return intrinsic_color, abs_mag

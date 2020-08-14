@@ -205,8 +205,8 @@
                 "file_name": "./output/phot/V3890Sgr-2019-Color-mag.png",
                 "title": "Color-magnitude plot of the 2019 eruption\nbased on the nominal fit",
                 "params": {
-                    "show_title": true, "x_lim": [-0.5, 2.0], "x_ticks": [-0.5, 0, 0.5, 1.0, 1.5, 2.0], "y_lim": [-10, 0],
-                    "max_delta_t": 30, "legend_loc": "lower right"
+                    "show_title": true, "x_lim": [-1.0, 1.0], "x_ticks": [-1.0, -0.5, 0, 0.5, 1.0], "y_lim": [-10, 0],
+                    "max_delta_t": 50, "legend_loc": "lower right"
                 },
                 "plot_sets": [
                     {"data_sets": "2019-AAVSO/nominal"}
