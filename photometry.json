@@ -217,7 +217,7 @@
                 "file_name": "./output/phot/V3890Sgr-2019-SED-log(freq).png",
                 "title": "The evolution of the SED of the 2019 eruption of V3890 Sgr",
                 "params": {
-                    "show_title": true, "delta_t": [0.35, 1, 2, 3, 5, 10, 20, 30, 40]
+                    "show_title": true, "delta_t": [0.35, 1, 2, 3, 5, 10, 20, 30, 40, 50, 60]
                 },
                 "plot_sets": [
                     {"data_sets": "2019-AAVSO/nominal"},
