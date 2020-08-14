@@ -58,9 +58,10 @@ class SpectrumPlot(BasePlot):
         return
 
     def _draw_spectrum(self, ax: Axes, spectrum: Spectrum1DEx):
-        is_blue = min(spectrum.spectral_axis.value) < 5000
-        label = "Blue arm" if is_blue else "Red arm"
-        color = "b" if is_blue else "r"
+        color = "b" if spectrum.is_blue else "r"
+        label = "Blue arm" if spectrum.is_blue else "Red arm"
+        if spectrum.flux_scale_factor != 1:
+            label += f" (scaled by {spectrum.flux_scale_factor})"
         ax.plot(spectrum.spectral_axis, spectrum.flux, label=label, color=color, linestyle="-", linewidth=0.25)
         return
 

@@ -11,8 +11,12 @@ class DataSource(ABC):
     """
     _subclasses = None
 
-    def __init__(self, source: str):
+    def __init__(self, source: str, **kwargs):
         print(F"\n{self.__class__.__name__}: Ingesting/parsing data from '{source}' ...")
+
+        # Store any extended arguments - base doesn't know of them but subclass may do.
+        self._kwargs = kwargs
+
         self._data = self._ingest(source)
         if isinstance(self._data, DataFrame):
             print(F"\t... ingested {len(self._data)} row(s).")
@@ -21,13 +25,13 @@ class DataSource(ABC):
         return
 
     @classmethod
-    def create(cls, type_name: str, source: str) -> Type["DataSource"]:
+    def create(cls, type_name: str, source: str, **kwargs) -> Type["DataSource"]:
         """
         Factory method for creating a DataSource of the chosen type with the requested source.
         Will raise a KeyError if the type_name is not a recognised subclass.
         """
         ctor = cls._get_subclass_hierarchy()[type_name.casefold()]
-        data_source = ctor(source)
+        data_source = ctor(source, **kwargs)
         return data_source
 
     @classmethod
@@ -43,9 +47,12 @@ class DataSource(ABC):
             source = config["file_spec"]
         elif "source" in config:
             source = config["source"]
+            config.pop("source")        # remove this to prevent clash with specific, named argument.
         else:
             raise KeyError("No source specified")
-        return cls.create(type_name, source)
+
+        # Pass the rest of the config dictionary on as **kwargs
+        return cls.create(type_name, source, **config)
 
     @abstractmethod
     def _ingest(self, source: str) -> Union[DataFrame, Spectrum1DEx]:

@@ -12,10 +12,17 @@ CGREEN = '\33[32m'
 CBLUE = '\33[34m'
 CEND = '\033[0m'
 
+
 class Spectrum1DEx(Spectrum1D):
     """
     Extends specutils Spectrum1D.  Supports generating fits HDU from the spectral data.
     """
+    def __init__(self, flux=None, spectral_axis=None, wcs=None, velocity_convention=None,
+                 rest_value=None, redshift=None, radial_velocity=None, **kwargs):
+        super().__init__(flux=flux, spectral_axis=spectral_axis, wcs=wcs, velocity_convention=velocity_convention,
+                         rest_value=rest_value, redshift=redshift, radial_velocity=radial_velocity, **kwargs)
+        self._flux_scale_factor = 1
+        return
 
     @property
     def min_wavelength(self) -> Quantity:
@@ -25,16 +32,34 @@ class Spectrum1DEx(Spectrum1D):
     def max_wavelength(self) -> Quantity:
         return Quantity(max(self.wavelength.value), unit=self.wavelength.unit)
 
+    @property
+    def is_blue(self) -> bool:
+        return min(self.wavelength.value) < 5000
+
+    @property
+    def flux_scale_factor(self) -> float:
+        """
+        The cumulative scale factor applied to the flux of this spectrum when it was loaded.
+        """
+        return self._flux_scale_factor
+
+    @flux_scale_factor.setter
+    def flux_scale_factor(self, value):
+        self._flux_scale_factor = value
+
     @classmethod
     def from_spectrum1d(cls, spec1d: Spectrum1D):
         """
         Creates a instance of a Spectrum1DEx from the passed Spectrum1D
         """
         if spec1d is not None:
-            return Spectrum1DEx(flux=spec1d.flux, spectral_axis=spec1d.spectral_axis, uncertainty=spec1d.uncertainty,
-                                wcs=spec1d.wcs, mask=spec1d.mask, meta=spec1d.meta)
+            new_spec = Spectrum1DEx(flux=spec1d.flux, spectral_axis=spec1d.spectral_axis,
+                                    uncertainty=spec1d.uncertainty, wcs=spec1d.wcs, mask=spec1d.mask, meta=spec1d.meta)
+            if isinstance(spec1d, Spectrum1DEx):
+                new_spec._flux_scale_factor = spec1d._flux_scale_factor
         else:
-            return None
+            new_spec = None
+        return new_spec
 
     @classmethod
     def spectral_region_centred_on(cls, lambda_c: float, width_ms: float, units: str = "Angstrom") \
@@ -59,11 +84,19 @@ class Spectrum1DEx(Spectrum1D):
                     region_list.append(cls.spectral_region_over(min(item), max(item), units))
         return region_list
 
+    def __getitem__(self, item):
+        value = super().__getitem__(item)
+        if isinstance(value, Spectrum1DEx):
+            value._flux_scale_factor = self._flux_scale_factor
+        return value
+
     def copy(self):
         """
         Create a copy of this spectrum
         """
-        return super()._copy()
+        copy = super()._copy()
+        copy._flux_scale_factor = self._flux_scale_factor
+        return copy
 
     def create_image_hdu(self, name, header=None) \
             -> fits.ImageHDU:
@@ -166,4 +199,4 @@ class Spectrum1DEx(Spectrum1D):
 
     def __repr__(self) \
             -> str:
-        return super().__repr__().replace("Spectrum1D", "Spectrum1DEx")
+        return super().__repr__().replace("Spectrum1D(", f"Spectrum1DEx(flux_scale_factor={self._flux_scale_factor}, ")
