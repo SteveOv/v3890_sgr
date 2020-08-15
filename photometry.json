@@ -196,6 +196,23 @@
                     ]
                 }
             }
+        },
+        "2014-AAVSO-V745-Sco": {
+            "file_spec": "./data/AAVSO/V745_Sco/aavsodata_5f37c97603c1a.txt",
+            "description": "Data from AAVSO.  AAVSO give the eruption peak at JD = 2456695.194",
+            "type": "AavsoMagnitudeDataSource",
+            "light_curves":{
+                "nominal": {
+                    "eruption_jd": 2456695,
+                    "query_params": { "excluded_observers": "", "day_range": [0, 100] },
+                    "data_sets": [
+                        {"set": "I", "color": "darkred", "label": "I-band","breaks": [0.35, 0.46, 9.6, 22.2, 30.0, 38.9, 66.5]},
+                        {"set": "R", "color": "r", "label": "R-band",      "breaks": [0.35, 0.46, 8.2, 22.6, 29.0, 38.5]},
+                        {"set": "V", "color": "g", "label": "V-band",      "breaks": [0.35, 0.46, 8.2, 21.1, 31.8, 40.0]},
+                        {"set": "B", "color": "b", "label": "B-band",      "breaks": [0.35, 0.42, 7.0, 22.3, 31.5, 50.5]}
+                    ]
+                }
+            }
         }
     },
     "plots": {
@@ -398,6 +415,22 @@
                 "title": "The 1962 eruption of V3890 Sgr ($t_{{e}}=22437818-0.35$)\noverlaid with slopes from the 2019 eruption",
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "plot_sets": [{"data_sets": "1962-Schaefer/nominal_same_fits_2019"}]
+            }
+        ],
+        "2014 V745 Sco Eruption Visual Plots (based on AAVSO data)": [
+            {
+                "type": "MagnitudeTimePlot",
+                "file_name": "./output/phot/V745Sco-2014-LC-AAVSO-linear-day-nominal.png",
+                "title": "The 2014 eruption of V745 Sco\n($t_{{e}}=2456695.194$)",
+                "params": {"show_title": true, "x_size": 1, "y_size": 1},
+                "plot_sets": [{"data_sets": "2014-AAVSO-V745-Sco/nominal"}]
+            },
+            {
+                "type": "TwoByTwoMagnitudeLogTimePlot",
+                "file_name": "./output/phot/V745Sco-2014-LCx4-AAVSO-log(day)-nominal.png",
+                "title": "The 2014 eruption of V745 Sco from AAVSO visual observations ($t_{{e}}=2456695.194$)",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true},
+                "plot_sets": [{"data_sets": "2014-AAVSO-V745-Sco/nominal"}]
             }
         ],
         "Temporary Plots": [
