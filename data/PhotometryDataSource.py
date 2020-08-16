@@ -7,6 +7,7 @@ class PhotometryDataSource(DataSource, ABC):
         """
         Query the data to get the required data
         """
+        print(f"{self.__class__.__name__}: Querying data...")
         # Get the basic data set from the subclass
         df = self._on_query(eruption_jd)
 
@@ -37,10 +38,20 @@ class PhotometryDataSource(DataSource, ABC):
                     print(f"\tafter query (query_params): {query_key} == '{query_value}', {len(df)} rows left")
 
         # If set_params supplied look for a where value and then apply that
-        if set_params is not None and "where" in set_params:
-            query_value = set_params["where"]
-            df = df.query(query_value)
-            print(f"\tafter querying (set_params): '{query_value}', {len(df)} rows left")
+        if set_params is not None:
+            for query_key in set_params:
+                query_value = set_params[query_key]
+
+                if query_key == "where":
+                    # Generic filter/query expression in the form (where) "field == value"
+                    df = df.query(query_value)
+                    print(f"\tafter querying (set_params) : '{query_value}', {len(df)} rows left")
+                elif query_key == "band":
+                    df = df.query(f"band=='{query_value}'")
+                    print(f"\tafter query (set_params): band == '{query_value}', {len(df)} rows left")
+                elif query_key == "filter":
+                    df = df.query(f"filter=='{query_value}'")
+                    print(f"\tafter query (set_params): filter == '{query_value}', {len(df)} rows left")
 
         # return whatever is left
         return df

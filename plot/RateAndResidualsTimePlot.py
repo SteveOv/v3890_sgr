@@ -77,12 +77,14 @@ class RateAndResidualsTimePlot(RateTimePlot):
                 self._ax_res.grid(which="minor", linestyle="-", linewidth=self._line_width, alpha=0.1)
         return
 
-    def _draw_plot_set(self, ax: Axes, ix: int, ps: PlotSet):
+    def _draw_lightcurve_and_fit_set(self, ax: Axes, ix: int, lightcurve: Lightcurve = None, fit_set: FitSet = None):
         # Super() looks after the main ax with the rate(& fit)/time plot
-        super()._draw_plot_set(ax, ix, ps)
+        super()._draw_lightcurve_and_fit_set(ax, ix, lightcurve, fit_set)
 
         # now we calculate and plot the residuals to the additional ax
-        if self.show_residuals and self._ax_res is not None:
-            x_res, y_res = ps.fits.calculate_residuals(ps.x, ps.y)
-            self._ax_res.plot(x_res, y_res, ".", color=ps.color, markersize=self._marker_size * 2, alpha=1, zorder=2)
+        if self.show_residuals and fit_set is not None and lightcurve is not None and self._ax_res is not None:
+            color = lightcurve.metadata.get_or_default("color", fit_set.metadata.get_or_default("color", "k"))
+
+            x_res, y_res = fit_set.calculate_residuals(lightcurve.x, lightcurve.y)
+            self._ax_res.plot(x_res, y_res, ".", color=color, markersize=self._marker_size * 2, alpha=1, zorder=2)
         return

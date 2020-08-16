@@ -91,13 +91,14 @@ class RatesAndRatioTimePlot(RateTimePlot):
                 ax.grid(which="minor", linestyle="-", linewidth=self._line_width, alpha=0.1)
         return
 
-    def _draw_plot_set(self, ax: Axes, ix: int, ps: PlotSet):
+    def _draw_lightcurve_and_fit_set(self, ax: Axes, ix: int, lightcurve: Lightcurve = None, fit_set: FitSet = None):
         # Work out what we are plotting here so we know which ax to plot it on.
-        # TODO: add properties to PlotSet which publish what type of data (band, hard/soft/PC/WT rate, ratio) carried.
-        if "hard_data" in ps.name:
-            super()._draw_plot_set(self._ax_hard, ix, ps)
-        elif "soft_data" in ps.name:
-            super()._draw_plot_set(self._ax_soft, ix, ps)
-        elif "hardness_ratio" in ps.name:
-            super()._draw_plot_set(self._ax_ratio, ix, ps)
+        if lightcurve is not None:
+            data_type = lightcurve.metadata.get_or_default("data_type", None)
+            if data_type == "hard":
+                super()._draw_lightcurve_and_fit_set(self._ax_hard, ix, lightcurve, fit_set)
+            elif data_type == "soft":
+                super()._draw_lightcurve_and_fit_set(self._ax_soft, ix, lightcurve, fit_set)
+            elif data_type == "ratio":
+                super()._draw_lightcurve_and_fit_set(self._ax_ratio, ix, lightcurve, fit_set)
         return

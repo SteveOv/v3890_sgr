@@ -1,3 +1,5 @@
+from fitting.Lightcurve import *
+
 from fitting.Fit import *
 
 from fitting.NullFit import *

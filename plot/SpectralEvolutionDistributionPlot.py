@@ -3,7 +3,6 @@ from typing import List, Dict, Tuple
 from uncertainties import UFloat
 from utility import math_uncertainties as unc
 from plot.BasePlot import *
-from plot.PlotSet import *
 
 
 class SpectralEvolutionDistributionPlot(BasePlot):
@@ -128,8 +127,7 @@ class SpectralEvolutionDistributionPlot(BasePlot):
         The call from super() to get this plot to draw its content to the Axes. In this case we're not directly
         plotting photometric data, instead we'll do SED analysis from fits and then plot the resulting data.
         """
-        plot_data = kwargs["plot_data"]
-        plot_sets = plot_data.plot_sets
+        fit_sets = kwargs["fit_sets"]
         r_m, r_m_err = self.target_distance_m
 
         nu_effs = self.__class__._calculate_effective_frequencies(self.lambda_effs)
@@ -140,7 +138,7 @@ class SpectralEvolutionDistributionPlot(BasePlot):
 
         # We don't include the distance uncertainty in these SED calculations as it's systematic.
         # Instead we'll work it out once and present it separately.
-        df = self.__class__._calculate_sed_data(plot_sets, self.delta_t, nu_effs, ext_corrections, self._zero_mag_fluxes, r_m)
+        df = self.__class__._calculate_sed_data(fit_sets, self.delta_t, nu_effs, ext_corrections, self._zero_mag_fluxes, r_m)
 
         ix = 0
         for delta_t in sorted(self.delta_t):
@@ -179,12 +177,12 @@ class SpectralEvolutionDistributionPlot(BasePlot):
         return
 
     @classmethod
-    def _calculate_sed_data(cls, plot_sets: Dict[str, PlotSet], delta_ts: [],
+    def _calculate_sed_data(cls, fit_sets: Dict, delta_ts: [],
                             nu_eff_lookup: Dict, extinction_corrections: Dict, band_zero_mag_fluxes: Dict,
                             distance_m: float, distance_m_err: float = 0) -> DataFrame:
 
         # Generate the dataframe with bands, and (extinction corrected) magnitudes at the requested times
-        df = cls._get_magnitudes_from_photometric_fits(plot_sets, nu_eff_lookup, extinction_corrections, delta_ts)
+        df = cls._get_magnitudes_from_photometric_fits(fit_sets, nu_eff_lookup, extinction_corrections, delta_ts)
 
         # Calculate flux density values for the retrieved, corrected magnitudes.
         df[['flux_hz', "flux_hz_err"]] = df.apply(
@@ -199,21 +197,20 @@ class SpectralEvolutionDistributionPlot(BasePlot):
         return df
 
     @classmethod
-    def _get_magnitudes_from_photometric_fits(cls, plot_sets: Dict[str, PlotSet],
+    def _get_magnitudes_from_photometric_fits(cls, fit_sets: Dict,
                                               nu_eff_lookup: Dict, ext_corrections: Dict, delta_ts: []) -> DataFrame:
         """
         Generates a data frame from the passed plot_set fitted light-curves,
         containing the magnitudes and extinction magnitudes for the bands and times requested.
         """
         rows = []
-        for plot_set_key in plot_sets:
-            plot_set = plot_sets[plot_set_key]
-            band = plot_set.param("set")
-            label = plot_set.label
+        for fit_set_key, fit_set in fit_sets.items():
+            label = fit_set.label
+            band = fit_set.metadata.get_or_default("band", label)
 
             # Now use the fits to calculate magnitudes at the requested time intervals
             for delta_t in delta_ts:
-                mag = plot_set.fits.find_y_value(delta_t)
+                mag = fit_set.find_y_value(delta_t)
                 if mag is not None:
                     # Calculate the corrected mag too - subtract the extinction correction.
                     cor_mag, cor_mag_err = \

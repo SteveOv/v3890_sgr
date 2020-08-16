@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict, Type, Union
 from pandas import DataFrame
 from data.spectrum import *
+from data import *
 
 
 class DataSource(ABC):
@@ -25,7 +26,7 @@ class DataSource(ABC):
         return
 
     @classmethod
-    def create(cls, type_name: str, source: str, **kwargs) -> Type["DataSource"]:
+    def create(cls, type_name: str, source: str, **kwargs):
         """
         Factory method for creating a DataSource of the chosen type with the requested source.
         Will raise a KeyError if the type_name is not a recognised subclass.
@@ -35,7 +36,7 @@ class DataSource(ABC):
         return data_source
 
     @classmethod
-    def create_from_config(cls, config: Dict, default_type_name: str = None) -> Type["DataSource"]:
+    def create_from_config(cls, config: Dict, default_type_name: str = None):
         if "type" in config:
             type_name = config["type"]
         elif default_type_name is not None:

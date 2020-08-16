@@ -1,7 +1,5 @@
 from plot.BasePlot import *
 
-from plot.PlotSet import *
-from plot.PlotData import *
 from plot.PlotHelper import *
 
 from plot.SpectralEvolutionDistributionPlot import *

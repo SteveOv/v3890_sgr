@@ -70,17 +70,16 @@ class MagnitudeAndRateTimePlot(MagnitudeTimePlot):
         self._ax2.set(ylim=self.y2_lim)
         return
 
-    def _draw_plot_set(self, ax: Axes, ix: int, ps: PlotSet):
-        if ps.data_type == "band":
-            # Magnitude data - plotted against the default y-axis
-            super()._draw_plot_set(ax, ix, ps)
-        elif ps.data_type == "rate":
-            # Rate/count data - make sure it's plotted against the secondary y-axis
-            super()._draw_plot_set(self._ax2, ix, ps)
+    def _draw_lightcurve_and_fit_set(self, ax: Axes, ix: int, lightcurve: Lightcurve = None, fit_set: FitSet = None):
+        data_type = lightcurve.data_type if lightcurve is not None else None
+        if data_type in ["mag", "band"]:
+            super()._draw_lightcurve_and_fit_set(ax, ix, lightcurve, fit_set)
+        elif data_type == "rate":
+            super()._draw_lightcurve_and_fit_set(self._ax2, ix, lightcurve, fit_set)
         return
 
-    def _draw_plot_sets(self, ax: Axes, plot_sets: Dict[str, PlotSet]):
-        super()._draw_plot_sets(ax, plot_sets)
+    def _draw_lightcurves_and_fit_sets(self, ax: Axes, lightcurves: Dict, fit_sets: Dict):
+        super()._draw_lightcurves_and_fit_sets(ax, lightcurves, fit_sets)
 
         # Once all the plots have been made we can configure the additional legend for the y2 axis
         if self.show_legend:

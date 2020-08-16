@@ -1,6 +1,6 @@
 from uncertainties import unumpy, ufloat_fromstr, UFloat
 from plot.BasePlot import *
-from plot.PlotSet import *
+from fitting import FitSet
 from utility import math_uncertainties as unc
 
 
@@ -54,18 +54,17 @@ class ColorMagnitudePlot(BasePlot):
         """
         Hook into the BasePlot plot processing to enable this type to draw to the plot Axes
         """
-        plot_data = kwargs["plot_data"]
-        plot_sets = plot_data.plot_sets
-
         # we are interested in the B and V band data (TODO: remove hard coding later)
-        b_set = plot_sets["2019-AAVSO/nominal/B"]
-        v_set = plot_sets["2019-AAVSO/nominal/V"]
+        fit_sets = kwargs["fit_sets"]
+        b_set = fit_sets["V3890-Sgr-2019-Vis-nominal/B-band"]
+        v_set = fit_sets["V3890-Sgr-2019-Vis-nominal/V-band"]
+
         delta_ts = np.append(np.arange(0.1, 2.0, 0.1), np.arange(2.0, self.max_delta_t, 0.5))
 
         for color_excess in [self.color_excess.nominal_value]:
             for mu in [self.mu.nominal_value]:
                 x_data, y_data = self.__class__._calculate_color_magnitude_values(
-                    b_set.fits, v_set.fits, delta_ts, color_excess, mu)
+                    b_set, v_set, delta_ts, color_excess, mu)
 
                 color = "b"
                 label = f"E(B-V)={color_excess:.2f}, $\\mu$={mu:.2f}"

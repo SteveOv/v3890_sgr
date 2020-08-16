@@ -1,5 +1,4 @@
 import warnings
-from plot.PlotData import *
 from plot.MagnitudeTimePlot import *
 
 
@@ -42,7 +41,8 @@ class TwoByTwoMagnitudeLogTimePlot(MagnitudeTimePlot):
         """
         Produce a figure with up to 4 (2 x 2) Magnitude v log(time) plots, for each of the passed band data.
         """
-        plot_data = kwargs["plot_data"]
+        lightcurves = kwargs["lightcurves"]
+        fit_sets = kwargs["fit_sets"]
 
         # TODO: look at creating the axes on the fly as this approach is hard coded to 4 axes always
         fig, axes = plt.subplots(2, 2, figsize=(self.x_size, self.y_size))
@@ -50,9 +50,7 @@ class TwoByTwoMagnitudeLogTimePlot(MagnitudeTimePlot):
             fig.suptitle(title)
 
         ax_ix = 0
-        for plot_set_key in plot_data.plot_sets.keys():
-            ps = plot_data.plot_sets[plot_set_key]
-
+        for lightcurve_key, lightcurve in lightcurves.items():
             if ax_ix > 3:
                 warnings.warn("More than four bands specified for this plot.  Only the first four will be shown")
                 break
@@ -60,15 +58,16 @@ class TwoByTwoMagnitudeLogTimePlot(MagnitudeTimePlot):
             # Get the super class to set up the ax - it knows how to configure it for linear or log x scale.
             ax = axes.flat[ax_ix]
             super()._configure_ax(ax)
-            ax.set_ylabel(self._param("y_label", F"{ps.label} Apparent magnitude [mag]"))
+            ax.set_ylabel(self._param("y_label", F"{lightcurve.label} Apparent magnitude [mag]"))
 
-            # Get the super class to render the data.
-            # It knows how to render mags v days on linear or log x-scale and will optionally draw the fits if required.
-            self._draw_plot_set(ax, 0, ps)
+            # Get the super class to render the data to this ax.
+            # It knows how to render mags v days on linear or log x-scale.
+            fit_set = fit_sets[lightcurve_key] if lightcurve_key in fit_sets else None
+            self._draw_lightcurve_and_fit_set(ax, 0, lightcurve, fit_set)
 
             # Plotting breaks are specific to this type of plot so we do that here by subverting epoch drawing.
-            if self.show_breaks and ps.has_param("breaks"):
-                epochs_from_breaks = dict(zip(["%.2f" % x for x in ps.param("breaks")], ps.param("breaks")))
+            if self.show_breaks and fit_set is not None:
+                epochs_from_breaks = dict(zip(["%.2f" % x for x in fit_set.breaks], fit_set.breaks))
                 self._draw_epochs(ax, epochs_from_breaks)
 
             ax_ix += 1

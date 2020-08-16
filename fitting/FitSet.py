@@ -1,14 +1,15 @@
 from abc import ABC, abstractmethod
-from typing import List, Union, Tuple
+from typing import List, Union, Tuple, Dict
 from pandas import DataFrame
 import copy
 import uncertainties
 import numpy as np
 from matplotlib.axes import Axes
-from fitting import Fit, FitSet, FittedFit, NullFit, InterpolatedFit
+from fitting import Fit, FitSet, FittedFit, NullFit, InterpolatedFit, Lightcurve
+from utility import WithMetadata
 
 
-class FitSet(ABC):
+class FitSet(WithMetadata):
     """
     Base class for a set of fits to a range of data
     """
@@ -16,9 +17,12 @@ class FitSet(ABC):
     # TODO: Python 3 does support some form of generics so look at reworking this as a generic type.
     #       This should make the logic around the Fits factory easier, and we'll require less from any subclass.
 
-    def __init__(self, fits: List[Fit], breaks: List[float]):
+    def __init__(self, name: str, fits: List[Fit], breaks: List[float], **kwargs):
+        self._name = name
         self._fits = fits
         self._breaks = breaks
+        super().__init__(**kwargs)
+        return
 
     def __iter__(self) -> [Fit]:
         return self._fits.__iter__()
@@ -29,12 +33,20 @@ class FitSet(ABC):
     def __str__(self) -> str:
         text = f"{type(self).__name__}: breaks = {self.breaks}".replace("\n", "")
         for fit in self:
-            text += F"\n{fit}"
+            text += F"\n\t{fit}"
         return text
+
+    @property
+    def name(self) -> str:
+        return self._name
 
     @property
     def breaks(self) -> List[float]:
         return self._breaks
+
+    @property
+    def label(self) -> str:
+        return self.metadata.get_or_default("label", self._name)
 
     @classmethod
     def copy(cls, source: FitSet, x_shift: float = 0, y_shift: float = 0) -> FitSet:
@@ -44,21 +56,21 @@ class FitSet(ABC):
         fits = []
         for fit in source:
             fits.append(type(fit).copy(fit, x_shift, y_shift))
-        new_set = cls(fits, np.add(copy.copy(source.breaks), x_shift))
-        print(f"Copied {cls.__name__} while applying x_shift = {x_shift} and y_shift = {y_shift}.\n{new_set} to Fits")
+        metadata = copy.copy(source.metadata)
+        new_set = source.__class__(source.name, fits, np.add(copy.copy(source.breaks), x_shift), **metadata)
+        print(f"Copied {cls.__name__} while applying x_shift = {x_shift} and y_shift = {y_shift}.\n{new_set}")
         return new_set
 
     @classmethod
-    def fit_to_data(cls, df: DataFrame, x_col: str, y_col: str, y_err_col: str = None,
-                    breaks: List[Union[float, str]] = [], start_id: int = 0)\
-            -> FitSet:
+    def fit_to_data(cls, name: str, lightcurve: Lightcurve, x_col: str, y_col: str, y_err_col: str = None,
+                    breaks: List[Union[float, str]] = [], start_id: int = 0):
         """
         Factory method for a fit set.  Will create a set of fits to the passed data (x, y and delta y)
         based on the list of breaks.  Set y_err_col to None to omit sigma weighting from the fit.
         Each fit will be labelled with a subscript starting at start_id.
         """
         fits = []
-        ranges = cls._ranges_from_breaks(df[x_col], breaks, "def")
+        ranges = cls._ranges_from_breaks(lightcurve.df[x_col], breaks, "def")
         prior_fit = None
 
         for rng in ranges:
@@ -69,7 +81,7 @@ class FitSet(ABC):
 
             if fit_type == "def":
                 # Must have at least two data points to calculate the best fit line
-                range_df = df.query(F"{x_col}>={from_xi}").query(F"{x_col}<={to_xi}").sort_values(by=x_col)
+                range_df = lightcurve.df.query(F"{x_col}>={from_xi}").query(F"{x_col}<={to_xi}").sort_values(by=x_col)
                 if len(range_df) > 1:
                     dyi = range_df[y_err_col] if y_err_col is not None else None
                     fit = cls._create_fitted_fit_on_data(
@@ -94,7 +106,8 @@ class FitSet(ABC):
             start_id += 1
             prior_fit = fit
 
-        fit_set = cls(fits, breaks)
+        fit_set = cls(name, fits, breaks, **lightcurve.metadata)
+        print(f"Fitted {fit_set.__class__.__name__} to {lightcurve}.\n{fit_set}")
         return fit_set
 
     def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, label: str = None, y_shift: float = 0):
