@@ -10,7 +10,7 @@ class SpectrumPlot(BasePlot):
         self._default_y_size = 1
 
         self._default_show_spectral_lines = True
-        self._default_y_lim = (-1, 100)
+        self._default_y_lim = None
         return
 
     @property
@@ -42,8 +42,11 @@ class SpectrumPlot(BasePlot):
         # Do the basic config now we have defined the default behaviour
         super()._configure_ax(ax, **kwargs)
 
-        # Basic config leaves y-axis dynamic.  Override this here; Y tick only on the zero line and a range limit
-        ax.set_ylim(self.y_lim)
+        # Base behaviour has y-axis "dynamic" based on the data.  Keep that behaviour unless explicit limits specified.
+        if self.y_lim is not None:
+            ax.set_ylim(self.y_lim)
+
+        # Override the ticks though; Y tick only on the zero line
         ax.set_yticks([0], minor=False)
         ax.set_yticklabels([], minor=False)
         return

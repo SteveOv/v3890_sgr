@@ -15,11 +15,13 @@ for plot_group_config in settings["plots"]:
         # Create the requested spectral data sources and get the data from them
         spectra = []
         spectral_lines = {}
+        delta_t = None
         for spec_name in plot_config["spectra"]:
             ds = DataSource.create_from_config(settings["data_sources"][spec_name], "CalibratedSpectralDataSource")
-            mjd = ds.header["MJD"]
-            print(f"\tUsing spectrum '{spec_name}', Delta-t={tm.delta_t_from_jd(tm.jd_from_mjd(mjd), eruption_jd):.2f}")
-            spectra.append(ds.query())
+            delta_t = tm.delta_t_from_jd(tm.jd_from_mjd(ds.header["MJD"]), eruption_jd)
+            spectrum = ds.query()
+            print(f"\tUsing spectrum '{spec_name}': Delta-t={delta_t:.2f} & max_flux={spectrum.max_flux}")
+            spectra.append(spectrum)
 
         # Build the list of spectral lines which will overlay the spectra
         if "spectral_lines" in plot_config:
@@ -37,6 +39,9 @@ for plot_group_config in settings["plots"]:
                     print(f"** unknown line_set: {line_set_name}")
 
         # Do the print!
+        plot_config["params"]["y_lim"] = [-1, 100]
+        plot_config["title"] = \
+            f"Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t={delta_t:.2f}$ d"
         PlotHelper.plot_to_file(plot_config, spectra=spectra, spectral_lines=spectral_lines)
 
 
