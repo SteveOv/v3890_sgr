@@ -10,11 +10,16 @@ class SpectrumPlot(BasePlot):
         self._default_y_size = 1
 
         self._default_show_spectral_lines = True
+        self._default_y_lim = (-1, 100)
         return
 
     @property
     def show_spectral_lines(self) -> bool:
         return self._param("show_spectral_lines", self._default_show_spectral_lines)
+
+    @property
+    def y_lim(self):
+        return self._param("y_lim", self._default_y_lim)
 
     def _configure_ax(self, ax: Axes, **kwargs):
         # Get the spectra - we'll base the configuration on the data
@@ -34,11 +39,13 @@ class SpectrumPlot(BasePlot):
         first_tick = round(min_lambda / x_ticks_delta) * x_ticks_delta
         self._default_x_ticks = np.arange(first_tick, max_lambda, x_ticks_delta, dtype=int)
 
-        # Y tick only on the zero line
+        # Do the basic config now we have defined the default behaviour
+        super()._configure_ax(ax, **kwargs)
+
+        # Basic config leaves y-axis dynamic.  Override this here; Y tick only on the zero line and a range limit
+        ax.set_ylim(self.y_lim)
         ax.set_yticks([0], minor=False)
         ax.set_yticklabels([], minor=False)
-
-        super()._configure_ax(ax, **kwargs)
         return
 
     def _draw_plot_data(self, ax: Axes, **kwargs):
