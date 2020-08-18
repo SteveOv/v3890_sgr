@@ -1,5 +1,5 @@
 import warnings
-from typing import List, Union, Tuple
+from typing import List, Union
 import numpy as np
 from specutils import Spectrum1D
 from astropy.io import fits
@@ -33,13 +33,21 @@ class Spectrum1DEx(Spectrum1D):
         return Quantity(max(self.wavelength.value), unit=self.wavelength.unit)
 
     @property
+    def max_flux(self) -> Quantity:
+        return Quantity(max(self.flux.value), unit=self.flux.unit)
+
+    @property
+    def min_flux(self) -> Quantity:
+        return Quantity(min(self.flux.value), unit=self.flux.unit)
+
+    @property
     def is_blue(self) -> bool:
         return min(self.wavelength.value) < 5000
 
     @property
     def flux_scale_factor(self) -> float:
         """
-        The cumulative scale factor applied to the flux of this spectrum when it was loaded.
+        The scale factor applied to the flux of this spectrum when it was loaded.
         """
         return self._flux_scale_factor
 
