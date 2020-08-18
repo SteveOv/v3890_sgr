@@ -1,7 +1,6 @@
 from uncertainties import unumpy, ufloat_fromstr, UFloat
 from plot.BasePlot import *
 from fitting import FitSet
-from utility import math_uncertainties as unc
 
 
 class ColorMagnitudePlot(BasePlot):

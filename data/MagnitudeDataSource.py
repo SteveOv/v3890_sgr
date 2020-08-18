@@ -1,15 +1,8 @@
 from data.PhotometryDataSource import *
-from utility import timing as tm, math_uncertainties as unc
+from utility import timing as tm
 
 
 class MagnitudeDataSource(PhotometryDataSource, ABC):
-
-    vega_fluxes = {
-                "B": 4000,
-                "V": 3600,
-                "R": 3060,
-                "I": 2420
-            }
 
     def _on_query(self, eruption_jd: float) -> DataFrame:
         """
@@ -25,26 +18,4 @@ class MagnitudeDataSource(PhotometryDataSource, ABC):
         # We create day and log(day) field, relative to passed eruption jd
         df['day'] = tm.delta_t_from_jd(df['jd'], eruption_jd)
         df['log_day'] = np.log10(df.query("day>0")['day'])
-
-        """ Currently not required (also, this is quite slow)
-        # If not already present, calculate flux density values for the retrieved data.
-        if "flux_hz" not in df.columns:
-            df[['flux_hz', "flux_hz_err"]] = df.apply(
-                lambda d: MagnitudeDataSource.flux_density_from_magnitude(d["mag"], d["mag_err"], d["band"]),
-                axis=1,
-                result_type="expand")
-        """
         return df
-
-    @classmethod
-    def flux_density_from_magnitude(cls, mag, mag_err, band):
-
-        f_vega = cls.vega_fluxes[band] if band in cls.vega_fluxes else 0
-
-        n, n_err = unc.divide(mag, -2.5, mag_err, 0)
-        n, n_err = unc.power(10, n, 0, n_err)
-        f_nu, f_nu_err = unc.multiply(n, f_vega, n_err, 0)
-
-        return f_nu, f_nu_err
-
-

@@ -1,12 +1,13 @@
 import math
 from typing import List, Dict, Tuple
 from uncertainties import UFloat
-from utility import math_uncertainties as unc
+from utility import uncertainty_math as unc, magnitudes as mag
 from plot.BasePlot import *
 
 
 class SpectralEvolutionDistributionPlot(BasePlot):
 
+    """
     _mag_ab_correction_factors = {
         # FROM LJMU Website
         "B": -0.1,
@@ -18,6 +19,7 @@ class SpectralEvolutionDistributionPlot(BasePlot):
         "UVM2": 1.69,
         "UVW2": 1.73
     }
+    """
 
     def __init__(self, plot_params: Dict):
         super().__init__(plot_params)
@@ -53,7 +55,7 @@ class SpectralEvolutionDistributionPlot(BasePlot):
             {"I": 0.601, "R": 0.807, "V": 0.992, "B": 1.324, "UVM2": 1.968, "UVW2": 1.968}
 
         # These are derived data which is not directly specified in params.
-        self._zero_mag_fluxes = self.__class__._calculate_zero_mag_fluxes(self._mag_ab_correction_factors)
+        self._zero_mag_fluxes = self.__class__._calculate_zero_mag_fluxes()
         e_b_v = self.color_excess
         self._extinction_corrections = self.__class__._calculate_extinction_corrections(
             self.relative_extinction_coeffs, e_b_v.nominal_value, e_b_v.std_dev)
@@ -87,7 +89,7 @@ class SpectralEvolutionDistributionPlot(BasePlot):
     @property
     def target_distance_m(self) -> Tuple[float, float]:
         r_pc = self.target_distance_pc
-        return unc.multiply(r_pc.nominal_value, 3.086e16, r_pc.std_dev, 0)
+        return unc.multiply(r_pc.nominal_value, r_pc.std_dev, 3.086e16, 0)
 
     @property
     def color_excess(self) -> UFloat:
@@ -169,7 +171,7 @@ class SpectralEvolutionDistributionPlot(BasePlot):
         # Then put it back into the luminosity calculation, but with the distance uncertainty and plot the result.
         x_pos = nu_effs["I"]
         y_pos = 8e38
-        f_nu, f_nu_err = unc.divide(y_pos, 4 * math.pi * np.power(r_m, 2))
+        f_nu, f_nu_err = unc.divide(y_pos, 0, 4 * math.pi * np.power(r_m, 2), 0)
         lum_nu, lum_nu_err = \
             self.__class__._calculate_specific_luminosity(f_nu, f_nu_err, r_m, r_m_err)
         self._plot_points_to_error_bars_on_ax(ax, [x_pos], [lum_nu], [lum_nu_err], "k", fmt=",")
@@ -239,11 +241,11 @@ class SpectralEvolutionDistributionPlot(BasePlot):
         #           m_2 = 0
         #           f_2 = f_0 = flux at mag zero for the band
         # therefore
-        #           f_nu = 10^(mag/-2.5) * f_0
+        #           f_nu = 10^(-0.4 * mag) * f_0
         #
-        exponent, exponent_err = unc.divide(mag, -2.6, mag_err, 0)
-        f_int, f_int_err = unc.power(10, exponent, 0, exponent_err)
-        f_nu, f_nu_err = unc.multiply(f_int, zero_mag_fluxes[band], f_int_err, 0)
+        exponent, exponent_err = unc.multiply(-0.4, 0, mag, mag_err)
+        f_int, f_int_err = unc.power(10, 0, exponent, exponent_err)
+        f_nu, f_nu_err = unc.multiply(f_int, f_int_err, zero_mag_fluxes[band], 0)
         return f_nu, f_nu_err
 
     @classmethod
@@ -254,9 +256,9 @@ class SpectralEvolutionDistributionPlot(BasePlot):
         using the relation: L_nu = 4pi * r^2 * F_nu
         """
         # Calculate the luminosity L_nu = 4pi * r^2 * F_nu
-        a, a_err = unc.multiply(flux, 4*math.pi, flux_err, 0)
-        r2, r2_err = unc.power(distance_m, 2, distance_m_err, 0)
-        l_nu, l_nu_err = unc.multiply(a, r2, a_err, r2_err)
+        a, a_err = unc.multiply(flux, flux_err, 4*math.pi, 0)
+        r2, r2_err = unc.power(distance_m, distance_m_err, 2, 0)
+        l_nu, l_nu_err = unc.multiply(a, a_err, r2, r2_err)
         return l_nu, l_nu_err
 
     @classmethod
@@ -270,27 +272,14 @@ class SpectralEvolutionDistributionPlot(BasePlot):
         return nu_eff
 
     @classmethod
-    def _calculate_zero_mag_fluxes(cls, mag_ab_correction_factors: Dict[str, float]) -> Dict[str, float]:
+    def _calculate_zero_mag_fluxes(cls) -> Dict[str, float]:
         """
-        Calculate the band specific 0 mag flux densities [Jy] from the passed mag(AB) - mag Vega factors.
+        Calculate the band specific 0 mag(Vega) flux densities [Jy] from the passed mag(AB) - mag Vega factors.
         """
-        #
-        # Based on the standard definition of the magnitude system, where monochromatic flux (in erg/s/cm^2/Hz)
-        # gives magnitude (Oke, 1974)
-        #               m_AB = -2.5 log(f_nu) - 48.60
-        # therefore
-        #               f_nu = 10^(-0.4(m_AB + 48.60))
-        # if you work through that 1 Jy = 10^-23, so f_nu [Jy] = f_nu/10^-23, you get
-        #               f_nu = 10^(0.4(8.9-m_AB)) Jy
-        # Here the mag is zero, so we just use the correction factor
-        #               f_nu = 10^(0.4(8.9-(m_AB-0)) Jy
-        #
+        # mag(AB) = corr, where mag(Vega) == 0
         band_zero_fluxes = {}
-        for band in mag_ab_correction_factors:
-            m_ab_zero = mag_ab_correction_factors[band]
-            exponent = 0.4 * (8.9 - m_ab_zero)
-            f_nu_zero = 10**exponent
-            band_zero_fluxes[band] = f_nu_zero
+        for band in mag.mag_ab_correction_factors:
+            band_zero_fluxes[band], _ = mag.flux_density_jy_from_mag_ab(mag.mag_ab_correction_factors[band], 0)
         return band_zero_fluxes
 
     @classmethod
@@ -302,11 +291,11 @@ class SpectralEvolutionDistributionPlot(BasePlot):
         """
         extinction_for_bands = {}
         for band in coefficients:
-            correction, correction_err = unc.multiply((coefficients[band] * R_V), color_excess, 0, color_excess_err)
+            correction, correction_err = unc.multiply((coefficients[band] * R_V), 0, color_excess, color_excess_err)
             extinction_for_bands[band] = (correction, correction_err)
         return extinction_for_bands
 
     @classmethod
     def _correct_magnitudes(cls, mag, mag_err, band: str, corrections: Dict[str, Tuple[float, float]]):
         correction, correction_err = corrections[band]
-        return unc.subtract(mag, correction, mag_err, correction_err)
+        return unc.subtract(mag, mag_err, correction, correction_err)
