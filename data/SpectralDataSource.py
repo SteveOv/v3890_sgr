@@ -1,5 +1,5 @@
 from data.DataSource import *
-from data.spectrum import *
+from spectroscopy import *
 
 
 class SpectralDataSource(DataSource, ABC):

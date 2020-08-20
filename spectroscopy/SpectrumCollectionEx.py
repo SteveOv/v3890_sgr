@@ -1,9 +1,9 @@
 import warnings
-from typing import List, Type, Tuple
+from typing import List, Type
 import numpy as np
 from specutils import SpectrumCollection, Spectrum1D
 from astropy.units import Quantity
-from data.spectrum.Spectrum1DEx import Spectrum1DEx
+from spectroscopy.Spectrum1DEx import Spectrum1DEx
 
 
 class SpectrumCollectionEx(SpectrumCollection):

@@ -3,7 +3,7 @@ from pathlib import Path
 from astropy.wcs import WCS
 from astropy import units
 from data.SpectralDataSource import *
-from data.spectrum import *
+from spectroscopy import Spectrum1DEx, SpectrumCollectionEx
 
 
 class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
@@ -16,7 +16,7 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
     @classmethod
     def read_spectra(cls, filename: Union[str, Path], hdu_name: str = None, selected_fibres: [] = None,
                      header: bool = False, label: str = None) \
-            -> Union[SpectrumCollection, Tuple[Any, SpectrumCollectionEx]]:
+            -> Union[SpectrumCollectionEx, Tuple[Any, SpectrumCollectionEx]]:
         """
         Read the requested spectral data into a SpectrumCollectionEx.  If a fibre mask supplied
         only those spectra where the mask is true are returned, otherwise all spectra are returned.

@@ -10,7 +10,7 @@ from specutils import SpectrumList
 import plotting
 
 from data import FrodoSpecSpectralDataSource as FrodoSpecDS
-from data.spectrum import SpectrumCollectionEx, Spectrum1DEx
+from spectroscopy import SpectrumCollectionEx, Spectrum1DEx
 
 
 def read_setting(group, name, default=None, printout=True):

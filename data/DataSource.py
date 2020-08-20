@@ -1,9 +1,9 @@
+from typing import Dict, Type, Union
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Dict, Type, Union
 from pandas import DataFrame
-from data.spectrum import *
 from data import *
+from spectroscopy import *
 
 
 class DataSource(ABC):
