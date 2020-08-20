@@ -1,6 +1,7 @@
 import json
 from fitting import *
 import spectra_lookup
+from astropy import units as u
 from utility import magnitudes as mag, uncertainty_math as umath
 
 settings = json.load(open("../../photometry.json"))
@@ -78,11 +79,11 @@ for spec_key, delta_t in epochs.items():
     # Use the fit_set to get the Vega mag, then convert to mag(AB) and then a flux [erg/s/cm^2/Hz]
     vega_mag = fit_sets[f"{band}-band"].find_y_value(delta_t)
     flux, flux_err = \
-        mag.flux_density_jy_from_mag_ab(*mag.mag_ab_from_mag_vega(vega_mag.nominal_value, vega_mag.std_dev, band))
-    # print(f"{spec_key}: flux = {flux} +/- {flux_err}")
+        mag.mag_vega_to_flux_density_cgs_angstrom(vega_mag.nominal_value, vega_mag.std_dev, band)
 
     # The scale_factor is the ratio of the photometric flux to the sbands flux taken from the spectrum
-    scale_factor, scale_factor_err = umath.divide(flux, flux_err, sbands_fluxes[spec_key], 0)
+    sbands_flux = sbands_fluxes[spec_key] * mag.units_flux_density_cgs_angstrom
+    scale_factor, scale_factor_err = umath.divide(flux, flux_err, sbands_flux, 0)
 
     # Boost the scale_factor, so the resulting scaled spectra have arbitrary flux counts in a useful range
     #scale_factor, _ = umath.multiply(scale_factor, scale_factor_err, 1e23, 0)

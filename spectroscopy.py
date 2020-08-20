@@ -55,7 +55,10 @@ for plot_group_config in settings["plots"]:
                     print(f"** unknown line_set: {line_set_name}")
 
         # Do the print!
-        plot_config["params"]["y_lim"] = [-1, 100]
+        plot_config["params"]["y_lim"] = [-1e-12, 1e-10]
+        plot_config["params"]["y_ticks"] = [0, 20e-12, 40e-12, 60e-12, 80e-12, 100e-12]
+        plot_config["params"]["y_tick_labels"] = ["0", "20", "40", "60", "80", "100"]
+        plot_config["params"]["y_label"] = f"Flux [$10^{{-12}}$ {spectra[0].flux.unit:latex_inline}]"
         plot_config["title"] = \
             f"Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t={delta_t:.2f}$ d"
         PlotHelper.plot_to_file(plot_config, spectra=spectra, spectral_lines=spectral_lines, line_fits=line_fits)

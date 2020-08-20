@@ -24,13 +24,13 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
         """
         hdr, flux, spectral_axis, wcs = cls._read_data_from_fits(filename, hdu_name)
         if selected_fibres is None:
-            flux = flux * units.Unit("adu")
-            spectral_axis = spectral_axis * units.Unit("Angstrom")
+            flux = flux * cls._get_spectral_axis_units(wcs, hdr)
+            spectral_axis = spectral_axis * cls._get_spectral_axis_units(wcs, hdr)
         else:
             selection_mask = np.zeros(flux.shape[0], dtype=bool)
             selection_mask.put(selected_fibres, True)
-            flux = flux[selected_fibres] * units.Unit("adu")
-            spectral_axis = spectral_axis[selected_fibres] * units.Unit("Angstrom")
+            flux = flux[selected_fibres] * cls._get_spectral_axis_units(wcs, hdr)
+            spectral_axis = spectral_axis[selected_fibres] * cls._get_spectral_axis_units(wcs, hdr)
 
         # Default the label to the HDU name
         if label is None:
@@ -45,8 +45,8 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
             return spectra
 
     @classmethod
-    def read_spectrum(cls, filename: Union[str, Path], hdu_name: str = None, index: int = 0, header: bool = False,
-                      flux_scale_factor: float = 1) -> Union[Spectrum1D, Tuple[Spectrum1D, Any]]:
+    def read_spectrum(cls, filename: Union[str, Path], hdu_name: str = None, index: int = 0, header: bool = False) \
+            -> Union[Spectrum1D, Tuple[Spectrum1D, Any]]:
         """
         Read the requested spectral data into a specutils Spectrum1D.  The index is used to specify
         which member to return if the HDU contains multiple spectra (defaults to zero).
@@ -55,16 +55,10 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
         """
         hdr, flux, spectral_axis, wcs = cls._read_data_from_fits(filename, hdu_name)
 
-        # Optionally scale the flux - this is the least invasive way of doing this.
-        # Would have liked to do it in the Spectrum itself but there were too many edge cases involved.
-        if flux_scale_factor != 1:
-            print(f"{cls.__name__}.read_spectrum(): Applying flux_scale_factor or {flux_scale_factor}")
-            flux = np.multiply(flux, flux_scale_factor)
-        flux = flux[index] * units.Unit("adu")
-        spectral_axis = spectral_axis[index] * units.Unit("Angstrom")
+        flux = flux[index] * cls._get_flux_axis_units(wcs, hdr)
+        spectral_axis = spectral_axis[index] * cls._get_spectral_axis_units(wcs, hdr)
 
         spectrum = Spectrum1DEx(flux=flux, spectral_axis=spectral_axis, wcs=wcs)
-        spectrum.flux_scale_factor = flux_scale_factor
         if header:
             return spectrum, hdr
         else:
@@ -121,3 +115,14 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
         # Now we should have both the data and wavelength data set up with the same size & shape.  Get them ready.
         assert flux.shape == spectral_axis.shape
         return hdr, flux, spectral_axis, wcs
+
+    @classmethod
+    def _get_spectral_axis_units(cls, wcs, header):
+        # TODO: make this a bit more resilient and there's probably functionality in the WCS for this too!
+        unit_string = header["CUNIT1"] if "CUNIT1" in header else "Angstrom"
+        return units.Unit(unit_string)
+
+    @classmethod
+    def _get_flux_axis_units(cls, wcs, header):
+        unit_string = header["BUNIT"] if "BUNIT" in header else "adu"
+        return units.Unit(unit_string)

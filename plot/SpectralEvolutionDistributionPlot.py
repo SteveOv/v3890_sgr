@@ -7,20 +7,6 @@ from plot.BasePlot import *
 
 class SpectralEvolutionDistributionPlot(BasePlot):
 
-    """
-    _mag_ab_correction_factors = {
-        # FROM LJMU Website
-        "B": -0.1,
-        "V": 0,
-        "R": 0.2,
-        "I": 0.45,
-
-        # From Breeveld (2010) Swift-UVOT-CALDDB-16-R01
-        "UVM2": 1.69,
-        "UVW2": 1.73
-    }
-    """
-
     def __init__(self, plot_params: Dict):
         super().__init__(plot_params)
 
@@ -44,10 +30,6 @@ class SpectralEvolutionDistributionPlot(BasePlot):
         self._default_x_tick_labels = ["14.6", "14.7", "14.8", "14.9", "15.0", "15.1", "15.2", "15.3"]
 
         self._default_delta_t = [1, 2, 3, 5, 10, 20]
-
-        # UVM2, UVW2 values from Breeveld (2010) Swift-UVOT-CALDDB-16-R01
-        self._default_lambda_effs = \
-            {"I": 7970e-10, "R": 6380e-10, "V": 5450e-10, "B": 4360e-10, "UVM2": 2221e-10, "UVW2": 1991e-10}
 
         # From Schlegel et al. (1998) Table 6, pp 551 A/A_V values for CTIO B, V, R & I filters (CCD Cousins)
         # UVM2, UVW2 from Darnley et al. (2016) & private conversation
@@ -97,7 +79,7 @@ class SpectralEvolutionDistributionPlot(BasePlot):
 
     @property
     def lambda_effs(self) -> Dict[str, float]:
-        return self._param("lambda_effs", self._default_lambda_effs)
+        return self._param("lambda_effs", mag.lambda_eff)
 
     @property
     def relative_extinction_coeffs(self) -> Dict[str, float]:
@@ -268,7 +250,7 @@ class SpectralEvolutionDistributionPlot(BasePlot):
         """
         nu_eff = {}
         for key in lambda_eff:
-            nu_eff[key] = 2.998e8 / lambda_eff[key]
+            nu_eff[key] = 2.998e8 / (lambda_eff[key] * 1e-10)
         return nu_eff
 
     @classmethod
@@ -279,7 +261,7 @@ class SpectralEvolutionDistributionPlot(BasePlot):
         # mag(AB) = corr, where mag(Vega) == 0
         band_zero_fluxes = {}
         for band in mag.mag_ab_correction_factors:
-            band_zero_fluxes[band], _ = mag.flux_density_jy_from_mag_ab(mag.mag_ab_correction_factors[band], 0)
+            band_zero_fluxes[band], _ = mag.mag_ab_to_flux_density_jy(*mag.mag_ab_correction_factors[band])
         return band_zero_fluxes
 
     @classmethod

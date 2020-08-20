@@ -13,7 +13,10 @@ class SpectrumPlot(BasePlot):
         self._default_show_data = True
         self._default_show_line_fits = True
         self._default_show_spectral_lines = True
+
         self._default_y_lim = None
+        self._default_y_ticks = [0]
+        self._default_y_tick_labels = []
         return
 
     @property
@@ -32,12 +35,20 @@ class SpectrumPlot(BasePlot):
     def y_lim(self):
         return self._param("y_lim", self._default_y_lim)
 
+    @property
+    def y_ticks(self):
+        return self._param("y_ticks", self._default_y_ticks)
+
+    @property
+    def y_tick_labels(self):
+        return self._param("y_tick_labels", self._default_y_tick_labels)
+
     def _configure_ax(self, ax: Axes, **kwargs):
         # Get the spectra - we'll base the configuration on the data
         spectra, _, _ = self.__class__._extract_payload(kwargs)
 
         # Now we can set the defaults for labels and axes based on the data
-        self._default_y_label = f"Arbitrary flux"
+        self._default_y_label = f"Flux [{spectra[0].flux.unit:latex_inline}]"
         self._default_x_label = f"Wavelength [{spectra[0].wavelength.unit}]"
 
         # X Ticks every 500 A
@@ -56,8 +67,8 @@ class SpectrumPlot(BasePlot):
             ax.set_ylim(self.y_lim)
 
         # Override the ticks though; Y tick only on the zero line
-        ax.set_yticks([0], minor=False)
-        ax.set_yticklabels([], minor=False)
+        ax.set_yticks(self.y_ticks, minor=False)
+        ax.set_yticklabels(self.y_tick_labels, minor=False)
         return
 
     def _draw_plot_data(self, ax: Axes, **kwargs):
