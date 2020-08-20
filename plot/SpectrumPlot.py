@@ -48,8 +48,8 @@ class SpectrumPlot(BasePlot):
         spectra, _, _ = self.__class__._extract_payload(kwargs)
 
         # Now we can set the defaults for labels and axes based on the data
-        self._default_y_label = f"Flux [{spectra[0].flux.unit:latex_inline}]"
-        self._default_x_label = f"Wavelength [{spectra[0].wavelength.unit}]"
+        self._default_y_label = f"Flux density [{spectra[0].flux.unit:latex_inline}]"
+        self._default_x_label = f"Wavelength [{spectra[0].wavelength.unit:latex_inline}]"
 
         # X Ticks every 500 A
         min_lambda = min(s.min_wavelength.value for s in spectra) - 100

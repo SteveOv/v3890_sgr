@@ -1,4 +1,5 @@
 from typing import Dict
+import math
 import numpy as np
 from matplotlib.axes import Axes
 from astropy.units import Quantity
@@ -62,6 +63,10 @@ class GaussianLineFit:
         return self.model.fwhm if self.model is not None else None
 
     @property
+    def flux(self):
+        return self.amplitude * self.stddev * np.sqrt(2*math.pi)
+
+    @property
     def model(self) -> Gaussian1D:
         if self._model is not None:
             if isinstance(self._model, CompoundModel):
@@ -115,12 +120,21 @@ class GaussianLineFit:
         noise_spectrum = noise_region_uncertainty(spectrum, noise_region)
         model = CompoundModel("+", Gaussian1D(**hint, name="line"), Polynomial1D(degree=1, name="cont"), name=label)
         fitter = LevMarLSQFitter()
+
+        """
+        Can fix a fit parameter within a given range
+        model.mean_0.min = model.mean_0 - 2
+        model.mean_0.max = model.mean_0 + 2        
+        """
+
         gaussian_fit = fitter(model,
                               noise_spectrum.wavelength,
                               noise_spectrum.flux,
                               weights=np.divide(1, np.power(noise_spectrum.uncertainty.quantity, 2)))
 
-        print(gaussian_fit)
+        for x, y in zip(gaussian_fit.param_names, gaussian_fit.parameters):
+            print(x, y)
+
         range_from = spectrum.min_wavelength
         range_to = spectrum.max_wavelength
 
@@ -142,7 +156,10 @@ class GaussianLineFit:
             if label is None:
                 label = self.label
             text = \
-                f"{label}\n$\\mu$={self.mean:.1f}\nFWHM={self.fwhm:.2f}\n$v_{{\\sigma}}$={self.velocity_dispersion:.1f}"
+                f"{label}\n" \
+                f"$\\mu$={self.mean.value:.1f} {self.mean.unit:latex_inline}\n" \
+                f"flux=${self.flux.value:.2e}$ {self.flux.unit:latex_inline}\n" \
+                f"$v_{{\\sigma}}$={self.velocity_dispersion.value:.1f} {self.velocity_dispersion.unit:latex_inline}"
 
             # Have to take the units off for this, otherwise you get an UnitConversionError when saving the plot
             peak_position = (self.mean.value, max(y_plot).value)

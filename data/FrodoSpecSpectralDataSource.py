@@ -125,4 +125,6 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
     @classmethod
     def _get_flux_axis_units(cls, wcs, header):
         unit_string = header["BUNIT"] if "BUNIT" in header else "adu"
+        if unit_string.endswith("/A"):
+            unit_string = unit_string[:-1] + "Angstrom"
         return units.Unit(unit_string)
