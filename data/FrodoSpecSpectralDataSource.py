@@ -23,6 +23,8 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
         Returns the SpectrumCollectionEx and optionally the HDU header.
         """
         hdr, flux, spectral_axis, wcs = cls._read_data_from_fits(filename, hdu_name)
+        cls._dump_headers(hdu_name, hdr)
+
         if selected_fibres is None:
             flux = flux * cls._get_spectral_axis_units(wcs, hdr)
             spectral_axis = spectral_axis * cls._get_spectral_axis_units(wcs, hdr)
@@ -79,10 +81,10 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
         filename = cls._canonicalize_filename(filename)
         if hdu_name is not None:
             flux, hdr = fits.getdata(filename, extname=hdu_name, header=True)
+            cls._dump_headers(hdu_name, hdr)
         else:
             flux, hdr = fits.getdata(filename, ext=0, header=True)
-
-        hdr["CUNIT1"] = "Angstrom"          # It's actually "Angstroms" in the files
+            cls._dump_headers(0, hdr)
 
         # Check the data and wavelength shapes match NAXIS1/2.  Need to get this right otherwise creating the
         # wavelength/spectral_axis via the WCS or assigning it to specutils object fails (data/wavelengths must match)
@@ -120,6 +122,8 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
     def _get_spectral_axis_units(cls, wcs, header):
         # TODO: make this a bit more resilient and there's probably functionality in the WCS for this too!
         unit_string = header["CUNIT1"] if "CUNIT1" in header else "Angstrom"
+        if unit_string == "Angstroms":
+            unit_string = "Angstrom"
         return units.Unit(unit_string)
 
     @classmethod
@@ -128,3 +132,12 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
         if unit_string.endswith("/A"):
             unit_string = unit_string[:-1] + "Angstrom"
         return units.Unit(unit_string)
+
+    @classmethod
+    def _dump_headers(cls, hdu_key, hdr):
+        # Print out some useful metadata.
+        print("\tFrom fits header...")
+        for key in ["OBJECT", "CONFNAME", "MJD", "NAXIS1", "NAXIS2", "CUNIT1", "CUNIT2", "BUNIT", "DEREDDEN"]:
+            if key in hdr:
+                print(f"\t\tHDU[{hdu_key}].header['{key}']: {hdr[key]}")
+        return
