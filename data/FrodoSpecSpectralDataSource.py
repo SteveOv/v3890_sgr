@@ -23,7 +23,6 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
         Returns the SpectrumCollectionEx and optionally the HDU header.
         """
         hdr, flux, spectral_axis, wcs = cls._read_data_from_fits(filename, hdu_name)
-        cls._dump_headers(hdu_name, hdr)
 
         if selected_fibres is None:
             flux = flux * cls._get_spectral_axis_units(wcs, hdr)
