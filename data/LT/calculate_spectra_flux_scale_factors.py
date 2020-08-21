@@ -1,4 +1,5 @@
 import json
+import pandas as pd
 from fitting import *
 import spectra_lookup
 from astropy import units as u
@@ -28,65 +29,27 @@ for fs_key, fs_config in fit_set_group_config["fit_sets"].items():
 eruption_jd = lightcurve_group_config["eruption_jd"]
 epochs = spectra_lookup.get_spectra_epochs(eruption_jd)
 
-# These are the output values copied from IRAF onedspec sbands operation.
-sbands_fluxes = {
-    "b_e_20190828_3": 6.34790E-13,
-    "b_e_20190828_11": 9.67548E-13,
-    "b_e_20190830_5": 6.27379E-13,
-    "b_e_20190831_5": 3.57901E-13,
-    "b_e_20190831_11": 3.15411E-13,
-    "b_e_20190901_5": 3.34849E-13,
-    "b_e_20190901_11": 1.89696E-13,
-    "b_e_20190902_5": 3.41798E-13,
-    "b_e_20190902_7": 2.84326E-13,
-    "b_e_20190903_5": 2.86212E-13,
-    "b_e_20190903_7": 2.48210E-13,
-    "b_e_20190904_4": 2.93339E-13,
-    "b_e_20190905_5": 2.51051E-13,
-    "b_e_20190905_7": 1.21134E-13,
-    "b_e_20190910_1": 1.68551E-13,
-    "b_e_20190911_5": 1.14096E-13,
-    "b_e_20190911_7": 5.97705E-14,
-    "b_e_20190913_5": 1.45967E-14,
-    "b_e_20190913_7": 3.45840E-14,
-    "b_e_20190915_5": 4.67948E-14,
-    "r_e_20190828_3": 2.04257E-12,
-    "r_e_20190828_11": 2.07057E-12,
-    "r_e_20190830_5": 1.01868E-12,
-    "r_e_20190831_5": 6.95945E-13,
-    "r_e_20190831_11": 6.22397E-13,
-    "r_e_20190901_5": 8.50185E-13,
-    "r_e_20190901_11": 8.52628E-13,
-    "r_e_20190902_5": 6.64032E-13,
-    "r_e_20190902_7": 6.71659E-13,
-    "r_e_20190903_5": 5.54302E-13,
-    "r_e_20190903_7": 3.85550E-13,
-    "r_e_20190904_4": 4.06901E-13,
-    "r_e_20190905_5": 3.41113E-13,
-    "r_e_20190905_7": 2.33229E-13,
-    "r_e_20190910_1": 1.76158E-13,
-    "r_e_20190911_5": 1.38241E-13,
-    "r_e_20190911_7": 1.06742E-13,
-    "r_e_20190913_5": 3.48328E-14,
-    "r_e_20190913_7": 7.25394E-14,
-    "r_e_20190915_5": 8.65306E-14
-}
+# Read in the output values from IRAF onedspec sbands operation.
+df = pd.read_csv("./sbands_fluxes.txt", skiprows=np.arange(0, 11), header=None, index_col=None, delim_whitespace=True)
+df.columns = ["fits", "band", "flux"]
 
 print(f"\nThe spectra scale factors")
 for spec_key, delta_t in epochs.items():
     band = str.upper(spec_key[0])
 
-    # Use the fit_set to get the Vega mag, then convert to mag(AB) and then a flux [erg/s/cm^2/Hz]
+    # Use the photometric fit to get the Vega mag in the appropriate band, then convert it
+    # to mag(AB) and then a flux [erg/s/cm^2/Angstrom] (the same units as the flux from sbands).
     vega_mag = fit_sets[f"{band}-band"].find_y_value(delta_t)
-    flux, flux_err = \
-        mag.mag_vega_to_flux_density_cgs_angstrom(vega_mag.nominal_value, vega_mag.std_dev, band)
+    mag_ab, mag_ab_err = mag.mag_vega_to_mag_ab(vega_mag.nominal_value, vega_mag.std_dev, band)
+    flux_jy, flux_jy_err = mag.mag_ab_to_flux_density_jy(mag_ab, mag_ab_err)
+    flux_cgs, flux_cgs_err = mag.flux_density_jy_to_cgs_angstrom(flux_jy, flux_jy_err, band)
 
     # The scale_factor is the ratio of the photometric flux to the sbands flux taken from the spectrum
-    sbands_flux = sbands_fluxes[spec_key] * mag.units_flux_density_cgs_angstrom
-    scale_factor, scale_factor_err = umath.divide(flux, flux_err, sbands_flux, 0)
+    sbands_flux = df.query(f"fits.str.contains('{spec_key}') and band=='{band}'", engine="python")["flux"].values[0]
+    sbands_flux_cgs = sbands_flux * mag.units_flux_density_cgs_angstrom
+    scale_factor, scale_factor_err = umath.divide(flux_cgs, flux_cgs_err, sbands_flux_cgs, 0)
 
-    # Boost the scale_factor, so the resulting scaled spectra have arbitrary flux counts in a useful range
-    #scale_factor, _ = umath.multiply(scale_factor, scale_factor_err, 1e23, 0)
+    # Write out IRAF imarith commands to perform the required scaling.  These can be pasted into the IRAF command line.
     print(f"imarith ./calibrated/cal_{spec_key}.fits * {scale_factor} ./scaled/scaled_{spec_key}.fits")
 
 

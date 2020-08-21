@@ -1,9 +1,9 @@
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Union
 from astropy import units as u
 from astropy.units import spectral_density, Quantity
 from utility import uncertainty_math as unc
 
-# For  converting Vega/J-C magnitudes to to mag(AB)
+# For converting Vega/J-C magnitudes: mag(AB) - Vega mag = factor
 mag_ab_correction_factors = {
     # FROM https://www.cfa.harvard.edu/~dfabricant/huchra/ay145/mags.html TODO: get a formal reference for these
     "B": (-0.163, 0.004),
@@ -33,11 +33,13 @@ units_flux_density_cgs_angstrom = u.erg / u.cgs.cm**2 / u.s / u.AA
 
 
 def mag_vega_to_mag_ab(mag, mag_err, band: str = "V"):
+    # If mag(AB) - V_mag = corr --> mag(AB) = corr + V_mag
     mag_ab, mag_ab_err = unc.add(mag, mag_err, *mag_ab_correction_factors[band])
     return mag_ab, mag_ab_err
 
 
 def mag_ab_to_mag_vega(mag_ab, mag_ab_err, band: str = "V"):
+    # If mag(AB) - V_mag = corr --> -V_mag = corr - mag(AB) --> V_mag = mag(AB) - corr
     mag_vega, mage_vega_err = unc.subtract(mag_ab, mag_ab_err, *mag_ab_correction_factors[band])
     return mag_vega, mage_vega_err
 
@@ -81,21 +83,17 @@ def flux_density_cgs_hz_to_mag_ab(flux, flux_err):
     return unc.subtract(log, log_err, 48.6, 0)
 
 
-def mag_ab_to_flux_density_cgs_angstrom(mag_ab, mag_ab_err, band: str = "V"):
+def flux_density_jy_to_cgs_angstrom(flux: Union[float, Quantity], flux_err: Union[float, Quantity], band: str = "V") \
+        -> Tuple[Quantity, Quantity]:
     """
-    Calculate the flux density, in units erg / s / cm^2 / Angstrom, of the passed mag(AB) value
+    Convert a flux density from units of Jansky to units erg / s / cm^2 / Angstrom.
     """
-    flux, err = mag_ab_to_flux_density_jy(mag_ab, mag_ab_err)
+    flux_jy = flux if isinstance(flux, Quantity) else flux * u.astrophys.Jy
+    flux_err_jy = flux_err if isinstance(flux_err, Quantity) else flux_err * u.astrophys.Jy
+
     flux_units = units_flux_density_cgs_angstrom
-    new_flux = Quantity(flux, u.astrophys.Jy).to(flux_units, equivalencies=spectral_density(lambda_eff[band] * u.AA))
-    new_err = Quantity(err, u.astrophys.Jy).to(flux_units, equivalencies=spectral_density(lambda_eff[band] * u.AA))
-    return new_flux, new_err
+    lambda_eff_angstrom = lambda_eff[band] * u.AA
 
-
-def mag_vega_to_flux_density_cgs_angstrom(mag_vega, mag_vega_err, band: str = "V"):
-    """
-    Calculate the flux density, in units erg / s / cm^2 / Angstrom, of the passed mag(Vega) value.
-    Convenience function which wraps mag_vega_to_mag_ab and mag_ab_to_flux_density_cgs_angstrom
-    """
-    mag_ab, mag_ab_err = mag_vega_to_mag_ab(mag_vega, mag_vega_err, band=band)
-    return mag_ab_to_flux_density_cgs_angstrom(mag_ab, mag_ab_err, band)
+    flux_cgs = flux_jy.to(flux_units, equivalencies=spectral_density(lambda_eff_angstrom))
+    flux_cgs_err = flux_err_jy.to(flux_units, equivalencies=spectral_density(lambda_eff_angstrom))
+    return flux_cgs, flux_cgs_err
