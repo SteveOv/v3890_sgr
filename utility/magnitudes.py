@@ -97,3 +97,23 @@ def flux_density_jy_to_cgs_angstrom(flux: Union[float, Quantity], flux_err: Unio
     flux_cgs = flux_jy.to(flux_units, equivalencies=spectral_density(lambda_eff_angstrom))
     flux_cgs_err = flux_err_jy.to(flux_units, equivalencies=spectral_density(lambda_eff_angstrom))
     return flux_cgs, flux_cgs_err
+
+
+def E_gr_to_E_BV(egr: float, egr_err: float) -> Tuple[float, float]:
+    """
+    Convert a SDSS E(g-r) color excess to a J-C E(B-V) color excess.
+    Conversions between B and g and V and g are taken from SDSS III website
+    http://www.sdss3.org/dr8/algorithms/sdssUBVRITransform.php
+    which in turn takes values from Lupton, 2005.
+    """
+    # Conversion based on;
+    # B = g + 0.3130(g-r)-0.2271 +/- 0.0107
+    # V = g - 0.5784(g-r)-0.0038 +/- 0.0054
+    #
+    # B-V = 0.3130(g-r) - 0.2271 + 0.5784(g-r) + 0.0038
+    # d(B-V) = sqrt(0.0107^2 + 0.0054^2)
+    #
+    B_V, B_V_err = unc.subtract(*unc.multiply(0.8914, 0, egr, egr_err), 0.2233, 0)
+    B_V_err = unc.uncertainty_add_or_subtract(B_V_err, 0.0119854)
+    return B_V, B_V_err
+

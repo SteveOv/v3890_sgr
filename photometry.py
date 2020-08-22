@@ -3,7 +3,7 @@ from fitting import *
 from data import *
 from plot import *
 import spectra_lookup
-from utility import novae as rn
+from utility import novae as rn, magnitudes as mag
 
 settings = json.load(open("photometry.json"))
 
@@ -112,11 +112,11 @@ for group_key in ['V3890-Sgr-2019-Vis-nominal-err', 'V3890-Sgr-2019-Vis-nominal+
     print(F"[{group_key}] The colour excess @ t2: E(B-V)_t2 = " +
           F"(B-V)_obs(t2) - (B-V)_int(t2) = ({BV_obs_t2:.4f}) - ({BV_int_t2:.4f}) = {E_BV_t2:.4f}")
 
-    # The E(B-V) calculated above, from intrinsic_BV figures of Bergh & Younger, imply that here we are
-    # seeing greater extinction for red than blue light.  That's rather at odds with existing findings/expectations!
-    # Instead, I'm going to use Schaefer's E(B-V) of 0.9 +/- 0.3 for subsequent calculations.
-    E_BV = ufloat(0.9, 0.3)
-    print(F"[{group_key}] The calculated colour excess is unrealistic: using E(B-V) = {E_BV:.4f} from Schaefer (2010)")
+    # Significantly lower than Schaefer's E(B-V) of 0.9 +/- 0.3.
+    # As recommended by Matt Darnley (private communication), we use the Pan-STARRS reddening survey along
+    # alpha=277.68, delta=-24.019 for r>5 kpc (which V380 Sgr has with even E(B-V)=0.9) giving E(g-r)=0.51 +/- 0.02
+    E_BV = ufloat(*mag.E_gr_to_E_BV(0.51, 0.02))
+    print(F"[{group_key}] Using E(B-V) = {E_BV:.4f} (derived from Pan-STARRS E(g-r) = 0.51 +/- 0.02)")
 
     # Now use the MMRD to work out the absolute magnitude
     M_V_tp = rn.absolute_magnitude_from_t2_fast_nova(t2)
