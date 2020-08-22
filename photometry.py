@@ -100,16 +100,17 @@ for group_key in ['V3890-Sgr-2019-Vis-nominal-err', 'V3890-Sgr-2019-Vis-nominal+
     # Work out the colour excess, E(B-V), at peak
     BV_int_tp = ufloat(0.23, 0.16)         # Bergh & Younger (1987)
     BV_int_t2 = ufloat(-0.02, 0.12)        # Bergh & Younger (1987)
-    E_BV_tp = BV_int_tp - BV_obs_tp
+    E_BV_tp = BV_obs_tp - BV_int_tp
+    print(F"[{group_key}] Calculating colour excess wrt Bergh & Younger (B-V)_int values at t_p and t_0")
     print(F"[{group_key}] The colour excess @ tp: E(B-V)_tp = " +
-          F"(B-V)_int(tp) - (B-V)_obs(tp) = ({BV_int_tp:.4f}) - ({BV_obs_tp:.4f}) = {E_BV_tp:.4f}")
+          F"(B-V)_obs(tp) - (B-V)_int(tp) = ({BV_obs_tp:.4f}) - ({BV_int_tp:.4f}) = {E_BV_tp:.4f}")
 
     # Work out the colour excess, E(B-V), at t2
     B_t2 = fitsB.find_y_value(t2)
     BV_obs_t2 = B_t2 - V_t2
-    E_BV_t2 = BV_int_t2 - BV_obs_t2
+    E_BV_t2 = BV_obs_t2 - BV_int_t2
     print(F"[{group_key}] The colour excess @ t2: E(B-V)_t2 = " +
-          F"(B-V)_int(t2) - (B-V)_obs(t2) = ({BV_int_t2:.4f}) - ({BV_obs_t2:.4f}) = {E_BV_t2:.4f}")
+          F"(B-V)_obs(t2) - (B-V)_int(t2) = ({BV_obs_t2:.4f}) - ({BV_int_t2:.4f}) = {E_BV_t2:.4f}")
 
     # The E(B-V) calculated above, from intrinsic_BV figures of Bergh & Younger, imply that here we are
     # seeing greater extinction for red than blue light.  That's rather at odds with existing findings/expectations!
