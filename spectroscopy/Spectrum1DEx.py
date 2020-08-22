@@ -19,9 +19,13 @@ class Spectrum1DEx(Spectrum1D):
     """
     def __init__(self, flux=None, spectral_axis=None, wcs=None, velocity_convention=None,
                  rest_value=None, redshift=None, radial_velocity=None, **kwargs):
+        if "name" in kwargs:
+            self._name = kwargs["name"]
+            kwargs.pop("name")
+        else:
+            self._name = None
         super().__init__(flux=flux, spectral_axis=spectral_axis, wcs=wcs, velocity_convention=velocity_convention,
                          rest_value=rest_value, redshift=redshift, radial_velocity=radial_velocity, **kwargs)
-        self._flux_scale_factor = 1
         return
 
     @property
@@ -45,26 +49,22 @@ class Spectrum1DEx(Spectrum1D):
         return min(self.wavelength.value) < 5000
 
     @property
-    def flux_scale_factor(self) -> float:
-        """
-        The scale factor applied to the flux of this spectrum when it was loaded.
-        """
-        return self._flux_scale_factor
+    def name(self) -> str:
+        return self._name
 
-    @flux_scale_factor.setter
-    def flux_scale_factor(self, value):
-        self._flux_scale_factor = value
+    @name.setter
+    def name(self, value: str):
+        self._name = value
 
     @classmethod
-    def from_spectrum1d(cls, spec1d: Spectrum1D):
+    def from_spectrum1d(cls, spec1d: Spectrum1D, name: str = None):
         """
         Creates a instance of a Spectrum1DEx from the passed Spectrum1D
         """
         if spec1d is not None:
             new_spec = Spectrum1DEx(flux=spec1d.flux, spectral_axis=spec1d.spectral_axis,
                                     uncertainty=spec1d.uncertainty, wcs=spec1d.wcs, mask=spec1d.mask, meta=spec1d.meta)
-            if isinstance(spec1d, Spectrum1DEx):
-                new_spec._flux_scale_factor = spec1d._flux_scale_factor
+            new_spec.name = name if name is not None else spec1d.name if isinstance(spec1d, Spectrum1DEx) else None
         else:
             new_spec = None
         return new_spec
@@ -95,7 +95,7 @@ class Spectrum1DEx(Spectrum1D):
     def __getitem__(self, item):
         value = super().__getitem__(item)
         if isinstance(value, Spectrum1DEx):
-            value._flux_scale_factor = self._flux_scale_factor
+            value.name = self.name
         return value
 
     def copy(self):
@@ -103,7 +103,7 @@ class Spectrum1DEx(Spectrum1D):
         Create a copy of this spectrum
         """
         copy = super()._copy()
-        copy._flux_scale_factor = self._flux_scale_factor
+        copy.name = self.name
         return copy
 
     def create_image_hdu(self, name, header=None) \
@@ -207,4 +207,4 @@ class Spectrum1DEx(Spectrum1D):
 
     def __repr__(self) \
             -> str:
-        return super().__repr__().replace("Spectrum1D(", f"Spectrum1DEx(flux_scale_factor={self._flux_scale_factor}, ")
+        return super().__repr__().replace("Spectrum1D(", f"Spectrum1DEx(name='{self.name}', ")

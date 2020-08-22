@@ -10,6 +10,7 @@ class SpectrumPlot(BasePlot):
         self._default_x_size = 2
         self._default_y_size = 1
 
+        self._default_show_legend = False
         self._default_show_data = True
         self._default_show_line_fits = True
         self._default_show_spectral_lines = True
@@ -48,12 +49,13 @@ class SpectrumPlot(BasePlot):
         spectra, _, _ = self.__class__._extract_payload(kwargs)
 
         # Now we can set the defaults for labels and axes based on the data
-        self._default_y_label = f"Flux density [{spectra[0].flux.unit:latex_inline}]"
-        self._default_x_label = f"Wavelength [{spectra[0].wavelength.unit:latex_inline}]"
+        s1 = spectra[next(iter(spectra))]
+        self._default_y_label = f"Flux density [{s1.flux.unit:latex_inline}]"
+        self._default_x_label = f"Wavelength [{s1.wavelength.unit:latex_inline}]"
 
         # X Ticks every 500 A
-        min_lambda = min(s.min_wavelength.value for s in spectra) - 100
-        max_lambda = max(s.max_wavelength.value for s in spectra) + 100
+        min_lambda = min(s.min_wavelength.value for k, s in spectra.items()) - 100
+        max_lambda = max(s.max_wavelength.value for k, s in spectra.items()) + 100
         self._default_x_lim = (min_lambda, max_lambda)
         x_ticks_delta = 500
         first_tick = round(min_lambda / x_ticks_delta) * x_ticks_delta
@@ -81,26 +83,21 @@ class SpectrumPlot(BasePlot):
             self._draw_spectra(ax, spectra)
 
         if self.show_line_fits and line_fits is not None:
-            self._draw_fitted_lines(ax, line_fits)
+            self._draw_fitted_lines(ax, spectra, line_fits)
 
         if self.show_spectral_lines:
             self._draw_spectral_lines(ax, spectral_lines)
         return
 
-    def _draw_spectra(self, ax: Axes, spectra: Union[Spectrum1DEx, List[Spectrum1DEx]]):
+    def _draw_spectra(self, ax: Axes, spectra: Dict[str, Spectrum1DEx]):
         if spectra is not None:
-            if isinstance(spectra, Spectrum1DEx):
-                spectra = [spectra]
-
-        for spectrum in spectra:
-            color = "b" if spectrum.is_blue else "r"
-            label = "Blue arm" if spectrum.is_blue else "Red arm"
-            if spectrum.flux_scale_factor != 1:
-                label += f" (scaled by {spectrum.flux_scale_factor})"
-            ax.plot(spectrum.spectral_axis, spectrum.flux, label=label, color=color, linestyle="-", linewidth=0.25)
+            for spec_key, spectrum in spectra.items():
+                color = "b" if spectrum.is_blue else "r"
+                label = "Blue arm" if spectrum.is_blue else "Red arm"
+                ax.plot(spectrum.spectral_axis, spectrum.flux, label=label, color=color, linestyle="-", linewidth=0.25)
         return
 
-    def _draw_spectral_lines(self, ax: Axes, spectral_lines):
+    def _draw_spectral_lines(self, ax: Axes, spectral_lines: Dict):
         if spectral_lines is not None and len(spectral_lines) > 0:
             # Replace the minor x-axis ticks with the epochs specified.
             ax.set_xticks(list(spectral_lines.values()), minor=True)
@@ -108,28 +105,25 @@ class SpectrumPlot(BasePlot):
 
             # Labels, if shown, are rotated 90deg and within the axis.
             ax.tick_params(which='minor', axis='x', direction='inout', pad=-35, labelsize='x-small',
-                           labelcolor='k', top=True, bottom=True, labeltop=False, labelbottom=True,
+                           labelcolor='k', top=True, bottom=True, labeltop=True, labelbottom=False,
                            labelrotation=90)
             ax.grid(which='minor', linestyle=':', linewidth=self._line_width, alpha=0.3)
         return
 
-    def _draw_fitted_lines(self, ax: Axes, line_fits: Union[GaussianLineFitSet, List[GaussianLineFitSet]]):
+    def _draw_fitted_lines(self, ax: Axes, spectra: Dict[str, Spectrum1DEx], line_fits: Dict[str, List[Model]]):
         if self.show_line_fits and line_fits is not None and len(line_fits) > 0:
-            if isinstance(line_fits, GaussianLineFitSet):
-                self._draw_fitted_lines(ax, [line_fits])
-            else:
-                for line_fit in line_fits:
-                    line_fit.draw_on_ax(ax, annotate=True)
+            for fit_key, line_fit_list in line_fits.items():
+                spectrum = spectra[fit_key] if fit_key in spectra else None
+                for line_fit in line_fit_list:
+                    fit_utilities.draw_fit_on_ax(ax, spectrum, line_fit, annotate=True)
         return
 
     @classmethod
     def _extract_payload(cls, kwargs) \
-            -> Tuple[Union[Spectrum1DEx, List[Spectrum1DEx]], Union[GaussianLineFitSet, List[GaussianLineFitSet]], Dict]:
+            -> Tuple[Dict[str, Spectrum1DEx], Dict[str, List[Model]], Dict]:
         spectra = kwargs["spectra"] if "spectra" in kwargs else None
-        if spectra is not None and isinstance(spectra, Spectrum1DEx):
-            spectra = [spectra]
-
-        spectral_lines = kwargs["spectral_lines"] if "spectral_lines" in kwargs else None
 
         line_fits = kwargs["line_fits"] if "line_fits" in kwargs else None
+
+        spectral_lines = kwargs["spectral_lines"] if "spectral_lines" in kwargs else None
         return spectra, line_fits, spectral_lines

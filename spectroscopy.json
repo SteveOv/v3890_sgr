@@ -412,7 +412,9 @@
         "params": {},
         "spectra": ["b_e_20190905_7", "r_e_20190905_7"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer" : [ "H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$" ],
+          "Nebular": [ "N III 4638", "He II 4686", "He I 4922", "He I 5016", "He I 6678", "He I 7065", "He I 7281" ],
+          "Fe II": [ "O i 7773" ]
         }
       }
     ],

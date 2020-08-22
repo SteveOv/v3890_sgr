@@ -56,10 +56,12 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
         """
         hdr, flux, spectral_axis, wcs = cls._read_data_from_fits(filename, hdu_name)
 
+        name = Path(filename).stem
+
         flux = flux[index] * cls._get_flux_axis_units(wcs, hdr)
         spectral_axis = spectral_axis[index] * cls._get_spectral_axis_units(wcs, hdr)
 
-        spectrum = Spectrum1DEx(flux=flux, spectral_axis=spectral_axis, wcs=wcs)
+        spectrum = Spectrum1DEx(flux=flux, spectral_axis=spectral_axis, wcs=wcs, name=name)
         if header:
             return spectrum, hdr
         else:
