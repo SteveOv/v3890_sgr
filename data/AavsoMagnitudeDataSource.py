@@ -35,9 +35,11 @@ class AavsoMagnitudeDataSource(MagnitudeDataSource):
         # No specific saturated field in this data
         df['is_saturated_obs'] = False
 
-        # We are only interested in those measurements which have been calibrated against standards
+        # We are only interested in measurement_methods which indicate target has been calibrated against standards.
         # Other values, excluded; DIFF - req' Comp Star 1 to standardize, STEP un-reduced step magnitude
-        df = df.query("measurement_method in 'STD'")
+        # The validation flag indicates; V - fully validated, Z - pre-validated, T - discrepancy, U - unvalidated.
+        # We exclude T & U (excluding Z leaves very little data and nothing usable for the 2019 eruption of V3890 Sgr).
+        df = df.query("measurement_method in 'STD' and validation_flag in ['V', 'Z']")
         return df[["jd", "mag", "mag_err", "band", "observer_code", "is_null_obs", "is_saturated_obs"]]
 
     @classmethod
