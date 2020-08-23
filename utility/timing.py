@@ -1,4 +1,5 @@
 from typing import Union, List
+from astropy.time import Time
 import numpy as np
 
 jd_mjd_offset = 2400000.5
@@ -23,3 +24,8 @@ def mjd_from_jd(jd: Union[float, List[float]]) -> Union[float, List[float]]:
     Derive the Modified Julian Data(s) from the passed Julian Date(s)
     """
     return np.subtract(jd, jd_mjd_offset)
+
+
+def date_time_from_jd(jd, format: str = "isot"):
+    time = Time(jd, format="jd")
+    return time.to_value(format=format)

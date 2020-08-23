@@ -21,6 +21,11 @@ class AavsoMagnitudeDataSource(MagnitudeDataSource):
         """
         source = self.__class__._canonicalize_filename(source)
         df = pd.read_csv(source, header=0, index_col=None)
+        print(f"\tRead in {len(df)} row(s) from {source}")
+
+        first = min(df["JD"])
+        last = max(df["JD"])
+        print(f"\tData covers time period JD={first} ({tm.date_time_from_jd(first)}) to JD={last} ({tm.date_time_from_jd(last)})")
 
         # Standardise column names as lower case without spaces - makes them easier to work with.
         # This gives us the standard jd, band and observer_code fields.
@@ -39,6 +44,7 @@ class AavsoMagnitudeDataSource(MagnitudeDataSource):
         # Other values, excluded; DIFF - req' Comp Star 1 to standardize, STEP un-reduced step magnitude
         # The validation flag indicates; V - fully validated, Z - pre-validated, T - discrepancy, U - unvalidated.
         # We exclude T & U (excluding Z leaves very little data and nothing usable for the 2019 eruption of V3890 Sgr).
+        print("\tIngesting only those observations calibrated against a standard and where validated/pre-validated.")
         df = df.query("measurement_method in 'STD' and validation_flag in ['V', 'Z']")
         return df[["jd", "mag", "mag_err", "band", "observer_code", "is_null_obs", "is_saturated_obs"]]
 
