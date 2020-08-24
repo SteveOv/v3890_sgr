@@ -1,7 +1,7 @@
 import json
-from data import DataSource, CalibratedSpectralDataSource
-from plot import *
-from utility import timing as tm
+from data import DataSource
+from plot import PlotHelper
+from utility import timing as tm, magnitudes as mag
 from spectroscopy import line_fitting
 
 # Placeholder for pulling together all of the spectroscopy tasks
@@ -20,8 +20,8 @@ print(F"\n\n****************************************************************")
 print(F"* Fitting spectral lines and deriving parameters.")
 print(F"****************************************************************")
 line_fit_sets = {}
-line_fit_sets["b_e_20190905_7"] = line_fitting.fit_b_e_20190905_7(data_sources["b_e_20190905_7"].query())
-line_fit_sets["r_e_20190905_7"] = line_fitting.fit_r_e_20190905_7(data_sources["r_e_20190905_7"].query())
+for spec_key, data_source in data_sources.items():
+    line_fit_sets[spec_key] = line_fitting.fit(data_source.query(), spec_key)
 
 print(F"\n\n****************************************************************")
 print(F"* Producing plots of spectroscopy data and lines ")

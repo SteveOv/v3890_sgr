@@ -1,5 +1,7 @@
 import math
+import functools
 import numpy as np
+from typing import Union, List
 from matplotlib.axes import Axes
 from astropy import units as u
 from astropy.units import Quantity
@@ -80,7 +82,97 @@ def draw_fit_on_ax_over_range(ax: Axes, start: Quantity, end: Quantity, fit: Mod
     return
 
 
+def trace_fitting(func, show_parameters=True, show_fitting_code=False, show_continuum_in_code=False):
+    """
+    Decorator for fitting functions (input Spectrum1DEx, returns CompoundModel, GaussianModel or list of)
+    """
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        fit_models = func(*args, **kwargs)
+
+        if show_parameters:
+            spectrum = args[0]
+            desc = describe_fits(fit_models, for_matplotlib=True, include_amplitude=True, include_flux=True)
+            print(f"{func.__name__}({spectrum.name}): " + desc)
+
+        if show_fitting_code:
+            # Write out Python/astropy code to recreate the fit
+            print(encode_fits(fit_models, include_continuum=show_continuum_in_code))
+        return fit_models
+    return wrapper
+
+
+def encode_fits(fit_model: Union[Model, List[Model]], include_continuum=False) -> str:
+    """
+    Write text for re-encoding the fit in Python astropy code.
+    """
+    if isinstance(fit_model, CompoundModel):
+        code = encode_compound_model(fit_model, include_continuum)
+    elif isinstance(fit_model, Gaussian1D):
+        code = encode_gaussian_model(fit_model)
+    elif isinstance(fit_model, Polynomial1D):
+        code = encode_polynomial_model(fit_model)
+    elif isinstance(fit_model, Model):
+        code = ""
+    else:
+        # assume a list thereof
+        code = ""
+        for sub in fit_model:
+            code += encode_fits(sub, include_continuum=include_continuum)
+    return code
+
+
+def encode_compound_model(model: CompoundModel, include_continuum=False) -> str:
+    """
+    Write text for re-encoding the CompoundModel in Python astropy code.
+    """
+    code = f"CompoundFit('+'"
+    for sub in model:
+        if isinstance(sub, Gaussian1D):
+            code += ",\n\t" + encode_gaussian_model(sub)
+        elif isinstance(sub, Polynomial1D) and include_continuum:
+            code += ",\n\t" + encode_polynomial_model(sub)
+    code += f",\n\tname='{model.name}')"
+    return code
+
+
+def encode_gaussian_model(model: Gaussian1D) -> str:
+    """
+    Write text for re-encoding the Gaussia1D model in Python astropy code.
+    """
+    return f"Gaussian1D(amplitude={model.amplitude.value:.4e}, mean={model.mean.value:.4f}, " \
+           f"stddev={model.stddev.value:.4f}, name='{model.name}')"
+
+
+def encode_polynomial_model(model: Polynomial1D) -> str:
+    """
+    Write text for re-encoding the Polynomial1D model in Python astropy code.
+    """
+    return f"Polynomial1D(degree={model.degree}, name='{model.name}')"
+
+
+def describe_fits(fit_model: Union[Model, List[Model]], for_matplotlib: bool = False, **kwargs) -> str:
+    """
+    Write text for tracing or plotting to matplotlib text/annotation describing the fits
+    """
+    if isinstance(fit_model, CompoundModel):
+        desc = "\n\t" + describe_compound_fit(fit_model, for_matplotlib=False, **kwargs)
+    elif isinstance(fit_model, Gaussian1D):
+        desc = "\n\t" + describe_gaussian_fit(fit_model, for_matplotlib=False)
+    elif isinstance(fit_model, Model):
+        desc = f"\n\t{fit_model}"
+    else:
+        # assume a list thereof
+        desc = ""
+        for fit in fit_model:
+            desc += describe_fits(fit, for_matplotlib=for_matplotlib, **kwargs)
+    return desc
+
+
 def describe_compound_fit(fit: CompoundModel, for_matplotlib: bool = False, **kwargs):
+    """
+    Write text for tracing or plotting to matplotlib text/annotation describing the compound fit
+    """
     text = f"{fit.name}"
     for sub in fit:
         if isinstance(sub, Gaussian1D):
@@ -90,12 +182,15 @@ def describe_compound_fit(fit: CompoundModel, for_matplotlib: bool = False, **kw
 
 def describe_gaussian_fit(fit: Gaussian1D, for_matplotlib: bool = False, include_amplitude: bool = True,
                           include_flux: bool = True) -> str:
+    """
+    Write text for tracing or plotting to matplotlib text/annotation describing the Gaussian fit
+    """
     amplitude = fit.amplitude.quantity
     mu = fit.mean.quantity
     sigma = fit.stddev.quantity
 
     v_sigma = calculate_velocity_dispersion(fit)
-    text = f"{fit.name}. " if fit.name is not None and len(fit.name) > 0 else ""
+    text = f"{fit.name}: " if fit.name is not None and len(fit.name) > 0 else ""
     if for_matplotlib:
         text += f"$\\mu$={mu.value:.1f} {mu.unit:latex_inline}, " \
                 f"$v_{{\\sigma}}$={v_sigma.value:.1f} {v_sigma.unit:latex_inline}"
