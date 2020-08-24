@@ -26,6 +26,20 @@ for spec_key, data_source in data_sources.items():
 print(F"\n\n****************************************************************")
 print(F"* Producing plots of spectroscopy data and lines ")
 print(F"****************************************************************")
+spectra = {}
+flux_units = None
+for ds_key, ds in data_sources.items():
+    if ds_key.startswith("r"):
+        spectra[ds_key] = ds.query()
+        flux_units = spectra[ds_key].flux.unit
+
+plot_config = {"type": "SpectralLineEvolutionPlot", "file_name": "./output/spec/V3890Sgr-2019-line-evo-H-alpha.png", "title": "Evolution of the H$\\alpha$ line", "params": { "show_legend": False}}
+plot_config["params"]["y_lim"] = [-1e-12, 15e-12]
+plot_config["params"]["y_ticks"] = [0, 5e-12, 10e-12, 15e-12]
+plot_config["params"]["y_tick_labels"] = ["0", "5", "10", "15"]
+plot_config["params"]["y_label"] = f"Flux density [$10^{{-12}}$ {flux_units:latex_inline}]"
+PlotHelper.plot_to_file(plot_config, spectra=spectra, line_fits=line_fit_sets)
+
 for plot_group_config in settings["plots"]:
     print(F"\nProcessing plot group: {plot_group_config}")
     flux_units = mag.units_flux_density_cgs_angstrom

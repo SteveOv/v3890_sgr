@@ -18,29 +18,19 @@ _frodo_spec_resolving_power = {
     "red-high": 5300
 }
 
+c = 2.998e8 * u.m / u.s
 
-def calculate_velocity_dispersion(fit: Gaussian1D) -> Quantity:
-    """
-    Get the velocity dispersion of this fit, based on the line's Gaussian dispersion and the LSF of the instrument.
-    """
-    # TODO: rework this so it's based directly on the dispersion and avoid the FWHM/2.355 step?
-    # The line width is the product of convolving the line spread function (LSF) of the spectrograph with
-    # the emission line.  Taking both to be Gaussian, we have
-    #   G_obs(x) = 1/(B_obs*sqrt(pi)) exp(-x^2/B_obs^2) where beta_obs^2 = beta_LSF^2 + beta_spec^2
-    # we take beta_obs = FWHM of the observed line
-    # and we can work out beta_LSF = lambda_0/R
-    # therefore B_spec = sqrt( beta_obs^2 - beta_LSF^2 )
-    #
-    mu = fit.mean.quantity
-    fwhm = fit.fwhm
 
-    r = _frodo_spec_resolving_power["blue-high"] if mu.value < 5500 else _frodo_spec_resolving_power["red-high"]
-    beta_spec = np.sqrt(fwhm**2 - (mu / r)**2)
+def calculate_velocity_from_sigma(lambda_0: Union[float, Quantity], sigma: Union[float, Quantity]) \
+        -> Union[float, Quantity]:
+    v_sigma = (sigma / lambda_0) * (c if isinstance(lambda_0, Quantity) and isinstance(sigma, Quantity) else c.value)
+    return v_sigma
 
-    # This is the FWHM corrected for the spectrograph's LSF.  It's related to the velocity dispersion through
-    sigma = beta_spec / 2.355  # 2 sqrt(2 ln2)
-    v = (sigma / mu) * Quantity(2.998e5, unit="km/s")
-    return v
+
+def calculate_sigma_from_velocity(lambda_0: Union[float, Quantity], velocity_sigma: Union[float, Quantity]) \
+        -> Union[float, Quantity]:
+    sigma = (velocity_sigma * lambda_0) / (c if isinstance(lambda_0, Quantity) and isinstance(velocity_sigma, Quantity) else c.value)
+    return sigma
 
 
 def calculate_flux(fit: Gaussian1D) -> Quantity:
@@ -189,7 +179,7 @@ def describe_gaussian_fit(fit: Gaussian1D, for_matplotlib: bool = False, include
     mu = fit.mean.quantity
     sigma = fit.stddev.quantity
 
-    v_sigma = calculate_velocity_dispersion(fit)
+    v_sigma = calculate_velocity_from_sigma(lambda_0=mu, sigma=sigma).to("km / s")
     text = f"{fit.name}: " if fit.name is not None and len(fit.name) > 0 else ""
     if for_matplotlib:
         text += f"$\\mu$={mu.value:.1f} {mu.unit:latex_inline}, " \
