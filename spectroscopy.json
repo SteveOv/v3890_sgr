@@ -1,4 +1,46 @@
 {
+  "data_sources": {
+    "b_e_20190828_3": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190828_3.fits"},
+    "r_e_20190828_3": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190828_3.fits"},
+    "b_e_20190828_11": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190828_11.fits"},
+    "r_e_20190828_11": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190828_11.fits"},
+    "b_e_20190830_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190830_5.fits"},
+    "r_e_20190830_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190830_5.fits"},
+    "b_e_20190831_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190831_5.fits"},
+    "r_e_20190831_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190831_5.fits"},
+    "b_e_20190831_11": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190831_11.fits"},
+    "r_e_20190831_11": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190831_11.fits"},
+    "b_e_20190901_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190901_5.fits"},
+    "r_e_20190901_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190901_5.fits"},
+    "b_e_20190901_11": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190901_11.fits"},
+    "r_e_20190901_11": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190901_11.fits"},
+    "b_e_20190902_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190902_5.fits"},
+    "r_e_20190902_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190902_5.fits"},
+    "b_e_20190902_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190902_7.fits"},
+    "r_e_20190902_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190902_7.fits"},
+    "b_e_20190903_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190903_5.fits"},
+    "r_e_20190903_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190903_5.fits"},
+    "b_e_20190903_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190903_7.fits"},
+    "r_e_20190903_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190903_7.fits"},
+    "b_e_20190904_4": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190904_4.fits"},
+    "r_e_20190904_4": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190904_4.fits"},
+    "b_e_20190905_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190905_5.fits"},
+    "r_e_20190905_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190905_5.fits"},
+    "b_e_20190905_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190905_7.fits"},
+    "r_e_20190905_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190905_7.fits"},
+    "b_e_20190910_1": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190910_1.fits"},
+    "r_e_20190910_1": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190910_1.fits"},
+    "b_e_20190911_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190911_5.fits"},
+    "r_e_20190911_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190911_5.fits"},
+    "b_e_20190911_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190911_7.fits"},
+    "r_e_20190911_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190911_7.fits"},
+    "b_e_20190913_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190913_5.fits"},
+    "r_e_20190913_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190913_5.fits"},
+    "b_e_20190913_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190913_7.fits"},
+    "r_e_20190913_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190913_7.fits"},
+    "b_e_20190915_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190915_5.fits"},
+    "r_e_20190915_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190915_5.fits"}
+  },
   "line_sets": {
     "Balmer": {
       "H$\\alpha$": 6562.79,
@@ -227,52 +269,11 @@
       "[Fe XI] 7892": 7892,
       "[Mn IX] 7968": 7968,
       "He II 8237": 8237
-    }
-  },
-  "data_sources": {
-    "b_e_20190828_3": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190828_3.fits"},
-    "r_e_20190828_3": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190828_3.fits"},
-    "b_e_20190828_11": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190828_11.fits"},
-    "r_e_20190828_11": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190828_11.fits"},
-    "b_e_20190830_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190830_5.fits"},
-    "r_e_20190830_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190830_5.fits"},
-    "b_e_20190831_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190831_5.fits"},
-    "r_e_20190831_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190831_5.fits"},
-    "b_e_20190831_11": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190831_11.fits"},
-    "r_e_20190831_11": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190831_11.fits"},
-    "b_e_20190901_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190901_5.fits"},
-    "r_e_20190901_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190901_5.fits"},
-    "b_e_20190901_11": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190901_11.fits"},
-    "r_e_20190901_11": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190901_11.fits"},
-    "b_e_20190902_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190902_5.fits"},
-    "r_e_20190902_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190902_5.fits"},
-    "b_e_20190902_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190902_7.fits"},
-    "r_e_20190902_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190902_7.fits"},
-    "b_e_20190903_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190903_5.fits"},
-    "r_e_20190903_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190903_5.fits"},
-    "b_e_20190903_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190903_7.fits"},
-    "r_e_20190903_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190903_7.fits"},
-    "b_e_20190904_4": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190904_4.fits"},
-    "r_e_20190904_4": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190904_4.fits"},
-    "b_e_20190905_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190905_5.fits"},
-    "r_e_20190905_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190905_5.fits"},
-    "b_e_20190905_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190905_7.fits"},
-    "r_e_20190905_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190905_7.fits"},
-    "b_e_20190910_1": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190910_1.fits"},
-    "r_e_20190910_1": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190910_1.fits"},
-    "b_e_20190911_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190911_5.fits"},
-    "r_e_20190911_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190911_5.fits"},
-    "b_e_20190911_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190911_7.fits"},
-    "r_e_20190911_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190911_7.fits"},
-    "b_e_20190913_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190913_5.fits"},
-    "r_e_20190913_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190913_5.fits"},
-    "b_e_20190913_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190913_7.fits"},
-    "r_e_20190913_7": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190913_7.fits"},
-    "b_e_20190915_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_b_e_20190915_5.fits"},
-    "r_e_20190915_5": {"source": "~/Documents/V3890_Sgr_Data/LT_Spectra/flux_cal_pipeline/dereddened/dr_r_e_20190915_5.fits"}
+    },
+    "Coronal": {}
   },
   "plots": {
-    "early_plots": [
+    "Delta-t ~1 d (x2)": [
       {
         "type": "SpectrumPlot",
         "file_name": "./output/spec/V3890Sgr-2019-spec-20190828_3.png",
@@ -280,8 +281,10 @@
         "params": {},
         "spectra": ["b_e_20190828_3", "r_e_20190828_3"],
         "spectral_lines": {
-          "Balmer": [],
-          "He/N": ["He II 6560"]
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 5016"],
+          "Fe II": [],
+          "Nebular": []
         }
       },
       {
@@ -291,10 +294,14 @@
         "params": {},
         "spectra": ["b_e_20190828_11", "r_e_20190828_11"],
         "spectral_lines": {
-          "Balmer" : [],
-          "He/N": ["He II 6560"]
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 5016", "He I 6678"],
+          "Fe II": [],
+          "Nebular": []
         }
-      },
+      }
+    ],
+    "Delta-t ~3 d": [
       {
         "type": "SpectrumPlot",
         "file_name": "./output/spec/V3890Sgr-2019-spec-20190830_5.png",
@@ -302,9 +309,14 @@
         "params": {},
         "spectra": ["b_e_20190830_5", "r_e_20190830_5"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He I 4922", "N II 5001","He I 5016", "He I 6678", "He I 7065"],
+          "Fe II": [],
+          "Nebular": []
         }
-      },
+      }
+    ],
+    "delta-t ~4 d (x2)": [
       {
         "type": "SpectrumPlot",
         "file_name": "./output/spec/V3890Sgr-2019-spec-20190831_5.png",
@@ -312,7 +324,10 @@
         "params": {},
         "spectra": ["b_e_20190831_5", "r_e_20190831_5"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He I 4922", "N II 5001","He I 5016", "He I 6678", "He I 7065"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416", "[Fe X] 6375"]
         }
       },
       {
@@ -322,9 +337,14 @@
         "params": {},
         "spectra": ["b_e_20190831_11", "r_e_20190831_11"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He I 4922", "N II 5001","He I 5016", "He I 6678", "He I 7065"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416", "[Fe X] 6375"]
         }
-      },
+      }
+    ],
+    "Delta-t ~5 d (x2)": [
       {
         "type": "SpectrumPlot",
         "file_name": "./output/spec/V3890Sgr-2019-spec-20190901_5.png",
@@ -332,7 +352,10 @@
         "params": {},
         "spectra": ["b_e_20190901_5", "r_e_20190901_5"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He I 4922", "N II 5001", "He I 5016", "He I 6678", "He I 7065", "He I 7281"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416","[Fe VII] 6086", "[Fe X] 6375"]
         }
       },
       {
@@ -342,9 +365,14 @@
         "params": {},
         "spectra": ["b_e_20190901_11", "r_e_20190901_11"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He I 4922", "N II 5001", "He I 5016", "He I 6678", "He I 7065", "He I 7281"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416","[Fe VII] 6086", "[Fe X] 6375"]
         }
-      },
+      }
+    ],
+    "Delta-t ~6 d (x2) [Hard X-ray peak 5.9d]": [
       {
         "type": "SpectrumPlot",
         "file_name": "./output/spec/V3890Sgr-2019-spec-20190902_5.png",
@@ -352,7 +380,10 @@
         "params": {},
         "spectra": ["b_e_20190902_5", "r_e_20190902_5"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He II 4686", "He I 4922", "N II 5001", "He I 5016", "He I 6678", "He I 7065", "He I 7281"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416","[Fe VII] 6086", "[Fe X] 6375"]
         }
       },
       {
@@ -362,9 +393,14 @@
         "params": {},
         "spectra": ["b_e_20190902_7", "r_e_20190902_7"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He II 4686", "He I 4922", "N II 5001", "He I 5016", "He I 6678", "He I 7065", "He I 7281"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416","[Fe VII] 6086", "[Fe X] 6375"]
         }
-      },
+      }
+    ],
+    "Delta-t ~7 d (x2)": [
       {
         "type": "SpectrumPlot",
         "file_name": "./output/spec/V3890Sgr-2019-spec-20190903_5.png",
@@ -372,7 +408,10 @@
         "params": {},
         "spectra": ["b_e_20190903_5", "r_e_20190903_5"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He II 4686", "He I 4922", "N II 5001", "He I 5016", "He I 5048", "He I 6678", "He I 7065", "He I 7281"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416", "[Fe X] 6375"]
         }
       },
       {
@@ -382,9 +421,14 @@
         "params": {},
         "spectra": ["b_e_20190903_7", "r_e_20190903_7"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He II 4686", "He I 4922", "N II 5001", "He I 5016", "He I 5048", "He I 6678", "He I 7065", "He I 7281"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416", "[Fe X] 6375"]
         }
-      },
+      }
+    ],
+    "Delta-t ~8 d": [
       {
         "type": "SpectrumPlot",
         "file_name": "./output/spec/V3890Sgr-2019-spec-20190904_4.png",
@@ -392,9 +436,14 @@
         "params": {},
         "spectra": ["b_e_20190904_4", "r_e_20190904_4"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He II 4686", "He I 4922", "N II 5001", "He I 5016", "He I 5048", "He I 6678", "He I 7065", "He I 7281"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416", "[Fe X] 6375"]
         }
-      },
+      }
+    ],
+    "Delta-t ~9 d (x2)": [
       {
         "type": "SpectrumPlot",
         "file_name": "./output/spec/V3890Sgr-2019-spec-20190905_5.png",
@@ -402,7 +451,10 @@
         "params": {},
         "spectra": ["b_e_20190905_5", "r_e_20190905_5"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He II 4686", "He I 4922", "N II 5001", "He I 5016", "He I 5048", "He I 6678", "He I 7065", "He I 7281"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416", "[Fe X] 6375"]
         }
       },
       {
@@ -412,13 +464,14 @@
         "params": {},
         "spectra": ["b_e_20190905_7", "r_e_20190905_7"],
         "spectral_lines": {
-          "Balmer" : [ "H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$" ],
-          "Nebular": [ "N III 4638", "He II 4686", "He I 4922", "He I 5016", "He I 6678", "He I 7065", "He I 7281" ],
-          "Fe II": [ "O i 7773" ]
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He II 4686", "He I 4922", "N II 5001", "He I 5016", "He I 5048", "He I 6678", "He I 7065", "He I 7281"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416", "[Fe X] 6375"]
         }
       }
     ],
-    "late_plots": [
+    "Delta-t ~14 d": [
       {
         "type": "SpectrumPlot",
         "file_name": "./output/spec/V3890Sgr-2019-spec-20190910_1.png",
@@ -426,9 +479,14 @@
         "params": {},
         "spectra": ["b_e_20190910_1", "r_e_20190910_1"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He II 4686", "He I 4922", "He I 5016", "He I 5048", "He I 6678", "He I 7065", "He I 7281"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416", "[Fe X] 6375"]
         }
-      },
+      }
+    ],
+    "Delta-t ~15 d (x2) [SSS turn-on @ 15.5d]": [
       {
         "type": "SpectrumPlot",
         "file_name": "./output/spec/V3890Sgr-2019-spec-20190911_5.png",
@@ -436,7 +494,10 @@
         "params": {},
         "spectra": ["b_e_20190911_5", "r_e_20190911_5"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He II 4686", "He I 4922", "He I 5016", "He I 5048", "He I 6678", "He I 7065", "He I 7281"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416", "[Fe X] 6375"]
         }
       },
       {
@@ -446,9 +507,14 @@
         "params": {},
         "spectra": ["b_e_20190911_7", "r_e_20190911_7"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He II 4686", "He I 4922", "He I 5016", "He I 5048", "He I 6678", "He I 7065", "He I 7281"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416", "[Fe X] 6375"]
         }
-      },
+      }
+    ],
+    "Delta-t ~17 d (x2)": [
       {
         "type": "SpectrumPlot",
         "file_name": "./output/spec/V3890Sgr-2019-spec-20190913_5.png",
@@ -456,7 +522,10 @@
         "params": {},
         "spectra": ["b_e_20190913_5", "r_e_20190913_5"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He II 4686", "He I 4922", "He I 5016", "He I 5048", "He I 6678", "He I 7065", "He I 7281"],
+          "Fe II": [],
+          "Nebular": ["[Fe X] 6375"]
         }
       },
       {
@@ -466,9 +535,14 @@
         "params": {},
         "spectra": ["b_e_20190913_7", "r_e_20190913_7"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He II 4686", "He I 4922", "He I 5016", "He I 5048", "He I 6678", "He I 7065", "He I 7281"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416", "[Fe X] 6375"]
         }
-      },
+      }
+    ],
+    "Delta-t ~19 d [SSS turn-off/decline @19d": [
       {
         "type": "SpectrumPlot",
         "file_name": "./output/spec/V3890Sgr-2019-spec-20190915_5.png",
@@ -476,7 +550,10 @@
         "params": {},
         "spectra": ["b_e_20190915_5", "r_e_20190915_5"],
         "spectral_lines": {
-          "Balmer" : []
+          "Balmer": ["H$\\alpha$", "H$\\beta$", "H$\\gamma$", "H$\\delta$"],
+          "He/N": ["He I 4471", "N III 4517", "N III 4638", "He II 4686", "He I 4922", "He I 5016", "He I 5048", "He I 6678", "He I 7065", "He I 7281"],
+          "Fe II": [],
+          "Nebular": ["[Fe ii] 4416", "[Fe X] 6375"]
         }
       }
     ]
