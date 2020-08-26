@@ -2,6 +2,7 @@ from typing import Tuple, Any, Union
 from pathlib import Path
 from astropy.wcs import WCS
 from astropy import units
+from datetime import datetime as dt
 from data.SpectralDataSource import *
 from spectroscopy import Spectrum1DEx, SpectrumCollectionEx
 
@@ -57,11 +58,13 @@ class FrodoSpecSpectralDataSource(SpectralDataSource, ABC):
         hdr, flux, spectral_axis, wcs = cls._read_data_from_fits(filename, hdu_name)
 
         name = Path(filename).stem
+        mjd = hdr["MJD"] if "MJD" in hdr else None
+        obs_date = dt.strptime(hdr["DATE-OBS"], "%Y-%m-%dT%H:%M:%S.%f") if "DATE-OBS" in hdr else None
 
         flux = flux[index] * cls._get_flux_axis_units(wcs, hdr)
         spectral_axis = spectral_axis[index] * cls._get_spectral_axis_units(wcs, hdr)
 
-        spectrum = Spectrum1DEx(flux=flux, spectral_axis=spectral_axis, wcs=wcs, name=name)
+        spectrum = Spectrum1DEx(flux=flux, spectral_axis=spectral_axis, wcs=wcs, name=name, mjd=mjd, obs_date=obs_date)
         if header:
             return spectrum, hdr
         else:

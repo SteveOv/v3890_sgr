@@ -1,4 +1,5 @@
 import warnings
+import datetime
 from typing import List, Union
 import numpy as np
 from specutils import Spectrum1D
@@ -19,11 +20,11 @@ class Spectrum1DEx(Spectrum1D):
     """
     def __init__(self, flux=None, spectral_axis=None, wcs=None, velocity_convention=None,
                  rest_value=None, redshift=None, radial_velocity=None, **kwargs):
-        if "name" in kwargs:
-            self._name = kwargs["name"]
-            kwargs.pop("name")
-        else:
-            self._name = None
+        # Have to pop these as the base class will error for any unknown kwargs
+        self._name = kwargs.pop("name") if "name" in kwargs else None
+        self._mjd = kwargs.pop("mjd") if "mjd" in kwargs else None
+        self._obs_date = kwargs.pop("obs_date") if "obs_date" in kwargs else None
+
         super().__init__(flux=flux, spectral_axis=spectral_axis, wcs=wcs, velocity_convention=velocity_convention,
                          rest_value=rest_value, redshift=redshift, radial_velocity=radial_velocity, **kwargs)
         return
@@ -52,9 +53,13 @@ class Spectrum1DEx(Spectrum1D):
     def name(self) -> str:
         return self._name
 
-    @name.setter
-    def name(self, value: str):
-        self._name = value
+    @property
+    def mjd(self) -> float:
+        return self._mjd
+
+    @property
+    def obs_date(self) -> datetime:
+        return self._obs_date
 
     @classmethod
     def from_spectrum1d(cls, spec1d: Spectrum1D, name: str = None):
@@ -64,7 +69,12 @@ class Spectrum1DEx(Spectrum1D):
         if spec1d is not None:
             new_spec = Spectrum1DEx(flux=spec1d.flux, spectral_axis=spec1d.spectral_axis,
                                     uncertainty=spec1d.uncertainty, wcs=spec1d.wcs, mask=spec1d.mask, meta=spec1d.meta)
-            new_spec.name = name if name is not None else spec1d.name if isinstance(spec1d, Spectrum1DEx) else None
+            if isinstance(spec1d, Spectrum1DEx):
+                new_spec._name = spec1d._name
+                new_spec._mjd = spec1d._mjd
+                new_spec._obs_date = spec1d._mjd
+            else:
+                new_spec._name = new_spec._mjd, = new_spec._obs_date = None
         else:
             new_spec = None
         return new_spec
@@ -95,7 +105,9 @@ class Spectrum1DEx(Spectrum1D):
     def __getitem__(self, item):
         value = super().__getitem__(item)
         if isinstance(value, Spectrum1DEx):
-            value.name = self.name
+            value._name = self._name
+            value._mjd = self._mjd
+            value._obs_date = self._obs_date
         return value
 
     def copy(self):
@@ -103,7 +115,9 @@ class Spectrum1DEx(Spectrum1D):
         Create a copy of this spectrum
         """
         copy = super()._copy()
-        copy.name = self.name
+        copy._name = self._name
+        copy._mjd = self._mjd
+        copy._obs_date = self._obs_date
         return copy
 
     def create_image_hdu(self, name, header=None) \
