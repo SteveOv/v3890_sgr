@@ -26,20 +26,6 @@ for spec_key, data_source in data_sources.items():
 print(F"\n\n****************************************************************")
 print(F"* Producing plots of spectroscopy data and lines ")
 print(F"****************************************************************")
-spectra = {}
-flux_units = None
-for ds_key, ds in data_sources.items():
-    if ds_key.startswith("r"):
-        spectra[ds_key] = ds.query()
-        flux_units = spectra[ds_key].flux.unit
-
-plot_config = {"type": "SpectralLineEvolutionPlot", "file_name": "./output/spec/V3890Sgr-2019-line-evo-H-alpha.png", "title": "Evolution of the H$\\alpha$ line", "params": { "show_legend": False}}
-plot_config["params"]["y_lim"] = [-1e-12, 15e-12]
-plot_config["params"]["y_ticks"] = [0, 5e-12, 10e-12, 15e-12]
-plot_config["params"]["y_tick_labels"] = ["0", "5", "10", "15"]
-plot_config["params"]["y_label"] = f"Flux density [$10^{{-12}}$ {flux_units:latex_inline}]"
-PlotHelper.plot_to_file(plot_config, spectra=spectra, line_fits=line_fit_sets)
-
 for plot_group_config in settings["plots"]:
     print(F"\nProcessing plot group: {plot_group_config}")
     flux_units = mag.units_flux_density_cgs_angstrom
@@ -49,17 +35,19 @@ for plot_group_config in settings["plots"]:
         spectral_lines = {}
         plot_line_fits = {}
         delta_t = None
-        for spec_name in plot_config["spectra"]:
-            ds = data_sources[spec_name]
-            delta_t = tm.delta_t_from_jd(tm.jd_from_mjd(ds.header["MJD"]), eruption_jd)
-            spectrum = ds.query()
-            print(f"\tUsing spectrum '{spec_name}': Delta-t={delta_t:.2f} & max_flux={spectrum.max_flux}")
-            spectra[spec_name] = ds.query()
-            flux_units = spectrum.flux.unit
+        for spec_match in plot_config["spectra"]:
+            # Get all the data source whose name start with the key value - for most plots each individually specified
+            filtered_data_sources = {k: v for k, v in data_sources.items() if k.startswith(spec_match)}
+            for spec_name, ds in filtered_data_sources.items():
+                delta_t = tm.delta_t_from_jd(tm.jd_from_mjd(ds.header["MJD"]), eruption_jd)
+                spectrum = ds.query()
+                print(f"\tUsing spectrum '{spec_name}': Delta-t={delta_t:.2f} & max_flux={spectrum.max_flux}")
+                spectra[spec_name] = ds.query()
+                flux_units = spectrum.flux.unit
 
-            # Pick up any fitted spectral lines taken from this spectrum
-            if spec_name in line_fit_sets:
-                plot_line_fits[spec_name] = line_fit_sets[spec_name]
+                # Pick up any fitted spectral lines taken from this spectrum
+                if spec_name in line_fit_sets:
+                    plot_line_fits[spec_name] = line_fit_sets[spec_name]
 
         # Build the list of known emission lines which will overlay the spectra
         if "spectral_lines" in plot_config:
@@ -81,6 +69,4 @@ for plot_group_config in settings["plots"]:
         plot_config["params"]["y_ticks"] = [0, 5e-12, 10e-12, 15e-12, 20e-12]
         plot_config["params"]["y_tick_labels"] = ["0", "5", "10", "15", "20"]
         plot_config["params"]["y_label"] = f"Flux density [$10^{{-12}}$ {flux_units:latex_inline}]"
-        plot_config["title"] = \
-            f"Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t={delta_t:.2f}$ d"
         PlotHelper.plot_to_file(plot_config, spectra=spectra, line_fits=plot_line_fits, spectral_lines=spectral_lines)
