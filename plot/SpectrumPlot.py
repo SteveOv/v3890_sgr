@@ -115,7 +115,7 @@ class SpectrumPlot(BasePlot):
             for fit_key, line_fit_list in line_fits.items():
                 spectrum = spectra[fit_key] if fit_key in spectra else None
                 for line_fit in line_fit_list:
-                    fit_utilities.draw_fit_on_ax(ax, spectrum, line_fit, annotate=True)
+                    fit_utilities.draw_fit_on_ax(ax, spectrum, line_fit, annotate=False)
         return
 
     @classmethod

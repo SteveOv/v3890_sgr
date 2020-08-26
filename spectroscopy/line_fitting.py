@@ -1,13 +1,14 @@
 import numpy as np
-from typing import Dict, List, Tuple, Union
-from astropy.units import Quantity, si
+from copy import copy
+from datetime import datetime
+from typing import List, Tuple, Union
+from astropy.units import si
 from astropy.modeling import CompoundModel
 from astropy.modeling.models import Gaussian1D, Polynomial1D
 from astropy.modeling.fitting import LevMarLSQFitter
 from specutils import SpectralRegion, Spectrum1D
-from specutils.manipulation.extract_spectral_region import *
 from specutils.manipulation.estimate_uncertainty import noise_region_uncertainty
-from specutils.fitting.continuum import fit_continuum, fit_generic_continuum
+from specutils.fitting.continuum import fit_generic_continuum
 from spectroscopy import Spectrum1DEx, fit_utilities
 
 _b_e_exclusion_regions = SpectralRegion([(3900, 4150), (4300, 4700), (4800, 4950), (4960, 5080)] * si.AA)
@@ -16,445 +17,104 @@ _r_e_exclusion_regions = SpectralRegion([(5900, 6100), (6450, 6750)] * si.AA)
 
 
 def fit(spectrum: Spectrum1DEx, key: str = None) -> List[CompoundModel]:
+    """
+    This is the switchboard method for the spectral fitting.
+    If it can find a specific method to do the fitting it'll call that, otherwise it falls back on to generic methods.
+    """
     this_module = __import__(__name__)
-    method = f"fit_{key}" if key is not None else f"fit_{spectrum.name}"
-    func = getattr(this_module, method)
+    method = f"fit_{key if key is not None else spectrum.name}"
+    if hasattr(this_module, method):
+        func = getattr(this_module, method)
+    elif spectrum.is_blue:
+        func = fit_blue_arm_spectrum
+    else:
+        func = fit_red_arm_spectrum
     return func(spectrum)
 
 
 @fit_utilities.trace_fitting
-def fit_b_e_20190828_3(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
+def fit_blue_arm_spectrum(spectrum: Spectrum1DEx) -> List[CompoundModel]:
+    # Derive the uncertainties in the spectrum from the noise. We use this for fitting as it provides weighting.
+    if spectrum.uncertainty is None:
+        noise_region = Spectrum1DEx.spectral_region_over(4700, 4900)
+        unc_spec = noise_region_uncertainty(spectrum, noise_region)
+    else:
+        unc_spec = spectrum
+
+    # Work out the continuum model
+    cont_model = _continuum_fit(unc_spec)
+
+    # The hints for H-beta.  Early ones are a single Gaussian but later are double.
+    if spectrum.obs_date < datetime(2019, 8, 30):
+        beta_hint = _named_gaussian(amplitude=2e-12, mean=4861.4, stddev=35)
+    else:
+        beta_hint = _named_gaussian(amplitude=2e-12, mean=(4855, 4865), stddev=(1, 10), subscript="1") \
+                    + _named_gaussian(amplitude=0.5e-12, mean=(4855, 4865), stddev=(10, 25), subscript="2")
+
+    # The hints of H-gamma.  Early ones are a single Gaussian but later are double.
+    if spectrum.obs_date < datetime(2019, 8, 30):
+        gamma_hint = _named_gaussian(amplitude=2e-12, mean=4340.5, stddev=25)
+    else:
+        gamma_hint = _named_gaussian(amplitude=2e-12, mean=(4335, 4345), stddev=(1, 7), subscript="1") \
+                    + _named_gaussian(amplitude=0.2e-12, mean=(4335, 4345), stddev=(7, 15), subscript="2")
+
+    # The hints for H-delta.  Early ones are a single Gaussian but later ones are double.
+    if spectrum.obs_date < datetime(2019, 8, 30):
+        delta_hint = _named_gaussian(amplitude=2e-12, mean=4101.7, stddev=20)
+    else:
+        delta_hint = _named_gaussian(amplitude=1e-12, mean=(4095, 4106), stddev=(1, 7), subscript="1") \
+                    + _named_gaussian(amplitude=0.2e-12, mean=(4095, 4106), stddev=(7, 15), subscript="2")
+
+    # The hints for the He I 4686 line.  Isn't present in the early spectra.
+    if spectrum.obs_date < datetime(2019, 9, 2):
+        he4686_hint = None
+    else:
+        he4686_hint = _named_gaussian(amplitude=2e-12, mean=(4680, 4690), stddev=(1, 3), subscript="1") \
+                     + _named_gaussian(amplitude=0.2e-12, mean=(4680, 4690), stddev=(3, 8), subscript="2")
+
+    # Now we fit the lines + continuum to the spectrum + uncertainty based on the hints.
+    weights = np.divide(1, np.power(unc_spec.uncertainty.quantity, 2))
+    fits = list()
+    fits.append(_perform_fit(CompoundModel("+", beta_hint, cont_model, name="H$\\beta$"), unc_spec, weights))
+    fits.append(_perform_fit(CompoundModel("+", gamma_hint, cont_model, name="H$\\gamma$"), unc_spec, weights))
+    fits.append(_perform_fit(CompoundModel("+", delta_hint, cont_model, name="H$\\delta$"), unc_spec, weights))
+    if he4686_hint is not None:
+        fits.append(_perform_fit(CompoundModel("+", he4686_hint, cont_model, name="He II (4686)"), unc_spec, weights))
+    return fits
 
 
 @fit_utilities.trace_fitting
-def fit_r_e_20190828_3(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-    hint = CompoundModel("+", _h_alpha_fit(amplitude=8e-12, stddev=50),
-                         _continuum_fit(noise_spectrum), name="H$\\alpha$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190828_11(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190828_11(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-    hint = CompoundModel("+", _h_alpha_fit(amplitude=8e-12, stddev=50),
-                         _continuum_fit(noise_spectrum), name="H$\\alpha$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190830_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(stddev=(1, 14)), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190830_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=8e-12, stddev=(1, 15), subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6560, 6565), stddev=(30, 60), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190831_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(stddev=(1, 14)), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190831_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=8e-12, stddev=(1, 15), subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6560, 6565), stddev=(30, 60), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190831_11(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(stddev=(1, 14)), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190831_11(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=8e-12, stddev=(1, 15), subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6560, 6565), stddev=(30, 60), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190901_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(stddev=(1, 14)), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190901_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=8e-12, stddev=(1, 15), subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6560, 6565), stddev=(30, 60), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190901_11(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(stddev=(1, 14)), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190901_11(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=8e-12, stddev=(1, 15), subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6560, 6565), stddev=(30, 60), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190902_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(stddev=(1, 14)), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190902_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=8e-12, stddev=(1, 15), subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6560, 6565), stddev=(30, 60), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190902_7(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(stddev=(1, 14)), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190902_7(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=8e-12, stddev=(1, 15), subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6560, 6565), stddev=(30, 60), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190903_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(stddev=(1, 14)), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190903_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=8e-12, stddev=(1, 15), subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6560, 6565), stddev=(30, 60), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190903_7(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(stddev=(1, 14)), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190903_7(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=8e-12, stddev=(1, 15), subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6560, 6565), stddev=(30, 60), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190904_4(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(stddev=(1, 14)), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190904_4(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=8e-12, stddev=(1, 15), subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6560, 6565), stddev=(30, 60), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190905_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(amplitude=2e-12, stddev=22), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190905_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=4e-12, stddev=2, subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6569, 6565), stddev=(20, 50), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190905_7(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(amplitude=2e-12, stddev=22), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190905_7(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=4e-12, stddev=2, subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6569, 6565), stddev=(20, 50), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190910_1(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(amplitude=2e-12, stddev=22), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190910_1(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=4e-12, stddev=2, subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6569, 6565), stddev=(20, 50), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190911_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(amplitude=2e-12, stddev=22), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190911_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=4e-12, stddev=2, subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6569, 6565), stddev=(20, 50), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190911_7(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(amplitude=2e-12, stddev=22), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190911_7(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=4e-12, stddev=2, subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6569, 6565), stddev=(20, 50), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190913_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(amplitude=2e-12, stddev=22), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190913_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=4e-12, stddev=2, subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6569, 6565), stddev=(20, 50), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190913_7(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(amplitude=2e-12, stddev=22), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190913_7(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=4e-12, stddev=2, subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6569, 6565), stddev=(20, 50), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_b_e_20190915_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 4700, 4900)
-    hint = CompoundModel("+", _h_beta_fit(amplitude=2e-12, stddev=22), _continuum_fit(noise_spectrum), name="H$\\beta$")
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-@fit_utilities.trace_fitting
-def fit_r_e_20190915_5(spectrum: Spectrum1DEx) -> List[CompoundModel]:
-    noise_spectrum = _get_uncertainty_spectrum(spectrum, 6300, 6700)
-
-    # H-alpha double Gaussian - asymmetric expansion
-    hint = _h_alpha_fit(amplitude=4e-12, stddev=2, subscript="1") \
-           + _h_alpha_fit(amplitude=2e-12, mean=(6569, 6565), stddev=(20, 50), subscript="2") \
-           + _continuum_fit(noise_spectrum)
-    hint.name = "H$\\alpha$"
-
-    line_fit = _perform_weighted_fit(hint, noise_spectrum)
-    return [line_fit]
-
-
-def _get_uncertainty_spectrum(spectrum: Spectrum1DEx, lower: float, upper: float):
-    noise_region = Spectrum1DEx.spectral_region_over(lower, upper)
-    return noise_region_uncertainty(spectrum, noise_region)
-
-
-def _perform_weighted_fit(hint: CompoundModel, uncertainty_spectrum) -> CompoundModel:
+def fit_red_arm_spectrum(spectrum: Spectrum1DEx) -> List[CompoundModel]:
+    # Derive the uncertainties in the spectrum from the noise. We use this for fitting as it provides weighting.
+    if spectrum.uncertainty is None:
+        noise_region = Spectrum1DEx.spectral_region_over(6200, 6900)
+        unc_spec = noise_region_uncertainty(spectrum, noise_region)
+    else:
+        unc_spec = spectrum
+
+    # Work out the continuum model
+    cont_model = _continuum_fit(unc_spec)
+
+    if spectrum.obs_date < datetime(2019, 8, 29):
+        alpha_hint = _named_gaussian(amplitude=8e-12, mean=6562.8, stddev=50)
+    elif spectrum.obs_date < datetime(2019, 9, 5):
+        # H-alpha double Gaussian - asymmetric expansion
+        alpha_hint = _named_gaussian(amplitude=8e-12, mean=6562.8, stddev=(1, 15), subscript="1") \
+                    + _named_gaussian(amplitude=2e-12, mean=(6560, 6565), stddev=(30, 60), subscript="2")
+    else:
+        alpha_hint = _named_gaussian(amplitude=4e-12, mean=6562.8, stddev=2, subscript="1") \
+                    + _named_gaussian(amplitude=2e-12, mean=(6569, 6565), stddev=(20, 50), subscript="2") \
+
+    # Now we fit the lines + continuum to the spectrum + uncertainty based on the hints.
+    fits = list()
+    weights = np.divide(1, np.power(unc_spec.uncertainty.quantity, 2))
+    fits.append(_perform_fit(CompoundModel("+", alpha_hint, cont_model, "H$\\alpha$"), unc_spec, weights))
+    return fits
+
+
+def _perform_fit(hint: CompoundModel, uncertainty_spectrum, weights) -> CompoundModel:
     fitter = LevMarLSQFitter()
-    return fitter(hint, uncertainty_spectrum.wavelength, uncertainty_spectrum.flux,
-                  weights=np.divide(1, np.power(uncertainty_spectrum.uncertainty.quantity, 2)))
-
-
-def _h_alpha_fit(amplitude: Union[float, Tuple[float, float]] = 5e-12,
-                 mean: Union[float, Tuple[float, float]] = 6563,
-                 stddev: Union[float, Tuple[float, float]] = None,
-                 subscript=None) -> Gaussian1D:
-    return _named_gaussian(amplitude, mean, stddev, subscript=subscript)
-
-
-def _h_beta_fit(amplitude: Union[float, Tuple[float, float]] = 2e-12,
-                mean: Union[float, Tuple[float, float]] = 4861,
-                stddev: Union[float, Tuple[float, float]] = None,
-                subscript=None) -> Gaussian1D:
-    return _named_gaussian(amplitude, mean, stddev, subscript=subscript)
+    return fitter(hint, uncertainty_spectrum.wavelength, uncertainty_spectrum.flux, weights=weights)
 
 
 def _named_gaussian(
@@ -471,15 +131,15 @@ def _named_gaussian(
     bounds = {}
 
     if isinstance(amplitude, tuple):
-        bounds["amplitude"] = amplitude
+        bounds["amplitude"] = copy(amplitude)
         amplitude = np.mean(amplitude)
 
     if isinstance(mean, tuple):
-        bounds["stddev"] = mean
+        bounds["mean"] = copy(mean)
         mean = np.mean(mean)
 
     if isinstance(stddev, tuple):
-        bounds["stddev"] = stddev
+        bounds["stddev"] = copy(stddev)
         stddev = np.mean(stddev)
 
     if subscript is None or len(subscript) == 0:

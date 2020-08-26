@@ -8,10 +8,9 @@ from astropy.units import Quantity
 from astropy.modeling import Model
 from astropy.modeling import CompoundModel
 from astropy.modeling.models import Gaussian1D, Polynomial1D
-from astropy.modeling.fitting import LevMarLSQFitter
-from specutils import SpectralRegion
-from specutils.manipulation.estimate_uncertainty import noise_region_uncertainty
 from spectroscopy import Spectrum1DEx
+
+_fit_colors = ["m", "royalblue", "darkmagenta", "cyan", "violet", "mediumpurple"]
 
 _frodo_spec_resolving_power = {
     "blue-high": 5500,
@@ -43,19 +42,33 @@ def calculate_flux(fit: Gaussian1D) -> Quantity:
 
 
 def draw_fit_on_ax(ax: Axes, spectrum: Spectrum1DEx, fit: Model, annotate: bool = True,
-                   color: str = "m", line_width: float = 0.5, y_shift: float = 0):
+                   color: str = "m", line_width: float = 0.5, y_shift: float = 0, split=False):
     draw_fit_on_ax_over_range(ax, spectrum.min_wavelength, spectrum.max_wavelength, fit, annotate=annotate,
-                              color=color, line_width=line_width, y_shift=y_shift)
+                              color=color, line_width=line_width, y_shift=y_shift, split=split)
     return
 
 
 def draw_fit_on_ax_over_range(ax: Axes, start: Quantity, end: Quantity, fit: Model, annotate: bool = True,
-                              color: str = "m", line_width: float = 0.5, y_shift: float = 0):
+                              color: str = "m", line_width: float = 0.5, y_shift: float = 0, split=False):
     x_plot = Quantity(np.linspace(start.value, end.value, 1000), start.unit)
-    y_plot = fit(x_plot)
 
-    # Draw the model
-    ax.plot(x_plot, np.add(y_plot, y_shift), "-", color=color, linewidth=line_width, alpha=0.5, zorder=2)
+    if not split or not isinstance(fit, CompoundModel):
+        # Draw the whole model
+        y_plot = fit(x_plot)
+        ax.plot(x_plot, np.add(y_plot, y_shift), "-",
+                color=_fit_colors[0], linewidth=line_width, alpha=0.5, zorder=2)
+    else:
+        # Draw the individual elements (except continuum)
+        color_ix = 0
+        for sub in fit:
+            if isinstance(sub, Polynomial1D) and "cont" in sub.name:
+                # It's the continuum.  Leave it.
+                pass
+            else:
+                y_plot = sub(x_plot)
+                ax.plot(x_plot, np.add(y_plot, y_shift), "-",
+                        color=_fit_colors[color_ix], linewidth=line_width, alpha=0.5, zorder=2)
+                color_ix += 1
 
     if annotate:
         if isinstance(fit, CompoundModel):
@@ -72,7 +85,7 @@ def draw_fit_on_ax_over_range(ax: Axes, start: Quantity, end: Quantity, fit: Mod
     return
 
 
-def trace_fitting(func, show_parameters=True, show_fitting_code=False, show_continuum_in_code=False):
+def trace_fitting(func, show_parameters=True):
     """
     Decorator for fitting functions (input Spectrum1DEx, returns CompoundModel, GaussianModel or list of)
     """
@@ -82,75 +95,23 @@ def trace_fitting(func, show_parameters=True, show_fitting_code=False, show_cont
 
         if show_parameters:
             spectrum = args[0]
-            desc = describe_fits(fit_models, for_matplotlib=True, include_amplitude=True, include_flux=True)
+            desc = describe_fits(fit_models, for_matplotlib=False, include_amplitude=True, include_flux=True)
             print(f"{func.__name__}({spectrum.name}): " + desc)
-
-        if show_fitting_code:
-            # Write out Python/astropy code to recreate the fit
-            print(encode_fits(fit_models, include_continuum=show_continuum_in_code))
         return fit_models
     return wrapper
-
-
-def encode_fits(fit_model: Union[Model, List[Model]], include_continuum=False) -> str:
-    """
-    Write text for re-encoding the fit in Python astropy code.
-    """
-    if isinstance(fit_model, CompoundModel):
-        code = encode_compound_model(fit_model, include_continuum)
-    elif isinstance(fit_model, Gaussian1D):
-        code = encode_gaussian_model(fit_model)
-    elif isinstance(fit_model, Polynomial1D):
-        code = encode_polynomial_model(fit_model)
-    elif isinstance(fit_model, Model):
-        code = ""
-    else:
-        # assume a list thereof
-        code = ""
-        for sub in fit_model:
-            code += encode_fits(sub, include_continuum=include_continuum)
-    return code
-
-
-def encode_compound_model(model: CompoundModel, include_continuum=False) -> str:
-    """
-    Write text for re-encoding the CompoundModel in Python astropy code.
-    """
-    code = f"CompoundFit('+'"
-    for sub in model:
-        if isinstance(sub, Gaussian1D):
-            code += ",\n\t" + encode_gaussian_model(sub)
-        elif isinstance(sub, Polynomial1D) and include_continuum:
-            code += ",\n\t" + encode_polynomial_model(sub)
-    code += f",\n\tname='{model.name}')"
-    return code
-
-
-def encode_gaussian_model(model: Gaussian1D) -> str:
-    """
-    Write text for re-encoding the Gaussia1D model in Python astropy code.
-    """
-    return f"Gaussian1D(amplitude={model.amplitude.value:.4e}, mean={model.mean.value:.4f}, " \
-           f"stddev={model.stddev.value:.4f}, name='{model.name}')"
-
-
-def encode_polynomial_model(model: Polynomial1D) -> str:
-    """
-    Write text for re-encoding the Polynomial1D model in Python astropy code.
-    """
-    return f"Polynomial1D(degree={model.degree}, name='{model.name}')"
 
 
 def describe_fits(fit_model: Union[Model, List[Model]], for_matplotlib: bool = False, **kwargs) -> str:
     """
     Write text for tracing or plotting to matplotlib text/annotation describing the fits
     """
+    line_start = "\n" if for_matplotlib else "\n\t"
     if isinstance(fit_model, CompoundModel):
-        desc = "\n\t" + describe_compound_fit(fit_model, for_matplotlib=False, **kwargs)
+        desc = line_start + describe_compound_fit(fit_model, for_matplotlib=for_matplotlib, **kwargs)
     elif isinstance(fit_model, Gaussian1D):
-        desc = "\n\t" + describe_gaussian_fit(fit_model, for_matplotlib=False)
+        desc = line_start + describe_gaussian_fit(fit_model, for_matplotlib=for_matplotlib, **kwargs)
     elif isinstance(fit_model, Model):
-        desc = f"\n\t{fit_model}"
+        desc = line_start + f"{fit_model}"
     else:
         # assume a list thereof
         desc = ""
@@ -166,7 +127,7 @@ def describe_compound_fit(fit: CompoundModel, for_matplotlib: bool = False, **kw
     text = f"{fit.name}"
     for sub in fit:
         if isinstance(sub, Gaussian1D):
-            text += ("\n\t" if not for_matplotlib else "\n") + describe_gaussian_fit(sub, for_matplotlib, **kwargs)
+            text += ("\n\t\t" if not for_matplotlib else "\n") + describe_gaussian_fit(sub, for_matplotlib, **kwargs)
     return text
 
 
