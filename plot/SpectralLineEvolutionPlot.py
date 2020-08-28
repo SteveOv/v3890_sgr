@@ -16,11 +16,13 @@ class SpectralLineEvolutionPlot(BasePlot):
         self._default_x_lim = (-6000, 6000)                     # km / s
         self._default_x_ticks = [-5000, -2500, 0, 2500, 5000]   # km / s
         self._default_x_tick_labels = self._default_x_ticks
-        self._default_y_label = "Flux density"
+
+        self._default_y_label = "Flux density [10$^{-12}$ erg / ...]"
 
         # Extending the properties of BasePlot
-        self._default_y_lim = (-0.1, 1.0)
-        self._default_y_ticks = [0, 0.5, 1.0]
+        self._default_y_lim = (-1e-12, 20e-12)
+        self._default_y_ticks = [0, 5e-12, 10e-12, 15e-12, 20e-12]
+        self._default_y_tick_labels = ["0", "5", "10", "15", "20"]
         self._default_y_shift = 0
 
         self._default_lambda_0 = 6562.79
@@ -44,7 +46,7 @@ class SpectralLineEvolutionPlot(BasePlot):
 
     @property
     def y_tick_labels(self) -> List[str]:
-        return self._param("y_tick_labels", self._default_y_ticks)
+        return self._param("y_tick_labels", self._default_y_tick_labels)
 
     @property
     def lambda_0(self) -> float:
