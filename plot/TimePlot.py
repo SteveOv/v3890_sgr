@@ -127,14 +127,9 @@ class TimePlot(BasePlot, ABC):
 
     def _draw_epochs(self, ax: Axes, epochs: Dict[str, float]):
         if epochs is not None and len(epochs) > 0:
-            # Replace the minor x-axis ticks with the epochs specified.
-            ax.set_xticks(list(epochs.values()), minor=True)
-            ax.set_xticklabels(list(epochs.keys()) if self.show_epoch_labels else [], minor=True)
-
-            # Labels, if shown, are rotated 90deg and within the axis.
-            ax.tick_params(which='minor', axis='x', direction='inout', pad=-25, labelsize='x-small',
-                           labelcolor='gray', labelrotation=90)
-            ax.grid(which='minor', linestyle=':', linewidth=self._line_width, alpha=0.2)
+            x_pos = list(epochs.values())
+            text = list(epochs.keys()) if self.show_epoch_labels else None
+            self._draw_vertical_lines(ax, x=x_pos, text=text, color="gray", line_style="--")
         return
 
     def _define_data_label(self, label: str, shift_by: float = 0) -> str:

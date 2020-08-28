@@ -59,5 +59,5 @@ class TimePlotSupportingLogAxes(TimePlot, ABC):
             ax.set_yscale("log")
 
         if self.x_scale_log | self.y_scale_log:
-            ax.grid(which="minor", linestyle="-", linewidth=self._line_width, alpha=0.2)
+            ax.grid(which="minor", linestyle="-", linewidth=self._line_width, alpha=0.1)
         return

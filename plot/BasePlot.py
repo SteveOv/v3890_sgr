@@ -265,3 +265,43 @@ class BasePlot(ABC):
         """
         return ax.plot(x_points, np.add(y_points, y_shift), line_style,
                        label=label, color=color, linewidth=self._line_width, alpha=1, zorder=2)
+
+    def _draw_vertical_lines(self, ax: Axes, x, text=None,
+                             color="k", line_width=0.5, line_style=":", alpha=0.3,
+                             text_top=True, text_offset=0.05, text_rotation=90, text_size="xx-small"):
+        """
+        Will draw one or more vertical lines to the Axes from top to bottom at the required x positions.
+        The optional text will be written on the line at the required, proportional offset from the top/bottom.
+        """
+        y_lim = ax.get_ylim()
+        y_inverted = ax.yaxis_inverted()
+        y_min = min(y_lim)
+        y_max = max(y_lim)
+
+        # Plot a vertical line for each entry
+        ax.vlines(x=x, ymin=y_min, ymax=y_max, linestyle=line_style, linewidth=line_width, alpha=alpha, color=color)
+
+        # Add the optional text
+        if text is not None and len(text):
+            # Set the text position. Anchor to top/bottom with any offset a fraction of the scale towards the middle
+            h_align = "center"
+            y_scale = y_max - y_min
+
+            # If the y axis is inverted just invert the text location and offset calculations to compensate.
+            y_pos = y_max if text_top else y_min
+
+            # Stop the offset from taking the text off the body of the plot
+            y_offset = abs(y_scale * text_offset) if abs(text_offset) <= 0.90 else y_scale * 0.90
+
+            # Align and position the text.
+            if text_top:
+                y_pos -= y_offset
+                v_align = "top" if not y_inverted else "bottom"
+            else:
+                y_pos += y_offset
+                v_align = "bottom" if not y_inverted else "top"
+
+            for x_pos, this_text in zip(x, text):
+                ax.text(x_pos, y_pos, this_text, size=text_size, color=color, alpha=min([alpha * 2, 1]),
+                        rotation=text_rotation, verticalalignment=v_align, horizontalalignment=h_align)
+        return

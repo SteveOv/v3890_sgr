@@ -65,10 +65,10 @@ class TwoByTwoMagnitudeLogTimePlot(MagnitudeTimePlot):
             fit_set = fit_sets[lightcurve_key] if lightcurve_key in fit_sets else None
             self._draw_lightcurve_and_fit_set(ax, 0, lightcurve, fit_set)
 
-            # Plotting breaks are specific to this type of plot so we do that here by subverting epoch drawing.
             if self.show_breaks and fit_set is not None:
-                epochs_from_breaks = dict(zip(["%.2f" % x for x in fit_set.breaks], fit_set.breaks))
-                self._draw_epochs(ax, epochs_from_breaks)
+                color = fit_set.metadata.get_or_default("color", "k")
+                breaks_text = ["%.2f" % x for x in fit_set.breaks]
+                self._draw_vertical_lines(ax, fit_set.breaks, breaks_text, color=color, alpha=0.4)
 
             ax_ix += 1
 
