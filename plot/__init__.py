@@ -18,3 +18,4 @@ from plot.MagnitudeAndRateTimePlot import *
 from plot.TwoByTwoMagnitudeLogTimePlot import *
 from plot.RatesAndRatioTimePlot import *
 
+from plot.SpectralLineVelocityTimePlot import *

@@ -298,6 +298,15 @@
           "b_e_20190911_5", "b_e_201909011_7", "b_e_20190913_5", "b_e_20190913_7", "b_e_20190915_5"]
       }
     ],
+    "Spectral Line Velocity/Time plots": [
+      {
+        "type": "SpectralLineVelocityTimePlot",
+        "file_name": "./output/spec/V3890Sgr-2019-line-velocity-time.png",
+        "title": "Spectral line velocity evolution",
+        "params": {},
+        "spectra": ["r_e_", "b_e_"]
+      }
+    ],
     "Delta-t ~1 d (x2)": [
       {
         "type": "SpectrumPlot",
