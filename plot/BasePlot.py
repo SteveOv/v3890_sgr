@@ -267,7 +267,7 @@ class BasePlot(ABC):
                        label=label, color=color, linewidth=self._line_width, alpha=1, zorder=2)
 
     def _draw_vertical_lines(self, ax: Axes, x, text=None,
-                             color="k", line_width=0.5, line_style=":", alpha=0.3,
+                             color="k", line_width=0.5, line_style=":", v_align=None, alpha=0.3,
                              text_top=True, text_offset=0.05, text_rotation=90, text_size="xx-small"):
         """
         Will draw one or more vertical lines to the Axes from top to bottom at the required x positions.
@@ -296,10 +296,12 @@ class BasePlot(ABC):
             # Align and position the text.
             if text_top:
                 y_pos -= y_offset
-                v_align = "top" if not y_inverted else "bottom"
+                if v_align is None:
+                    v_align = "top" if not y_inverted else "bottom"
             else:
                 y_pos += y_offset
-                v_align = "bottom" if not y_inverted else "top"
+                if v_align is None:
+                    v_align = "bottom" if not y_inverted else "top"
 
             for x_pos, this_text in zip(x, text):
                 ax.text(x_pos, y_pos, this_text, size=text_size, color=color, alpha=min([alpha * 2, 1]),

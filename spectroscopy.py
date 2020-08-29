@@ -6,7 +6,6 @@ from spectroscopy import line_fitting
 
 # Placeholder for pulling together all of the spectroscopy tasks
 settings = json.load(open("spectroscopy.json"))
-line_sets = settings["line_sets"]
 eruption_jd = 2458723.278
 
 print(F"\n\n****************************************************************")
@@ -49,21 +48,6 @@ for plot_group_config in settings["plots"]:
                 if spec_name in line_fit_sets:
                     plot_line_fits[spec_name] = line_fit_sets[spec_name]
 
-        # Build the list of known emission lines which will overlay the spectra
-        if "spectral_lines" in plot_config:
-            print(f"Selecting spectral_lines to overlay on plot.")
-            for line_set_name in plot_config["spectral_lines"]:
-                if line_set_name in line_sets:
-                    line_set = line_sets[line_set_name]
-                    named_lines = plot_config["spectral_lines"][line_set_name]
-                    for named_line in named_lines:
-                        if named_line in line_set:
-                            spectral_lines[named_line] = line_set[named_line]
-                        else:
-                            print(f"** named_line '{named_line}' does not exist in line_set '{line_set_name}'")
-                else:
-                    print(f"** unknown line_set: {line_set_name}")
-
         # Do the print!
         plot_config["eruption_jd"] = eruption_jd
         if plot_config["type"] == "SpectrumPlot":
@@ -71,4 +55,5 @@ for plot_group_config in settings["plots"]:
             plot_config["params"]["y_ticks"] = [0, 5e-12, 10e-12, 15e-12, 20e-12]
             plot_config["params"]["y_tick_labels"] = ["0", "5", "10", "15", "20"]
             plot_config["params"]["y_label"] = f"Flux density [$10^{{-12}}$ {flux_units:latex_inline}]"
-        PlotHelper.plot_to_file(plot_config, spectra=spectra, line_fits=plot_line_fits, spectral_lines=spectral_lines)
+        line_labels = plot_config["spectral_line_labels"] if "spectral_line_labels" in plot_config else None
+        PlotHelper.plot_to_file(plot_config, spectra=spectra, line_fits=plot_line_fits, spectral_line_labels=line_labels)
