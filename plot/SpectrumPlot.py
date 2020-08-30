@@ -145,7 +145,7 @@ class SpectrumPlot(BasePlot):
                     else:
                         labels.append(label)
 
-                self._draw_vertical_lines(ax, x=x_pos, text=labels, color=color, text_size="3.5", line_width=0.2,
+                self._draw_vertical_lines(ax, x=x_pos, text=labels, color=color, text_size="3.0", line_width=0.2,
                                           v_align="bottom", text_top=True, text_offset=0.10 + (label_offset * ix))
                 ix += 1
         return
