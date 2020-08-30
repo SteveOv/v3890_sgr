@@ -267,7 +267,7 @@ class BasePlot(ABC):
                        label=label, color=color, linewidth=self._line_width, alpha=1, zorder=2)
 
     def _draw_vertical_lines(self, ax: Axes, x, text=None,
-                             color="k", line_width=0.5, line_style=":", v_align=None, alpha=0.3,
+                             color="k", line_width=0.5, line_style=":", h_align="center", v_align=None, alpha=0.3,
                              text_top=True, text_offset=0.05, text_rotation=90, text_size="xx-small"):
         """
         Will draw one or more vertical lines to the Axes from top to bottom at the required x positions.
@@ -284,7 +284,6 @@ class BasePlot(ABC):
         # Add the optional text
         if text is not None and len(text):
             # Set the text position. Anchor to top/bottom with any offset a fraction of the scale towards the middle
-            h_align = "center"
             y_scale = y_max - y_min
 
             # If the y axis is inverted just invert the text location and offset calculations to compensate.
@@ -306,4 +305,35 @@ class BasePlot(ABC):
             for x_pos, this_text in zip(x, text):
                 ax.text(x_pos, y_pos, this_text, size=text_size, color=color, alpha=min([alpha * 2, 1]),
                         rotation=text_rotation, verticalalignment=v_align, horizontalalignment=h_align)
+        return
+
+    def _draw_horizontal_lines(self, ax: Axes, y, text=None,
+                               color="k", line_width=0.5, line_style=":", h_align=None, v_align="center", alpha=0.3,
+                               text_right=False, text_offset=0.05, text_size="x-small"):
+        """
+        Will draw one or more horizontal lines to the Axes from top to bottom at the required x positions.
+        The optional text will be written on the line at the required, proportional offset from the top/bottom.
+        """
+        x_lim = ax.get_xlim()
+        x_min = min(x_lim)
+        x_max = max(x_lim)
+
+        ax.hlines(y=y, xmin=x_min, xmax=x_max, linestyles=line_style, linewidth=line_width, alpha=alpha, color=color)
+
+        if text is not None and len(text) > 0:
+            # Set the text position.  Anchored to left/right with any offset a fraction of the scale towards the middle.
+            x_scale = x_max - x_min
+            x_pos = x_max if text_right else x_min
+            x_offset = abs(x_scale * text_offset) if abs(text_offset) <= 0.90 else x_scale * 0.90
+
+            if text_right:
+                x_pos -= x_offset
+                h_align = "right" if h_align is None else h_align
+            else:
+                x_pos += x_offset
+                h_align = "left" if h_align is None else h_align
+
+            for y_pos, this_text in zip(y, text):
+                ax.text(x_pos, y_pos, this_text, size=text_size, color=color, alpha=min([alpha * 2, 1]),
+                        verticalalignment=v_align, horizontalalignment=h_align)
         return
