@@ -233,38 +233,43 @@ class BasePlot(ABC):
         return value
 
     def _plot_df_to_error_bars_on_ax(self, ax: Axes, df: DataFrame, x_col: str, y_col: str, y_err_col: str,
-                                     color: str, label: str = None, y_shift: float = 0, fmt: str = ","):
+                                     color: str, label: str = None, y_shift: float = 0, fmt: str = ",",
+                                     alpha=0.5, z_order=1):
         """
         Plot the passed data as a sequence of error bars using standard formatting as configured for this instance.
         """
         return self._plot_points_to_error_bars_on_ax(
-            ax, df[x_col], df[y_col], df[y_err_col], color, label, y_shift, fmt)
+            ax, df[x_col], df[y_col], df[y_err_col], color, label, y_shift, fmt, alpha, z_order)
 
     def _plot_points_to_error_bars_on_ax(self,
-                                         ax: Axes, x_points: List[float], y_points: List[float], y_err_points: List[float],
-                                         color: str, label: str = None, y_shift: float = 0, fmt: str = ","):
+                                         ax: Axes, x_points: List[float], y_points: List[float],
+                                         y_err_points: List[float], color: str, label: str = None, y_shift: float = 0,
+                                         fmt: str = ",", alpha=0.5, z_order=1):
         """
         Plot the passed data as a sequence of error bars using standard formatting as configured for this instance.
         """
         # TODO: extend this to include x_err too
         return ax.errorbar(x_points, np.add(y_points, y_shift), yerr=y_err_points,
                            label=label, fmt=fmt, color=color, fillstyle='full', markersize=self._marker_size,
-                           capsize=1, ecolor=color, elinewidth=self._line_width, alpha=0.5, zorder=1)
+                           capsize=1, ecolor=color, elinewidth=self._line_width, alpha=alpha, zorder=z_order)
 
     def _plot_df_to_lines_on_ax(self, ax: Axes, df: DataFrame, x_col: str, y_col: str,
-                                color: str, label: str = None, y_shift: float = 0, line_style: str = "-"):
+                                color: str, label: str = None, y_shift: float = 0, line_style: str = "-",
+                                alpha=1.0, z_order=2):
         """
         Plot the passed data as a sequence of lines using standard formatting as configured for this instance.
         """
-        return self._plot_points_to_lines_on_ax(ax, df[x_col], df[y_col], color, label, y_shift, line_style)
+        return self._plot_points_to_lines_on_ax(ax, df[x_col], df[y_col], color, label,
+                                                y_shift, line_style, alpha, z_order)
 
     def _plot_points_to_lines_on_ax(self, ax: Axes, x_points: List[float], y_points: List[float],
-                                    color: str, label: str = None, y_shift: float = 0, line_style: str = "-"):
+                                    color: str, label: str = None, y_shift: float = 0, line_style: str = "-",
+                                    alpha=1.0, z_order=2):
         """
         Plot the passed data as a sequence of lines using standard formatting as configured for this instance.
         """
         return ax.plot(x_points, np.add(y_points, y_shift), line_style,
-                       label=label, color=color, linewidth=self._line_width, alpha=1, zorder=2)
+                       label=label, color=color, linewidth=self._line_width, alpha=alpha, zorder=z_order)
 
     def _draw_vertical_lines(self, ax: Axes, x, text=None,
                              color="k", line_width=0.5, line_style=":", h_align="center", v_align=None, alpha=0.3,

@@ -72,7 +72,7 @@
         "type": "SpectralLineVelocityTimePlot",
         "file_name": "./output/spec/V3890Sgr-2019-line-velocity-time.png",
         "title": "Spectral line velocity evolution",
-        "params": {},
+        "params": { "x_size": 1.5 },
         "spectra": ["r_e_", "b_e_"]
       }
     ],

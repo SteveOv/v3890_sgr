@@ -19,16 +19,16 @@ class SpectralLineVelocityTimePlot(TimePlotSupportingLogAxes):
 
         self._default_lines = {
             "H$\\alpha$": {
-                "fit$_{1}$": {"color": "darkred", "label": "wide base"},
-                "fit$_{2}$": {"color": "r", "label": "narrow peak"}
+                "fit$_{1}$": {"color": "darkred", "label": "base"},
+                "fit$_{2}$": {"color": "r", "label": "peak"}
             },
             "H$\\beta$": {
-                "fit$_{1}$": {"color": "darkblue", "label": "wide base"},
-                "fit$_{2}$": {"color": "b", "label": "narrow peak"}
+                "fit$_{1}$": {"color": "darkblue", "label": "base"},
+                "fit$_{2}$": {"color": "b", "label": "peak"}
             },
             "He II (4686)": {
-                "fit$_{1}$": {"color": "darkcyan", "label": "wide base"},
-                "fit$_{2}$": {"color": "cyan", "label": "narrow peak"}
+                "fit$_{1}$": {"color": "darkcyan", "label": "base"},
+                "fit$_{2}$": {"color": "cyan", "label": "peak"}
             }
         }
 
@@ -79,12 +79,19 @@ class SpectralLineVelocityTimePlot(TimePlotSupportingLogAxes):
         # The line name / fit name will be used to look up the corresponding columns
         for line_name, line in self.lines.items():
             line_field = line_name.replace("\\", "_")
-            for fit_name, fit_plot_params in line.items():
+            for fit_name in line:
+                fit_plot_params = line[fit_name]
                 color = fit_plot_params["color"] if "color" in fit_plot_params else "k"
                 label = f"{line_name} {fit_plot_params['label'] if 'label' in fit_plot_params else fit_name}"
                 fit_field = fit_name.replace("\\", "_")
 
                 df_line = df.query(f"line == '{line_field}' and fit == '{fit_field}'").sort_values(by="delta_t")
                 if len(df_line) > 0:
-                    self._plot_df_to_error_bars_on_ax(ax, df, "delta_t", "velocity", "velocity_err", color, label)
+                    self._plot_points_to_error_bars_on_ax(ax, x_points=df_line["delta_t"],
+                                                          y_points=df_line["velocity"],
+                                                          y_err_points=df_line["velocity_err"],
+                                                          color=color, label=label)
+                    self._plot_points_to_lines_on_ax(ax, x_points=df_line["delta_t"],
+                                                     y_points=df_line["velocity"],
+                                                     color=color, line_style="--", alpha=0.3)
         return
