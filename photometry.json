@@ -238,12 +238,17 @@
             {
                 "type": "ColorMagnitudePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-Color-mag.png",
-                "title": "Color-magnitude plot of the 2019 eruption\nbased on the nominal fit",
+                "title": "Color-magnitude plot of the 2019 eruption\nbased on the nominal fit compared with the\nraw data of the 2014 eruption of V745 Sco",
                 "params": {
-                    "show_title": true, "x_lim": [-1.0, 1.0], "x_ticks": [-1.0, -0.5, 0, 0.5, 1.0], "y_lim": [-10, 0],
-                    "max_delta_t": 50, "legend_loc": "lower right"
+                    "show_title": true, "x_lim": [-1.0, 1.0], "x_ticks": [-1.0, -0.5, 0, 0.5, 1.0], "y_lim": [-10, -2],
+                    "max_delta_t": 30, "legend_loc": "lower left",
+                    "E(B-V)": "0.9+/-0.3",
+                    "comp_E(B-V)": "1.0+/-0.2", "comp_mu": "18.9+/-0.0","comp_source": "lightcurves"
                 },
-                "lightcurves": { },
+                "lightcurves": {
+                    "V745-Sco-2014-Vis-nominal/V-band": {},
+                    "V745-Sco-2014-Vis-nominal/B-band": {}
+                },
                 "fit_sets": {
                     "V3890-Sgr-2019-Vis-nominal/V-band": {},
                     "V3890-Sgr-2019-Vis-nominal/B-band": {}
