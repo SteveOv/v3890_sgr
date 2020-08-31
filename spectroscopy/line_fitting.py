@@ -73,7 +73,8 @@ def fit_blue_arm_spectrum(spectrum: Spectrum1DEx) -> List[CompoundModel]:
                      + _named_gaussian(amplitude=0.2e-12, mean=(4680, 4690), stddev=(3, 8), subscript="1")
 
     # Now we fit the lines + continuum to the spectrum + uncertainty based on the hints.
-    weights = np.divide(1, np.power(unc_spec.uncertainty.quantity, 2))
+    # From the astropy documentation; to get 1/sigma^2 weighting pass in 1/sigma
+    weights = np.divide(1, unc_spec.uncertainty.quantity)
     fits = list()
     fits.append(_perform_fit(CompoundModel("+", beta_hint, cont_model, name="H$\\beta$"), unc_spec, weights))
     fits.append(_perform_fit(CompoundModel("+", gamma_hint, cont_model, name="H$\\gamma$"), unc_spec, weights))
@@ -106,8 +107,9 @@ def fit_red_arm_spectrum(spectrum: Spectrum1DEx) -> List[CompoundModel]:
                     + _named_gaussian(amplitude=2e-12, mean=(6569, 6565), stddev=(20, 50), subscript="1") \
 
     # Now we fit the lines + continuum to the spectrum + uncertainty based on the hints.
+    # From the astropy documentation; to get 1/sigma^2 weighting pass in 1/sigma
+    weights = np.divide(1, unc_spec.uncertainty.quantity)
     fits = list()
-    weights = np.divide(1, np.power(unc_spec.uncertainty.quantity, 2))
     fits.append(_perform_fit(CompoundModel("+", alpha_hint, cont_model, "H$\\alpha$"), unc_spec, weights))
     return fits
 
@@ -162,9 +164,10 @@ def _continuum_fit(spectrum: Spectrum1D, name="continuum") -> Polynomial1D:
 
     # It's a bit of a bodge, but this is the easiest way I could find for selecting/excluding regions for fitting.
     continuum_model = fit_generic_continuum(spectrum,
-                                            model=Polynomial1D(degree=1),
+                                            model=Polynomial1D(degree=2),
                                             exclude_regions=exclusion_regions)
 
     # Create a new Polynomial1D with the same params (fixed)
-    return Polynomial1D(degree=continuum_model.degree, c0=continuum_model.c0, c1=continuum_model.c1,
-                        fixed={"c0": True, "c1": True}, name=name)
+    return Polynomial1D(degree=continuum_model.degree,
+                        c0=continuum_model.c0, c1=continuum_model.c1, c2=continuum_model.c2,
+                        fixed={"c0": True, "c1": True, "c2": True}, name=name)
