@@ -13,8 +13,11 @@ class SpectrumPlot(BasePlot):
 
         self._default_show_legend = False
         self._default_show_data = True
-        self._default_show_line_fits = False
+
         self._default_show_line_labels = True
+
+        self._default_show_line_fits = False
+        self._default_annotate_line_fits = False
 
         self._default_y_lim = None
         self._default_y_ticks = [0]
@@ -29,7 +32,11 @@ class SpectrumPlot(BasePlot):
 
     @property
     def show_line_fits(self) -> bool:
-        return self._param("show_fits", self._default_show_line_fits)
+        return self._param("show_line_fits", self._default_show_line_fits)
+
+    @property
+    def annotate_line_fits(self) -> bool:
+        return self._param("annotate_line_fits", self._default_annotate_line_fits)
 
     @property
     def show_line_labels(self) -> bool:
@@ -118,7 +125,7 @@ class SpectrumPlot(BasePlot):
             for fit_key, line_fit_list in line_fits.items():
                 spectrum = spectra[fit_key] if fit_key in spectra else None
                 for line_fit in line_fit_list:
-                    fit_utilities.draw_fit_on_ax(ax, spectrum, line_fit, annotate=False)
+                    fit_utilities.draw_fit_on_ax(ax, spectrum, line_fit, annotate=self.annotate_line_fits)
         return
 
     def _draw_spectral_line_labels(self, ax: Axes, spectral_line_labels: List[Dict]):

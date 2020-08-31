@@ -51,6 +51,8 @@ for plot_group_config in settings["plots"]:
         # Do the print!
         plot_config["eruption_jd"] = eruption_jd
         if plot_config["type"] == "SpectrumPlot":
+            plot_config["params"]["show_line_fits"] = False
+            plot_config["params"]["annotate_line_fits"] = False
             plot_config["params"]["y_lim"] = [-1e-12, 21e-12]
             plot_config["params"]["y_ticks"] = [0, 5e-12, 10e-12, 15e-12, 20e-12]
             plot_config["params"]["y_tick_labels"] = ["0", "5", "10", "15", "20"]
