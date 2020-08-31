@@ -264,7 +264,7 @@
                     "show_title": true, "x_lim": [-1.0, 1.0], "x_ticks": [-1.0, -0.5, 0, 0.5, 1.0], "y_lim": [-10, -2],
                     "max_delta_t": 30, "legend_loc": "lower left",
                     "E(B-V)": "0.9+/-0.3",
-                    "comp_E(B-V)": "1.0+/-0.2", "comp_mu": "18.9+/-0.0","comp_source": "lightcurves"
+                    "comp_E(B-V)": "0.70+/-0.1", "comp_mu": "16.7+/-0.0","comp_source": "lightcurves"
                 },
                 "lightcurves": {
                     "V745-Sco-2014-Vis-nominal/V-band": {},
