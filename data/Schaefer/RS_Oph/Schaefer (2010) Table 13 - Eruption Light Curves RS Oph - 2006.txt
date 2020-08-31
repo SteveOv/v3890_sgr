@@ -1,0 +1,165 @@
+Table 13
+Eruption Light Curve for RS Oph
+
+Julian Date	Band	Magnitude	Source				
+2006 eruption				
+2453779.36	V	4.46 +or- 0.15	Hachisu et al. 2008	
+2453780.33	V	5.23 +or- 0.02	Hachisu et al. 2008	
+2453781.36	V	5.73 +or- 0.02	Hachisu et al. 2008	
+2453782.33	V	5.70 +or- 0.15	Hachisu et al. 2008	
+2453783.36	V	6.43 +or- 0.02	Hachisu et al. 2008	
+2453784.33	V	6.47 +or- 0.01	Hachisu et al. 2008	
+2453784.35	B	7.53 +or- 0.02	
+2453784.35	V	6.80 +or- 0.02	Hachisu et al. 2008	
+2453785.33	V	6.93 +or- 0.15	Hachisu et al. 2008	
+2453787.33	V	7.10 +or- 0.15	Hachisu et al. 2008	
+2453788.35	V	7.10 +or- 0.15	Hachisu et al. 2008	
+2453789.32	B	8.18 +or- 0.02	
+2453789.32	V	7.46 +or- 0.02	Hachisu et al. 2008
+2453790.34	B	8.33 +or- 0.02	
+2453790.34	V	7.68 +or- 0.02	Hachisu et al. 2008
+2453791.31	B	8.54 +or- 0.02	
+2453791.31	V	7.66 +or- 0.02	Hachisu et al. 2008	
+2453793.33	V	8.00 +or- 0.15	Hachisu et al. 2008	
+2453794.30	V	7.61 +or- 0.01	Hachisu et al. 2008	
+2453794.33	B	8.85 +or- 0.02	
+2453794.33	V	8.00 +or- 0.02	Hachisu et al. 2008	
+2453797.29	B	8.99 +or- 0.02	
+2453797.29	V	8.29 +or- 0.02	Hachisu et al. 2008	
+2453798.30	B	9.08 +or- 0.02	
+2453798.30	V	8.37 +or- 0.02	Hachisu et al. 2008	
+2453799.30	B	8.97 +or- 0.02	
+2453799.30	V	8.38 +or- 0.02	Hachisu et al. 2008	
+2453800.29	B	9.22 +or- 0.02	
+2453800.29	V	8.39 +or- 0.02	Hachisu et al. 2008
+2453801.26	V	8.30 +or- 0.15	Hachisu et al. 2008	
+2453802.25	V	8.02 +or- 0.02	Hachisu et al. 2008	
+2453802.27	B	9.21 +or- 0.02	
+2453802.27	V	8.53 +or- 0.02	Hachisu et al. 2008	
+2453805.30	V	8.82 +or- 0.02	Hachisu et al. 2008
+2453807.31	B	9.68 +or- 0.02	
+2453807.31	V	9.03 +or- 0.02	Hachisu et al. 2008
+2453808.28	B	9.70 +or- 0.02	
+2453808.28	V	8.97 +or- 0.02	Hachisu et al. 2008	
+2453809.26	B	9.91 +or- 0.02	
+2453809.26	V	9.18 +or- 0.02	Hachisu et al. 2008	
+2453809.30	V	8.76 +or- 0.01	Hachisu et al. 2008	
+2453810.29	B	9.89 +or- 0.02	
+2453810.29	V	9.08 +or- 0.02	Hachisu et al. 2008	
+2453812.25	B	10.14 +or- 0.02	
+2453812.25	V	9.22 +or- 0.02	Hachisu et al. 2008	
+2453812.27	V	8.90 +or- 0.02	Hachisu et al. 2008	
+2453813.32	B	10.14 +or- 0.02	
+2453813.32	V	9.46 +or- 0.02	Hachisu et al. 2008
+2453814.24	B	10.13 +or- 0.02	
+2453814.24	V	9.26 +or- 0.02	Hachisu et al. 2008	
+2453815.24	V	8.94 +or- 0.03	Hachisu et al. 2008	
+2453815.26	B	10.11 +or- 0.02	
+2453815.26	V	9.29 +or- 0.02	Hachisu et al. 2008
+2453816.25	B	10.10 +or- 0.02	
+2453816.25	V	9.41 +or- 0.02	Hachisu et al. 2008	
+2453818.27	B	10.30 +or- 0.02	
+2453818.27	V	9.56 +or- 0.02	Hachisu et al. 2008	
+2453819.25	V	9.22 +or- 0.03	Hachisu et al. 2008	
+2453819.28	B	10.44 +or- 0.02	
+2453819.28	V	9.80 +or- 0.02	Hachisu et al. 2008	
+2453820.27	V	9.50 +or- 0.15	Hachisu et al. 2008	
+2453824.26	B	10.44 +or- 0.02	
+2453824.26	V	9.60 +or- 0.02	Hachisu et al. 2008	
+2453825.25	B	10.60 +or- 0.02	
+2453825.25	V	9.93 +or- 0.02	Hachisu et al. 2008	
+2453826.22	V	9.39 +or- 0.02	Hachisu et al. 2008	
+2453826.28	B	10.53 +or- 0.02	
+2453826.28	V	9.86 +or- 0.02	Hachisu et al. 2008	
+2453828.26	B	10.56 +or- 0.02	
+2453828.26	V	9.88 +or- 0.02	Hachisu et al. 2008	
+2453829.21	V	9.45 +or- 0.01	Hachisu et al. 2008	
+2453829.24	B	10.64 +or- 0.02	
+2453829.24	V	9.93 +or- 0.02	Hachisu et al. 2008	
+2453831.23	B	10.61 +or- 0.02	
+2453831.23	V	9.84 +or- 0.02	Hachisu et al. 2008	
+2453832.22	B	10.70 +or- 0.02	
+2453832.22	V	9.95 +or- 0.02	Hachisu et al. 2008	
+2453833.22	V	9.54 +or- 0.01	Hachisu et al. 2008	
+2453833.22	B	10.71 +or- 0.02	
+2453833.22	V	9.98 +or- 0.02	Hachisu et al. 2008	
+2453834.27	B	10.69 +or- 0.02	
+2453834.27	V	9.95 +or- 0.02	Hachisu et al. 2008	
+2453839.21	B	10.87 +or- 0.02	
+2453839.21	V	10.06 +or- 0.02	Hachisu et al. 2008	
+2453841.18	B	10.72 +or- 0.02	
+2453841.18	V	9.89 +or- 0.02	Hachisu et al. 2008	
+2453842.22	B	10.86 +or- 0.02	
+2453842.22	V	10.07 +or- 0.02	Hachisu et al. 2008	
+2453843.26	B	10.77 +or- 0.02	
+2453843.26	V	10.00 +or- 0.02	Hachisu et al. 2008	
+2453846.22	B	10.99 +or- 0.02	
+2453846.22	V	10.16 +or- 0.02	Hachisu et al. 2008	
+2453847.25	B	10.92 +or- 0.02	
+2453847.25	V	10.10 +or- 0.02	Hachisu et al. 2008	
+2453850.18	B	11.07 +or- 0.02	
+2453850.18	V	10.21 +or- 0.02	Hachisu et al. 2008	
+2453850.19	V	9.80 +or- 0.02	Hachisu et al. 2008	
+2453851.19	V	9.82 +or- 0.01	Hachisu et al. 2008	
+2453851.26	B	10.93 +or- 0.02	
+2453851.26	V	10.08 +or- 0.02	Hachisu et al. 2008	
+2453854.27	B	11.04 +or- 0.02	
+2453854.27	V	10.17 +or- 0.02	Hachisu et al. 2008	
+2453856.14	V	9.98 +or- 0.02	Hachisu et al. 2008	
+2453856.24	B	11.13 +or- 0.02	
+2453856.24	V	10.26 +or- 0.02	Hachisu et al. 2008	
+2453858.13	V	10.08 +or- 0.01	Hachisu et al. 2008	
+2453858.17	B	10.97 +or- 0.02	
+2453858.17	V	10.33 +or- 0.02	Hachisu et al. 2008	
+2453860.25	B	11.36 +or- 0.02	
+2453860.25	V	10.49 +or- 0.02	Hachisu et al. 2008	
+2453861.13	V	10.23 +or- 0.02	Hachisu et al. 2008	
+2453867.16	B	11.81 +or- 0.02	
+2453867.16	V	11.01 +or- 0.02	Hachisu et al. 2008	
+2453870.16	B	11.99 +or- 0.02	
+2453870.16	V	11.13 +or- 0.02	Hachisu et al. 2008	
+2453876.09	V	11.00 +or- 0.01	Hachisu et al. 2008	
+2453876.15	B	12.15 +or- 0.02	
+2453876.15	V	11.20 +or- 0.02	Hachisu et al. 2008	
+2453877.13	V	11.03 +or- 0.01	Hachisu et al. 2008	
+2453877.19	B	12.30 +or- 0.02	
+2453877.19	V	11.34 +or- 0.02	Hachisu et al. 2008	
+2453880.03	V	11.10 +or- 0.03	Hachisu et al. 2008	
+2453886.08	V	11.40 +or- 0.02	Hachisu et al. 2008	
+2453890.17	V	11.45 +or- 0.02	Hachisu et al. 2008	
+2453893.17	V	11.38 +or- 0.02	Hachisu et al. 2008	
+2453893.454	B	12.70 +or- 0.02	Zamanov et al. 2006	
+2453895.522	B	12.73 +or- 0.02	
+2453895.522	V	11.37 +or- 0.02	Zamanov et al. 2006	
+2453895.584	B	12.73 +or- 0.02	
+2453895.584	V	11.40 +or- 0.02	Zamanov et al. 2006	
+2453896.499	B	12.73 +or- 0.02	
+2453896.499	V	11.40 +or- 0.02	Zamanov et al. 2006	
+2453897.477	B	12.72 +or- 0.02	
+2453897.477	V	11.41 +or- 0.02	Zamanov et al. 2006	
+2453897.571	B	12.73 +or- 0.02	
+2453897.571	V	11.39 +or- 0.02	Zamanov et al. 2006	
+2453900.15	V	11.41 +or- 0.02	Hachisu et al. 2008	
+2453906.16	V	11.56 +or- 0.11	Hachisu et al. 2008	
+2453930.04	V	11.71 +or- 0.03	Hachisu et al. 2008	
+2453931.15	V	11.69 +or- 0.04	Hachisu et al. 2008	
+2453955.01	V	11.47 +or- 0.03	Hachisu et al. 2008	
+2453962.04	V	11.62 +or- 0.02	Hachisu et al. 2008	
+2453970.96	V	11.48 +or- 0.02	Hachisu et al. 2008	
+2453998.93	V	11.38 +or- 0.01	Hachisu et al. 2008	
+2454005.97	V	11.51 +or- 0.02	Hachisu et al. 2008	
+2454016.95	V	11.49 +or- 0.03	Hachisu et al. 2008	
+2454020.24	V	11.40 +or- 0.02	Worters et al. 2007	
+2454022.27	V	11.52 +or- 0.02	Worters et al. 2007	
+2454024.26	V	11.50 +or- 0.02	Worters et al. 2007	
+2454025.26	V	11.56 +or- 0.02	Worters et al. 2007	
+2454025.90	V	11.60 +or- 0.03	Hachisu et al. 2008	
+2454026.25	B	12.86 +or- 0.02	Worters et al. 2007	
+2454026.90	V	11.61 +or- 0.02	Hachisu et al. 2008	
+2454028.27	V	11.65 +or- 0.02	Worters et al. 2007	
+2454029.25	V	11.67 +or- 0.02	Worters et al. 2007	
+2454030.28	V	11.64 +or- 0.02	Worters et al. 2007	
+2454031.26	V	11.81 +or- 0.02	Worters et al. 2007	
+2454032.27	V	11.84 +or- 0.02	Worters et al. 2007	
+2454033.26	V	11.88 +or- 0.02	Worters et al. 2007	
+2454039.90	V	11.70 +or- 0.05	Hachisu et al. 2008	

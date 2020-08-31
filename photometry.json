@@ -2,8 +2,18 @@
     "data_sources": {
         "V745-Sco-2014-Vis": {
             "file_spec": "./data/AAVSO/V745_Sco/aavsodata_5f37c97603c1a.txt",
-            "description": "Data from AAVSO.  AAVSO give the eruption peak at JD = 2456695.194",
+            "description": "Full V745 Sco data set from the AAVSO.",
             "type": "AavsoMagnitudeDataSource"
+        },
+        "RS-Oph-2006-Vis-AAVSO": {
+            "file_spec": "./data/AAVSO/RS_Oph/aavsodata_5f4ce187b64a8.txt",
+            "description": "Full RS Oph data set from the AAVSO",
+            "type": "AavsoMagnitudeDataSource"
+        },
+        "RS-Oph-2006-Vis-Schaefer": {
+            "file_spec": "./data/Schaefer/RS_Oph/Schaefer (2010) Table 13 - Eruption Light Curves RS Oph - 2006.txt",
+            "description": "Full RS Oph data set from the AAVSO",
+            "type": "SchaeferMagnitudeDataSource"
         },
         "V3890-Sgr-1962-Vis": {
             "file_spec": "./data/Schaefer/Schaefer (2010) Table 15 - Eruption Light Curves V3890 Sgr - 1962.txt",
@@ -45,7 +55,18 @@
         "V745-Sco-2014-Vis-nominal": {
             "data_source": "V745-Sco-2014-Vis",
             "eruption_jd": 2456695,
-            "query_params": { "excluded_observers": "", "day_range": [0, 100] },
+            "query_params": { "excluded_observers": "", "day_range": [0, 200] },
+            "lightcurves": {
+                "I-band": { "band": "I", "color": "darkred" },
+                "R-band": { "band": "R", "color": "r" },
+                "V-band": { "band": "V", "color": "g" },
+                "B-band": { "band": "B", "color": "b" }
+            }
+        },
+        "RS-Oph-2006-Vis-nominal": {
+            "data_source": "RS-Oph-2006-Vis-AAVSO",
+            "eruption_jd": 2453779,
+            "query_params": { "day_range": [0, 200] },
             "lightcurves": {
                 "I-band": { "band": "I", "color": "darkred" },
                 "R-band": { "band": "R", "color": "r" },
@@ -496,10 +517,10 @@
                 "fit_sets": { "V3890-Sgr-2019-Vis-nominal/B-band": {} }
             }
         ],
-        "2014 V745 Sco Eruption Visual Plots (based on AAVSO data)": [
+        "Comparison System Visual Plots": [
             {
                 "type": "MagnitudeTimePlot",
-                "file_name": "./output/phot/V745Sco-2014-LC-AAVSO-linear-day-nominal.png",
+                "file_name": "./output/phot/V745Sco-2014-LC-linear-day-nominal.png",
                 "title": "The 2014 eruption of V745 Sco\n($t_{{e}}=2456695.194$)",
                 "params": {"show_title": true, "x_size": 1, "y_size": 1},
                 "lightcurves": { "V745-Sco-2014-Vis-nominal/": {} },
@@ -507,10 +528,28 @@
             },
             {
                 "type": "TwoByTwoMagnitudeLogTimePlot",
-                "file_name": "./output/phot/V745Sco-2014-LCx4-AAVSO-log(day)-nominal.png",
+                "file_name": "./output/phot/V745Sco-2014-LCx4-log(day)-nominal.png",
                 "title": "The 2014 eruption of V745 Sco from AAVSO visual observations ($t_{{e}}=2456695.194$)",
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true},
                 "lightcurves": { "V745-Sco-2014-Vis-nominal/": {} },
+                "fit_sets": {}
+            },
+            {
+                "type": "MagnitudeTimePlot",
+                "file_name": "./output/phot/RSOph-2006-LC-linear-day-nominal.png",
+                "title": "The 2006 eruption of RS Oph\n($t_{{e}}=2453779$)",
+                "params": {"show_title": true, "x_size": 1, "y_size": 1,
+                    "y_lim": [4, 14], "x_lim": [0, 200], "x_ticks": [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200]},
+                "lightcurves": { "RS-Oph-2006-Vis-nominal/": {} },
+                "fit_sets": {}
+            },
+            {
+                "type": "TwoByTwoMagnitudeLogTimePlot",
+                "file_name": "./output/phot/RSOph-2006-LCx4-log(day)-nominal.png",
+                "title": "The 2006 eruption of RS Oph ($t_{{e}}=2453779$)",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true,
+                    "y_lim": [4, 14], "x_lim": [0.01, 200]},
+                "lightcurves": { "RS-Oph-2006-Vis-nominal/": {} },
                 "fit_sets": {}
             }
         ],
