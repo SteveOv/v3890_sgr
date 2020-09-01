@@ -261,18 +261,14 @@
                 "file_name": "./output/phot/V3890Sgr-2019-Color-mag.png",
                 "title": "Color-magnitude plot of the 2019 eruption\nbased on the nominal fit compared with the\nraw data of the 2014 eruption of V745 Sco",
                 "params": {
-                    "show_title": true, "x_lim": [-1.0, 1.0], "x_ticks": [-1.0, -0.5, 0, 0.5, 1.0], "y_lim": [-10, -2],
-                    "max_delta_t": 30, "legend_loc": "lower left",
-                    "E(B-V)": "0.9+/-0.3",
-                    "comp_E(B-V)": "0.70+/-0.1", "comp_mu": "16.7+/-0.0","comp_source": "lightcurves"
-                },
-                "lightcurves": {
-                    "V745-Sco-2014-Vis-nominal/V-band": {},
-                    "V745-Sco-2014-Vis-nominal/B-band": {}
+                    "show_title": true, "x_lim": [-1.0, 1.0], "x_ticks": [-1.0, -0.5, 0, 0.5, 1.0], "y_lim": [-10, 0],
+                    "legend_loc": "upper left", "max_delta_t": 30, "x_size": 1.5, "y_size": 1.5
                 },
                 "fit_sets": {
-                    "V3890-Sgr-2019-Vis-nominal/V-band": {},
-                    "V3890-Sgr-2019-Vis-nominal/B-band": {}
+                    "V3890-Sgr-2019-Vis-nominal/": {"label": "V3890 Sgr", "E(B-V)": "0.23+/-0.02", "mu": "16.65+/-0.0", "marker": "o"}
+                },
+                "lightcurves": {
+                    "V745-Sco-2014-Vis-nominal/": {"label": "V745 Sco", "E(B-V)": "0.70+/-0.1", "mu": "16.7+/-0.0", "marker": "D"}
                 }
             },
             {

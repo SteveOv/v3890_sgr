@@ -1,7 +1,7 @@
-from uncertainties import unumpy, ufloat_fromstr, UFloat
+from uncertainties import ufloat_fromstr, UFloat
 from plot.BasePlot import *
 from fitting import FitSet, Lightcurve
-from utility import uncertainty_math as um
+from utility import uncertainty_math as um, colors
 from numpy import ndarray
 
 
@@ -24,29 +24,8 @@ class ColorMagnitudePlot(BasePlot):
         self._default_y_ticks = [-10, -8, -6, -4, -2, 0]
 
         # Compulsory - want a failure if these are not set
-        self._default_mu = self._default_color_excess = None
         self._default_max_delta_t = 70
         return
-
-    @property
-    def mu(self):
-        return self._param("mu", self._default_mu)
-
-    @property
-    def color_excess(self) -> UFloat:
-        return self._param("E(B-V)", self._default_color_excess)
-
-    @property
-    def comp_mu(self) -> UFloat:
-        return ufloat_fromstr(self._param("comp_mu", "18.9+/-0"))
-
-    @property
-    def comp_color_excess(self) -> UFloat:
-        return ufloat_fromstr(self._param("comp_E(B-V)", "1.0+/-0.2"))
-
-    @property
-    def comp_source(self) -> str:
-        return self._param("comp_source", "lightcurves")
 
     @property
     def max_delta_t(self):
@@ -67,40 +46,60 @@ class ColorMagnitudePlot(BasePlot):
         """
         Hook into the BasePlot plot processing to enable this type to draw to the plot Axes
         """
-        # we are interested in the B and V band fits data
-        fit_sets = kwargs["fit_sets"]
         delta_ts = np.append(np.arange(0.1, 2.0, 0.1), np.arange(2.0, self.max_delta_t, 0.5))
 
-        def _value_on_key_ends_with(dc: Dict, key_end: str):
-            return next(v for k, v in dc.items() if k.endswith(key_end)) if dc is not None else None
-        b_set = _value_on_key_ends_with(fit_sets, "B-band")
-        v_set = _value_on_key_ends_with(fit_sets, "V-band")
+        # Could be fit set and/or lightcurve data
+        for data_set in [kwargs["fit_sets"], kwargs["lightcurves"]]:
 
-        # Get the color and magnitude data from the fitset data
-        x_data, x_date_err, y_data, y_data_err = \
-            self.__class__._calculate_color_magnitudes_from_fit_sets(b_set, v_set, delta_ts, self.color_excess, self.mu)
+            # we are interested in the B and V band fits data.  May be more than one of each.
+            if data_set is not None and len(data_set):
+                b_sets = ColorMagnitudePlot._values_with_key_ends_with(data_set, "B-band")
+                v_sets = ColorMagnitudePlot._values_with_key_ends_with(data_set, "V-band")
 
-        color = "b"
-        label = f"E(B-V)={self.color_excess.nominal_value:.2f}, $\\mu$={self.mu.nominal_value:.2f}"
-        ax.errorbar(x_data, y_data,
-                    # xerr=x_data_err, yerr=y_data_err,
-                    label=label, fmt="D", color=color, fillstyle='full', markersize=self._marker_size * 2,
-                    capsize=1, ecolor=color, elinewidth=self._line_width, alpha=0.5, zorder=1)
+                for b_set, v_set in zip(b_sets, v_sets):
+                    e_b_v = ufloat_fromstr(b_set.metadata.get_or_default("E(B-V)", None))
+                    mu = ufloat_fromstr(b_set.metadata.get_or_default("mu", None))
+                    marker = b_set.metadata.get_or_default("marker", "D")
 
-        if self.comp_source is not None and self.comp_source in kwargs:
-            # If we have a comparison data set configured get the data - it's probably lightcurve data
-            comp = kwargs[self.comp_source]
-            b_set = _value_on_key_ends_with(comp, "B-band")
-            v_set = _value_on_key_ends_with(comp, "V-band")
-            x_data, x_date_err, y_data, y_data_err = \
-                self.__class__._calculate_color_magnitudes_from_lightcurves(b_set, v_set, delta_ts,
-                                                                            self.comp_color_excess, self.comp_mu)
-            color = "r"
-            label = f"E(B-V)={self.comp_color_excess.nominal_value:.2f}, $\\mu$={self.comp_mu.nominal_value:.2f}"
-            ax.errorbar(x_data, y_data,
-                        # xerr=x_data_err, yerr=y_data_err,
-                        label=label, fmt="D", color=color, fillstyle='full', markersize=self._marker_size * 2,
-                        capsize=1, ecolor=color, elinewidth=self._line_width, alpha=0.5, zorder=1)
+                    if isinstance(b_set, FitSet):
+                        dt, b_v_int, b_v_int_err, abs_mag, abs_mag_err = \
+                            self.__class__._calculate_color_magnitudes_from_fit_sets(b_set, v_set, delta_ts,
+                                                                                     e_b_v, mu)
+                    else:
+                        dt, b_v_int, b_v_int_err, abs_mag, abs_mag_err = \
+                            self.__class__._calculate_color_magnitudes_from_lightcurves(b_set, v_set, delta_ts,
+                                                                                        e_b_v, mu)
+
+                    label = b_set.metadata.get_or_default("label", f"E(B-V)={e_b_v.nominal_value:.2f}\n$\\mu$={mu.nominal_value:.2f}")
+                    self._draw_color_magnitude_plot(ax, dt, b_v_int, b_v_int_err, abs_mag, abs_mag_err,
+                                                    label=label, marker=marker)
+
+        return
+
+    def _draw_color_magnitude_plot(self, ax: Axes, delta_t, intrinsic_color, intrinsic_color_err, mag, mag_err,
+                                   label: str, color: str = "k", marker: str = "D"):
+        # TODO: support changing the color of the plotted points on delta_t
+        for dt, a_color, a_color_err, a_mag, a_mag_err in \
+                zip(delta_t, intrinsic_color, intrinsic_color_err, mag, mag_err):
+            # We use the fill color to highlight the passing of time - that why we plot individually
+            if dt < 6:
+                fillcolor = "cyan"
+            elif dt < 15:
+                fillcolor = "w"
+            elif dt < 25:
+                fillcolor = "y"
+            else:
+                fillcolor = "r"
+
+            ax.errorbar(x=a_color, y=a_mag,
+                        # xerr=intrinsic_color_err, yerr=mag_err,
+                        label=label,
+                        fmt=marker, mfc=fillcolor, color=color, fillstyle='none', markersize=self._marker_size * 10,
+                        capsize=1, ecolor=color, elinewidth=self._line_width / 2,
+                        linewidth=self._line_width / 4, alpha=0.5, zorder=1)
+
+            # Only spec the label once
+            label = None
         return
 
     @classmethod
@@ -124,13 +123,16 @@ class ColorMagnitudePlot(BasePlot):
                 mag_v.append(V.nominal_value)
                 mag_v_err.append(V.std_dev)
 
-        # From this we calculate the absolute mag (from V band) and the observed color (B-V)
-        b_v_int, b_v_int_err = cls._calculate_intrinsic_color(mag_b, mag_b_err, mag_v, mag_v_err,
-                                                              color_excess.nominal_value, color_excess.std_dev)
+        # From this we calculate the observed color, intrinsic color & absolute mag (from V band)
+        b_v_obs, b_v_obs_err = colors.color_from_magnitudes(mag_b, mag_b_err, mag_v, mag_v_err)
+        b_v_int, b_v_int_err = colors.intrinsic_color_from_observed_color_and_excess(b_v_obs.tolist(),
+                                                                                     b_v_obs_err.tolist(),
+                                                                                     color_excess.nominal_value,
+                                                                                     color_excess.std_dev)
 
         abs_mag, abs_mag_err = cls._calculate_absolute_mag(mag_v, mag_v_err, mu.nominal_value, mu.std_dev)
 
-        return b_v_int, b_v_int_err, abs_mag, abs_mag_err
+        return delta_ts, b_v_int, b_v_int_err, abs_mag, abs_mag_err
 
     @classmethod
     def _calculate_color_magnitudes_from_lightcurves(cls, b_lc: Lightcurve, v_lc: Lightcurve,
@@ -141,40 +143,42 @@ class ColorMagnitudePlot(BasePlot):
         b_df = b_lc.df.copy()
         v_df = v_lc.df.copy()
 
-        b_df["r_day"] = np.round(b_df["day"], 3)
-        v_df["r_day"] = np.round(v_df["day"], 3)
+        # Join up the B and V data on matching day value (with specified sig figs).
+        # This then allows us to treat it as tabular data and use the same processing logic as for the fits.
+        b_df["r_day"] = np.round(b_df["day"], 2)
+        v_df["r_day"] = np.round(v_df["day"], 2)
         df_join = b_df.drop_duplicates(subset="r_day").set_index("r_day")\
             .join(v_df.drop_duplicates(subset="r_day").set_index("r_day"), on="r_day", how="inner", lsuffix="_b", rsuffix="_v", sort="b_day")\
-            .query(F"r_day <= {max(delta_ts)}")
+            .query(F"(r_day <= {max(delta_ts)})")
 
-        b_v_int, b_v_int_err = cls._calculate_intrinsic_color(df_join["mag_b"].tolist(), df_join["mag_err_b"].tolist(),
-                                                              df_join["mag_v"].tolist(), df_join["mag_err_v"].tolist(),
-                                                              color_excess.nominal_value, color_excess.std_dev)
+        # The above is generating some complex query logic within pandas.  We get a "truth value ambiguous" error
+        # when trying to do maths on the results as columns (as series), so convert them to lists first.
+        b_v_obs, b_v_obs_err = colors.color_from_magnitudes(df_join["mag_b"].tolist(), df_join["mag_err_b"].tolist(),
+                                                            df_join["mag_v"].tolist(), df_join["mag_err_v"].tolist())
+        b_v_int, b_v_int_err = colors.intrinsic_color_from_observed_color_and_excess(b_v_obs.tolist(),
+                                                                                     b_v_obs_err.tolist(),
+                                                                                     color_excess.nominal_value,
+                                                                                     color_excess.std_dev)
 
         abs_mag, abs_mag_err = cls._calculate_absolute_mag(df_join["mag_v"].tolist(), df_join["mag_err_v"].tolist(),
                                                            mu.nominal_value, mu.std_dev)
 
-        return b_v_int, b_v_int_err, abs_mag, abs_mag_err
-
-    @classmethod
-    def _calculate_intrinsic_color(cls, mag_b, mag_b_err, mag_v, mag_v_err, color_excess, color_excess_err):
-        b_v_obs, b_v_obs_err = um.subtract(mag_b, mag_b_err, mag_v, mag_v_err)
-
-        if isinstance(b_v_obs, ndarray):
-            # Handle multiple data.  Get the color excess into array form too
-            color_excess = np.full_like(b_v_obs, color_excess).tolist()
-            color_excess_err = np.full_like(b_v_obs, color_excess_err).tolist()
-            b_v_int, b_v_int_err = um.subtract(b_v_obs.tolist(), b_v_obs_err.tolist(), color_excess, color_excess_err)
-            b_v_int = b_v_int.tolist()
-            b_v_int_err = b_v_int_err.tolist()
-        else:
-            b_v_int, b_v_int_err = um.subtract(b_v_obs, b_v_obs_err, color_excess, color_excess_err)
-
-        return b_v_int, b_v_int_err
+        return df_join["day_b"].tolist(), b_v_int, b_v_int_err, abs_mag, abs_mag_err
 
     @classmethod
     def _calculate_absolute_mag(cls, mag_v, mag_v_err, mu, mu_err):
+        """
+        Calculate the absolute magnitude from the distance modulus.
+        Based on
+            mu = mag(apparent) - mag(absolute)
+        therefore
+            mag(absolute) = mag(apparent) - mu
+        """
         # Get the distance modulus into the same form as the V magnitude.
         dist_mod = np.full_like(mag_v, mu).tolist() if isinstance(mag_v, ndarray) else mu
         dist_mod_err = np.full_like(mag_v_err, mu_err).tolist() if isinstance(mag_v_err, ndarray) else mu_err
         return um.subtract(mag_v, mag_v_err, dist_mod, dist_mod_err)
+
+    @classmethod
+    def _values_with_key_ends_with(cls, dc: Dict, key_end: str) -> List:
+        return [v for k, v in dc.items() if k.endswith(key_end)]
