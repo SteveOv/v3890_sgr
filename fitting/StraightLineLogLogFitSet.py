@@ -1,8 +1,8 @@
 from typing import List
-from fitting import Fit, FitSet, StraightLineLogLogFit
+from fitting import Fit, StraightLineLogXFitSet, StraightLineLogLogFit
 
 
-class StraightLineLogLogFitSet(FitSet):
+class StraightLineLogLogFitSet(StraightLineLogXFitSet):
     """
     A set of StraightLineLogLogFit types used to fit a range of data
     It handles the fact that both the x- and y-axis are represented in Log form.
@@ -15,3 +15,4 @@ class StraightLineLogLogFitSet(FitSet):
         Custom factory method for creating the fits associated with this set.
         """
         return StraightLineLogLogFit.fit_to_data(id, xi, yi, dxi=None, dyi=dyi, range_from=from_xi, range_to=to_xi)
+

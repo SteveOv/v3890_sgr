@@ -58,7 +58,7 @@ class FitSet(WithMetadata):
             fits.append(type(fit).copy(fit, x_shift, y_shift))
         metadata = copy.copy(source.metadata)
         new_set = source.__class__(source.name, fits, np.add(copy.copy(source.breaks), x_shift), **metadata)
-        print(f"Copied {cls.__name__} while applying x_shift = {x_shift} and y_shift = {y_shift}.\n{new_set}")
+        print(f"Copied {cls.__name__} while applying x_shift = {x_shift} and y_shift = {y_shift}.")
         return new_set
 
     @classmethod
@@ -107,7 +107,7 @@ class FitSet(WithMetadata):
             prior_fit = fit
 
         fit_set = cls(name, fits, breaks, **lightcurve.metadata)
-        print(f"Fitted {fit_set.__class__.__name__} to {lightcurve}.\n{fit_set}")
+        print(f"Fitted {fit_set.__class__.__name__} to {lightcurve}.")
         return fit_set
 
     def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, label: str = None, y_shift: float = 0):
@@ -254,3 +254,7 @@ class FitSet(WithMetadata):
                 break
 
         return from_xi, to_xi
+
+    @abstractmethod
+    def to_latex(self, caption: str = None) -> str:
+        pass

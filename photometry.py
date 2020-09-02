@@ -1,4 +1,5 @@
 import json
+from copy import deepcopy
 from fitting import *
 from data import *
 from plot import *
@@ -65,6 +66,9 @@ for grp_key, grp_config in settings["fit_set_groups"].items():
             if fit_set is not None:
                 fit_set.metadata.conflate(lightcurve.metadata)
                 fit_sets[f"{grp_key}/{fit_set_key}"] = fit_set
+
+for fit_set_key, fit_set in fit_sets.items():
+    print(f"\n\t\tFit set {fit_set_key}\n{fit_set.to_latex()}\n")
 
 print(F"\n\n****************************************************************")
 print(F"* Analysing photometry data and fitted light curves ")
@@ -170,7 +174,7 @@ for grp_key, group_config in settings["plot_groups"].items():
             # Get all the matching lightcurves
             matches = {k: v for k, v in lightcurves.items() if k.startswith(key_match)}
             for key in matches:
-                lightcurve = copy.deepcopy(lightcurves[key])
+                lightcurve = deepcopy(lightcurves[key])
                 lightcurve.metadata.conflate(metadata_overrides)
                 plot_lightcurves[key] = lightcurve
 
@@ -180,7 +184,7 @@ for grp_key, group_config in settings["plot_groups"].items():
             # Get all the matching FitSets and
             matches = {k: v for k, v in fit_sets.items() if k.startswith(key_match)}
             for key, item in matches.items():
-                fit_set = copy.deepcopy(fit_sets[key])
+                fit_set = deepcopy(fit_sets[key])
                 fit_set.metadata.conflate(metadata_overrides)
                 plot_fit_sets[key] = fit_set
 

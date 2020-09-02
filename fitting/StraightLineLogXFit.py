@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List, Union
 import uncertainties
-from uncertainties import ufloat
+from uncertainties import ufloat, UFloat
 from matplotlib.axes import Axes
 from fitting import Fit, StraightLineFit
 
@@ -23,13 +23,19 @@ class StraightLineLogXFit(StraightLineFit):
         return text
 
     @property
+    def alpha(self) -> UFloat:
+        """
+        The alpha value of the slope power law as expressed as t^alpha
+        """
+        return self.slope / ufloat(-2.5, 0)
+
+    @property
     def power_law(self) -> str:
         """
         Restates this fit's slope as a power law, assuming that the slope is a straight line fit on log(y)/log(x) data.
         """
         if self.has_fit:
-            power_slope = self.slope / -2.5
-            law = F"$F \\propto t^{{\\alpha_{{{self.id}}}}}, \\alpha_{{{self.id}}} = {power_slope:.5fP}$"
+            law = F"$F \\propto t^{{\\alpha_{{{self.id}}}}}, \\alpha_{{{self.id}}} = {self.alpha:.5fP}$"
         else:
             law = "<No slope: insufficient data to fit line>"
         return law
