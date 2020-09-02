@@ -45,26 +45,56 @@
     "Spectral line evolution plots": [
       {
         "type": "SpectralLineEvolutionPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-line-evo-H-alpha.png",
-        "title": "Evolution of the H$\\alpha$ line",
-        "params": {"show_legend": false, "lambda_0": 6562.79, "y_shift": 0, "y_lim": [-1e-12, 15e-12], "y_ticks": [0, 5e-12, 10e-12, 15e-12], "y_tick_labels": ["0", "5", "10", "15"]},
-        "spectra": ["r_e_"]
+        "file_name": "./output/spec/V3890Sgr-2019-line-evo-H-alpha-delta-t.png",
+        "title": "Evolution of the H$\\alpha$ line.\nVertically shifted proportionally to $\\Delta t$",
+        "params": {"show_legend": false, "show_data": true, "show_fits": false, "x_size": 1, "y_size": 1.3,
+          "lambda_0": 6562.79, "fit_name": "H$\\alpha$", "y_shift": -1e-12, "y_shift_type": "delta-t", "subtract_continuum": true,
+          "y_lim": [-20e-12, 10e-12], "y_ticks": [-20e-12, -15e-12, -10e-12, -5e-12, 0, 5e-12, 10e-12], "y_tick_labels": ["-20", "-15","-10", "5", "0", "5", "10"]},
+        "spectra": [
+          "r_e_20190828_11","r_e_20190830_5","r_e_20190831_11", "r_e_20190901_5", "r_e_20190902_5", "r_e_20190903_7",
+          "r_e_20190904_4", "r_e_20190905_7", "r_e_20190910_1", "r_e_20190911_5", "r_e_20190913_5", "r_e_20190915_5"],
+        "line_fits": [
+          "r_e_20190828_11","r_e_20190830_5","r_e_20190831_11", "r_e_20190901_5", "r_e_20190902_5", "r_e_20190903_7",
+          "r_e_20190904_4", "r_e_20190905_7", "r_e_20190910_1", "r_e_20190911_5", "r_e_20190913_5", "r_e_20190915_5"]
+      },
+      {
+        "type": "SpectralLineEvolutionPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-line-fit-evo-H-alpha.png",
+        "title": "Evolution of the H$\\alpha$ fitted line",
+        "params": {"show_legend": false, "show_data": false, "show_fits": true, "x_size": 1, "y_size": 1,
+          "lambda_0": 6562.79, "fit_name": "H$\\alpha$", "y_shift": 0, "subtract_continuum": true,
+          "y_lim": [-1e-12, 10e-12], "y_ticks": [0, 5e-12, 10e-12], "y_tick_labels": ["0", "5", "10"]
+          },
+        "spectra": ["r_e_"],
+        "line_fits": ["r_e_"]
       },
       {
         "type": "SpectralLineEvolutionPlot",
         "file_name": "./output/spec/V3890Sgr-2019-line-evo-H-beta.png",
-        "title": "Evolution of the H$\\beta$ line",
-        "params": {"show_legend": false, "lambda_0": 4861.35, "y_shift": 0, "y_lim": [-1e-12, 15e-12], "y_ticks": [0, 5e-12, 10e-12, 15e-12], "y_tick_labels": ["0", "5", "10", "15"]},
-        "spectra": ["b_e_"]
+        "title": "Evolution of the H$\\beta$ line\nVertically shifted proportionally to $\\Delta t$",
+        "params": {"show_legend": false, "show_data": true, "show_fits": false, "x_size": 1, "y_size": 1.3,
+          "lambda_0": 4861.35, "fit_name": "H$\\beta$", "y_shift": -1e-12, "y_shift_type": "delta-t", "subtract_continuum": true,
+          "y_lim": [-20e-12, 5e-12], "y_ticks": [-20e-12, -15e-12, -10e-12, -5e-12, 0, 5e-12], "y_tick_labels": ["-20", "-15","-10", "5", "0", "5"]},
+        "spectra": [
+          "b_e_20190828_11","b_e_20190830_5","b_e_20190831_11", "b_e_20190901_5", "b_e_20190902_5", "b_e_20190903_7",
+          "b_e_20190904_4", "b_e_20190905_7", "b_e_20190910_1", "b_e_20190911_5", "b_e_20190913_5", "b_e_20190915_5"],
+        "line_fits": [
+          "b_e_20190828_11","b_e_20190830_5","b_e_20190831_11", "b_e_20190901_5", "b_e_20190902_5", "b_e_20190903_7",
+          "b_e_20190904_4", "b_e_20190905_7", "b_e_20190910_1", "b_e_20190911_5", "b_e_20190913_5", "b_e_20190915_5"]
       },
       {
         "type": "SpectralLineEvolutionPlot",
         "file_name": "./output/spec/V3890Sgr-2019-line-evo-He-II-4686.png",
-        "title": "Evolution of the He II (4686) line",
-        "params": {"show_legend": false, "lambda_0": 4686, "y_shift": 1e-12, "y_lim": [-1e-12, 15e-12], "y_ticks": [0, 5e-12, 10e-12, 15e-12], "y_tick_labels": ["0", "5", "10", "15"]},
-        "spectra": ["b_e_20190902_5", "b_e_20190902_7", "b_e_20190903_5", "b_e_20190903_7",
-          "b_e_20190904_4", "b_e_20190905_5", "b_e_20190905_7", "b_e_20190910_1",
-          "b_e_20190911_5", "b_e_201909011_7", "b_e_20190913_5", "b_e_20190913_7", "b_e_20190915_5"]
+        "title": "Evolution of the He II (4686) line\nVertically shifted proportionally to $\\Delta t$",
+        "params": {"show_legend": false, "show_data": true, "show_fits": false, "x_size": 1, "y_size": 1,
+          "lambda_0": 4686, "fit_name": "He II (4686)", "y_shift": -1e-12, "y_shift_type": "delta-t", "subtract_continuum": true,
+          "y_lim": [-20e-12, 0e-12], "y_ticks": [-20e-12, -15e-12, -10e-12, -5e-12, 0], "y_tick_labels": ["-20", "-15","-10", "5", "0"]},
+        "spectra": [
+          "b_e_20190902_5", "b_e_20190903_7", "b_e_20190904_4", "b_e_20190905_7", "b_e_20190910_1",
+          "b_e_20190911_5", "b_e_20190913_5", "b_e_20190915_5"],
+        "line_fits": [
+          "b_e_20190902_5", "b_e_20190903_7", "b_e_20190904_4", "b_e_20190905_7", "b_e_20190910_1",
+          "b_e_20190911_5", "b_e_20190913_5", "b_e_20190915_5"]
       }
     ],
     "Spectral Line Velocity/Time plots": [
@@ -73,7 +103,8 @@
         "file_name": "./output/spec/V3890Sgr-2019-line-velocity-time.png",
         "title": "Spectral line velocity evolution",
         "params": { "x_size": 1.5 },
-        "spectra": ["r_e_", "b_e_"]
+        "spectra": ["r_e_", "b_e_"],
+        "line_fits": ["r_e_", "b_e_"]
       }
     ],
     "Delta-t ~1 d (x2) / 20190828": [
