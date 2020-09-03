@@ -62,40 +62,11 @@ class TimePlot(BasePlot, ABC):
         return
 
     def _draw_lightcurves_and_fit_sets(self, ax: Axes, lightcurves: Dict, fit_sets: Dict):
-        # Try to match up lightcurve and fit_set for plotting.  The default method is
-        # through fit_set metadata item on the lightcurves.  Do we have any?
-        explicit_fits = []
-        if lightcurves is not None:
-            explicit_fits = {k: v for k, v in lightcurves.items() if "fit_set" in v.metadata}
-
-        if len(explicit_fits) > 0 or lightcurves is None or fit_sets is None or len(lightcurves) != len(fit_sets):
-            # At least one explicit fit_set or the lightcurve/fit_sets don't match up.
-            # We will go through the lightcurves matching where instructed, then plot any remaining fit_sets
-            ix = 0
-            fs_keys_used = []
-            if lightcurves is not None:
-                for lc_key, lightcurve in lightcurves.items():
-                    fs_key = lightcurve.metadata.get_or_default("fit_set", None)
-                    if fs_key is not None:
-                        fit_set = fit_sets[fs_key] if fs_key in fit_sets else None
-                        fs_keys_used.append(fs_key)
-                    else:
-                        fit_set = None
-                    self._draw_lightcurve_and_fit_set(ax, ix, lightcurve=lightcurve, fit_set=fit_set)
-                    ix += 1
-
-            # Pick up and attempt to render any fit_sets not matched to a lightcurve
-            if fit_sets is not None:
-                orphans = {k: v for k, v in fit_sets.items() if k not in fs_keys_used}
-                for fs_key, fit_set in orphans.items():
-                    self._draw_lightcurve_and_fit_set(ax, ix, fit_set=fit_set)
-                    ix += 1
-        else:
-            # No explicit fit_set links, but the number of lightcurves & fit_sets match so fall back on plotting in step
-            ix = 0
-            for lightcurve, fit_set in zip(lightcurves.values(), fit_sets.values()):
-                self._draw_lightcurve_and_fit_set(ax, ix, lightcurve, fit_set)
-                ix += 1
+        # Match up the lightcurves and fit sets.
+        ix = 0
+        for lightcurve, fit_set in self.__class__._pair_lightcurves_and_fit_sets(lightcurves, fit_sets):
+            self._draw_lightcurve_and_fit_set(ax, ix, lightcurve, fit_set)
+            ix += 1
         return
 
     def _draw_lightcurve_and_fit_set(self, ax: Axes, ix: int, lightcurve: Lightcurve = None, fit_set: FitSet = None):
@@ -134,3 +105,44 @@ class TimePlot(BasePlot, ABC):
 
     def _define_data_label(self, label: str, shift_by: float = 0) -> str:
         return label + (F" (shifted {shift_by:+.1f})" if shift_by != 0 else "")
+
+    @classmethod
+    def _pair_lightcurves_and_fit_sets(cls, lightcurves: Dict, fit_sets: Dict) -> List[Tuple[Lightcurve, FitSet]]:
+        """
+        Produce a master list of lightcurves and fitsets paired where possible.
+        Each entry is a tuple of a lightcurve and fitset (either may be null if no match found).
+        The ordering is prioritised by the lightcurves, then fit sets.
+        """
+        pairs = list()
+
+        # Try to match up lightcurve and fit_set for plotting.  The default method is
+        # through fit_set metadata item on the lightcurves.  Do we have any?
+        explicit_fits = []
+        if lightcurves is not None:
+            explicit_fits = {k: v for k, v in lightcurves.items() if "fit_set" in v.metadata}
+
+        if len(explicit_fits) > 0 or lightcurves is None or fit_sets is None or len(lightcurves) != len(fit_sets):
+            # At least one explicitly specified fit_set or the number of lightcurve/fit_sets don't match up.
+            # We will go through the lightcurves matching where instructed ...
+            fs_keys_used = []
+            if lightcurves is not None:
+                for lc_key, lightcurve in lightcurves.items():
+                    fs_key = lightcurve.metadata.get_or_default("fit_set", None)
+                    if fs_key is not None:
+                        fit_set = fit_sets[fs_key] if fs_key in fit_sets else None
+                        fs_keys_used.append(fs_key)
+                    else:
+                        fit_set = None
+                    pairs.append((lightcurve, fit_set))
+
+            # ... then pick up any fit_sets not matched to a lightcurve
+            if fit_sets is not None:
+                orphans = {k: v for k, v in fit_sets.items() if k not in fs_keys_used}
+                for fs_key, fit_set in orphans.items():
+                    pairs.append((None, fit_set))
+
+        else:
+            # No explicit fit_set links, but the number of lightcurves & fit_sets match so fall back on pairing in step
+            for lightcurve, fit_set in zip(lightcurves.values(), fit_sets.values()):
+                pairs.append((lightcurve, fit_set))
+        return pairs

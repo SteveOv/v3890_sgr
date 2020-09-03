@@ -50,7 +50,7 @@ class TwoByTwoMagnitudeLogTimePlot(MagnitudeTimePlot):
             fig.suptitle(title)
 
         ax_ix = 0
-        for lightcurve_key, lightcurve in lightcurves.items():
+        for lightcurve, fit_set in self.__class__._pair_lightcurves_and_fit_sets(lightcurves, fit_sets):
             if ax_ix > 3:
                 warnings.warn("More than four bands specified for this plot.  Only the first four will be shown")
                 break
@@ -62,7 +62,6 @@ class TwoByTwoMagnitudeLogTimePlot(MagnitudeTimePlot):
 
             # Get the super class to render the data to this ax.
             # It knows how to render mags v days on linear or log x-scale.
-            fit_set = fit_sets[lightcurve_key] if lightcurve_key in fit_sets else None
             self._draw_lightcurve_and_fit_set(ax, 0, lightcurve, fit_set)
 
             if self.show_breaks and fit_set is not None:

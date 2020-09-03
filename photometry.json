@@ -557,8 +557,15 @@
                 "enabled": true,
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal+SPET/": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+SPET-Revised-Fits/": {} },
-                "plot_sets": [{"data_sets": "V3890-Sgr-2019-Vis/nominal+SPET_Revised_Breaks"}]
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+SPET-Revised-Fits/": {} }
+            },
+            {
+                "type": "TwoByTwoMagnitudeLogTimePlot",
+                "file_name": "./output/phot/V3890Sgr-2019-LCx4-AAVSO-log(day)-nominal+SPET-revised-breaks.png",
+                "title": "The 2019 eruption of V3890 Sgr from AAVSO visual observations ($t_{{e}}=2458723.278$)\n[+SPET data, revised breaks]",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true},
+                "lightcurves": { "V3890-Sgr-2019-Vis-nominal+SPET/": {} },
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+SPET-Revised-Fits/": {} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
@@ -571,8 +578,7 @@
                 },
                 "fit_sets": {
                     "V3890-Sgr-2019-Vis-nominal-shifted/": {}
-                },
-                "plot_sets": [{"data_sets": "V3890-Sgr-2019-Vis-Shifted/nominal"}]
+                }
             }
         ]
     }

@@ -156,8 +156,9 @@ print(F"\n\n****************************************************************")
 print(F"* Producing plots of photometry data and fitted light curves ")
 print(F"****************************************************************")
 # Produce any configured plots
-for grp_key, group_config in settings["plot_groups"].items():
+for grp_key in settings["plot_groups"]:
     print(F"\nProcessing plot group: {grp_key}")
+    group_config = settings["plot_groups"][grp_key]
     for plot_config in group_config:
 
         # Pass on some calculated parameters to the plots - these are from the nominal fits (which is run last)
