@@ -45,7 +45,7 @@
     "Spectral line evolution plots": [
       {
         "type": "SpectralLineEvolutionPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-line-evo-H-alpha-delta-t.png",
+        "file_name": "./output/spec/V3890Sgr-2019-line-evo-H-alpha-delta-t.pdf",
         "title": "Evolution of the H$\\alpha$ line.\nVertically shifted proportionally to $\\Delta t$",
         "params": {"show_legend": false, "show_data": true, "show_fits": false, "x_size": 1, "y_size": 1.3,
           "lambda_0": 6562.79, "fit_name": "H$\\alpha$", "y_shift": -1e-12, "y_shift_type": "delta-t", "subtract_continuum": true,
@@ -59,7 +59,7 @@
       },
       {
         "type": "SpectralLineEvolutionPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-line-fit-evo-H-alpha.png",
+        "file_name": "./output/spec/V3890Sgr-2019-line-fit-evo-H-alpha.pdf",
         "title": "Evolution of the H$\\alpha$ fitted line",
         "params": {"show_legend": false, "show_data": false, "show_fits": true, "x_size": 1, "y_size": 1,
           "lambda_0": 6562.79, "fit_name": "H$\\alpha$", "y_shift": 0, "subtract_continuum": true,
@@ -70,7 +70,7 @@
       },
       {
         "type": "SpectralLineEvolutionPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-line-evo-H-beta.png",
+        "file_name": "./output/spec/V3890Sgr-2019-line-evo-H-beta.pdf",
         "title": "Evolution of the H$\\beta$ line\nVertically shifted proportionally to $\\Delta t$",
         "params": {"show_legend": false, "show_data": true, "show_fits": false, "x_size": 1, "y_size": 1.3,
           "lambda_0": 4861.35, "fit_name": "H$\\beta$", "y_shift": -1e-12, "y_shift_type": "delta-t", "subtract_continuum": true,
@@ -84,7 +84,7 @@
       },
       {
         "type": "SpectralLineEvolutionPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-line-evo-He-II-4686.png",
+        "file_name": "./output/spec/V3890Sgr-2019-line-evo-He-II-4686.pdf",
         "title": "Evolution of the He II (4686) line\nVertically shifted proportionally to $\\Delta t$",
         "params": {"show_legend": false, "show_data": true, "show_fits": false, "x_size": 1, "y_size": 1,
           "lambda_0": 4686, "fit_name": "He II (4686)", "y_shift": -1e-12, "y_shift_type": "delta-t", "subtract_continuum": true,
@@ -100,7 +100,7 @@
     "Spectral Line Velocity/Time plots": [
       {
         "type": "SpectralLineVelocityTimePlot",
-        "file_name": "./output/spec/V3890Sgr-2019-line-velocity-time.png",
+        "file_name": "./output/spec/V3890Sgr-2019-line-velocity-time.pdf",
         "title": "Spectral line velocity evolution",
         "params": { "x_size": 1.5 },
         "spectra": ["r_e_", "b_e_"],
@@ -110,7 +110,7 @@
     "Delta-t ~1 d (x2) / 20190828": [
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190828_3.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190828_3.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=1.08$ d",
         "params": {},
         "spectra": ["b_e_20190828_3", "r_e_20190828_3"],
@@ -120,7 +120,7 @@
       },
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190828_11.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190828_11.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=1.13$ d",
         "params": {},
         "spectra": ["b_e_20190828_11", "r_e_20190828_11"],
@@ -132,7 +132,7 @@
     "Delta-t ~3 d / 20190830": [
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190830_5.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190830_5.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=3.08$ d",
         "params": {},
         "spectra": ["b_e_20190830_5", "r_e_20190830_5"],
@@ -154,7 +154,7 @@
     "delta-t ~4 d (x2) / 20190831": [
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190831_5.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190831_5.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=4.08$ d",
         "params": {},
         "spectra": ["b_e_20190831_5", "r_e_20190831_5"],
@@ -176,7 +176,7 @@
       },
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190831_11.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190831_11.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=4.15$ d",
         "params": {},
         "spectra": ["b_e_20190831_11", "r_e_20190831_11"],
@@ -200,7 +200,7 @@
     "Delta-t ~5 d (x2) / 20190901": [
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190901_5.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190901_5.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=5.08$ d",
         "params": {},
         "spectra": ["b_e_20190901_5", "r_e_20190901_5"],
@@ -222,7 +222,7 @@
       },
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190901_11.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190901_11.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=5.15$ d",
         "params": {},
         "spectra": ["b_e_20190901_11", "r_e_20190901_11"],
@@ -246,7 +246,7 @@
     "Delta-t ~6 d (x2) / 20190902 [Hard X-ray peak 5.9d]": [
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190902_5.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190902_5.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=6.08$ d",
         "params": {},
         "spectra": ["b_e_20190902_5", "r_e_20190902_5"],
@@ -271,7 +271,7 @@
       },
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190902_7.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190902_7.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=6.14$ d",
         "params": {},
         "spectra": ["b_e_20190902_7", "r_e_20190902_7"],
@@ -298,7 +298,7 @@
     "Delta-t ~7 d (x2) / 20190903": [
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190903_5.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190903_5.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=7.09$ d",
         "params": {},
         "spectra": ["b_e_20190903_5", "r_e_20190903_5"],
@@ -323,7 +323,7 @@
       },
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190903_7.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190903_7.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=7.15$ d",
         "params": {},
         "spectra": ["b_e_20190903_7", "r_e_20190903_7"],
@@ -350,7 +350,7 @@
     "Delta-t ~8 d / 20190904": [
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190904_4.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190904_4.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=8.09$ d",
         "params": {},
         "spectra": ["b_e_20190904_4", "r_e_20190904_4"],
@@ -377,7 +377,7 @@
     "Delta-t ~9 d (x2) / 20190905": [
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190905_5.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190905_5.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=9.07$ d",
         "params": {},
         "spectra": ["b_e_20190905_5", "r_e_20190905_5"],
@@ -402,7 +402,7 @@
       },
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190905_7.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190905_7.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=9.15$ d",
         "params": {},
         "spectra": ["b_e_20190905_7", "r_e_20190905_7"],
@@ -429,7 +429,7 @@
     "Delta-t ~14 d": [
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190910_1.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190910_1.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=14.08$ d",
         "params": {},
         "spectra": ["b_e_20190910_1", "r_e_20190910_1"],
@@ -456,7 +456,7 @@
     "Delta-t ~15 d (x2) [SSS turn-on @ 15.5d]": [
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190911_5.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190911_5.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=15.07$ d",
         "params": {},
         "spectra": ["b_e_20190911_5", "r_e_20190911_5"],
@@ -481,7 +481,7 @@
       },
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190911_7.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190911_7.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=15.13$ d",
         "params": {},
         "spectra": ["b_e_20190911_7", "r_e_20190911_7"],
@@ -508,7 +508,7 @@
     "Delta-t ~17 d (x2)": [
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190913_5.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190913_5.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=17.07$ d",
         "params": {},
         "spectra": ["b_e_20190913_5", "r_e_20190913_5"],
@@ -533,7 +533,7 @@
       },
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190913_7.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190913_7.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=17.13$ d",
         "params": {},
         "spectra": ["b_e_20190913_7", "r_e_20190913_7"],
@@ -559,7 +559,7 @@
     "Delta-t ~19 d [SSS turn-off/decline @19d": [
       {
         "type": "SpectrumPlot",
-        "file_name": "./output/spec/V3890Sgr-2019-spec-20190915_5.png",
+        "file_name": "./output/spec/V3890Sgr-2019-spec-20190915_5.pdf",
         "title": "Sky-subtracted, calibrated, scaled and de-reddened spectra at $\\Delta t=19.07$ d",
         "params": {},
         "spectra": ["b_e_20190915_5", "r_e_20190915_5"],
