@@ -17,7 +17,7 @@ class StraightLineLogXFitSet(FitSet):
         """
         return StraightLineLogXFit.fit_to_data(id, xi, yi, dxi=None, dyi=dyi, range_from=from_xi, range_to=to_xi)
 
-    def to_latex(self, caption: str = None) -> str:
+    def to_latex(self, table_align="H", caption: str = None) -> str:
         range_field = r"$\Delta t$ range [d]"
         table = {"Symbol": list(), range_field: list(), "Value": list()}
         for fit in self:
@@ -30,10 +30,10 @@ class StraightLineLogXFitSet(FitSet):
 
         ld = {
             "tabletype": "table",
-            "tablealign": "ht",
+            "tablealign": table_align,
             "preamble": r"\begin{center}",
             "col_align": "c c r",
-            "header_start": r"\hline",
+            "header_start": r"\textbf{" + self.name + r"} \\",
             "header_end": r"\hline",
             "data_start": r"\hline",
             "data_end": r"\hline",
