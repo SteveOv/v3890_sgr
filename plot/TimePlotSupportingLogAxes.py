@@ -52,6 +52,7 @@ class TimePlotSupportingLogAxes(TimePlot, ABC):
         if self.x_scale_log:
             ax.set_xscale("log")
             # These are set by super, but it seems we need to set them again after changing to log axis!
+            ax.set(xlim=self.x_lim)
             ax.set_xticks(self.x_ticks, minor=False)
             ax.set_xticklabels(self.x_tick_labels, minor=False)
 

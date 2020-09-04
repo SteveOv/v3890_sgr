@@ -132,29 +132,29 @@ def describe_compound_fit(fit: CompoundModel, for_matplotlib: bool = False, **kw
 
 
 def describe_gaussian_fit(fit: Gaussian1D, for_matplotlib: bool = False, include_amplitude: bool = True,
-                          include_flux: bool = True) -> str:
+                          include_flux: bool = True, include_velocity: bool = True) -> str:
     """
     Write text for tracing or plotting to matplotlib text/annotation describing the Gaussian fit
     """
-    amplitude = fit.amplitude.quantity
     mu = fit.mean.quantity
     sigma = fit.stddev.quantity
-
-    v_sigma = calculate_velocity_from_sigma(lambda_0=mu, sigma=sigma).to("km / s")
     text = f"{fit.name}: " if fit.name is not None and len(fit.name) > 0 else ""
-    if for_matplotlib:
-        text += f"$\\mu$={mu.value:.1f} {mu.unit:latex_inline}, " \
-                f"$v_{{\\sigma}}$={v_sigma.value:.1f} {v_sigma.unit:latex_inline}"
-        if include_amplitude:
-            text += f", A={amplitude.value:.1e} {amplitude.unit:latex_inline}"
-        if include_flux:
-            flux = calculate_flux(fit)
-            text += f", flux=${flux.value:.2e}$ {flux.unit:latex_inline}"
-    else:
-        text += f"mu={mu:.2f}, sigma={sigma:.2f}, v_sigma={v_sigma}"
-        if include_amplitude:
-            text += f", A={amplitude:.2e}"
-        if include_flux:
-            flux = calculate_flux(fit)
-            text += f", flux={flux:.3e}"
+    text += f"$\\mu$={mu.value:.1f} {mu.unit:latex_inline}" if for_matplotlib else f"mu={mu:.2f}, sigma={sigma:.2f}"
+
+    if include_amplitude:
+        amplitude = fit.amplitude.quantity
+        text += ", A={amplitude.value:.1e} {amplitude.unit:latex_inline}" if for_matplotlib else f", A={amplitude:.2e}"
+
+    if include_flux:
+        flux = calculate_flux(fit)
+        text += f", flux=${flux.value:.2e}$ {flux.unit:latex_inline}" if for_matplotlib else f", flux={flux:.3e}"
+
+    if include_velocity:
+        v_sigma = calculate_velocity_from_sigma(lambda_0=mu, sigma=sigma).to("km / s")
+        v_2sigma = calculate_velocity_from_sigma(lambda_0=mu, sigma=2 * sigma).to("km / s")
+        if for_matplotlib:
+            text += f", $v_{{\\sigma}}$={v_sigma.value:.3e} {v_sigma.unit:latex_inline}"
+            text += f", $v_{{2\\sigma}}$={v_2sigma.value:.3e} {v_2sigma.unit:latex_inline}"
+        else:
+            text += f", v_sigma={v_sigma:.3e}, v_2sigma={v_2sigma:.3e}"
     return text

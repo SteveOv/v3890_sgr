@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 from pandas import DataFrame
 from matplotlib.axes import Axes
 from plot import TimePlotSupportingLogAxes
@@ -10,12 +10,22 @@ from utility import timing as tm
 class SpectralLineVelocityTimePlot(TimePlotSupportingLogAxes):
 
     def __init__(self, plot_params: Dict):
-        super().__init__(plot_params)
+        super().__init__(plot_params, x_axis_supports_log=True, y_axis_supports_log=True)
 
         self._default_x_label = "$\\Delta t$ [days]"
-        self._default_y_label = "Velocity dispersion [km / s]"
         self._default_x_lim = [0, 30]
         self._default_x_ticks = [0, 5, 10, 15, 20, 25, 30]
+        self._default_x_lim_log = [0.9, 20]
+        self._default_x_ticks_log = [1, 5, 10, 15, 20]
+
+        self._default_y_label = "Velocity [km / s]"
+        self._default_y_lim = [0, 5000]
+        self._default_y_ticks = [0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000]
+        self._default_y_tick_labels = \
+            ["0", "500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"]
+        self._default_y_lim_log = [1, 10000]
+        self._default_y_ticks_log = [1, 10, 100, 1000, 10000]
+        self._default_y_tick_labels_log = ["1", "10", "100", "1000", "10000"]
 
         self._default_lines = {
             "H$\\alpha$": {
@@ -27,13 +37,26 @@ class SpectralLineVelocityTimePlot(TimePlotSupportingLogAxes):
                 "fit$_{2}$": {"color": "b", "label": "peak"}
             },
             "He II (4686)": {
-                "fit$_{1}$": {"color": "darkcyan", "label": "base"},
-                "fit$_{2}$": {"color": "cyan", "label": "peak"}
+                "fit$_{1}$": {"color": "darkgreen", "label": "base"},
+                "fit$_{2}$": {"color": "g", "label": "peak"}
             }
         }
 
         self._default_eruption_jd = 2458723.278
         return
+
+    @property
+    def y_lim(self) -> List[float]:
+        return self._param("y_lim", self._default_y_lim_log if self.y_scale_log else self._default_y_lim)
+
+    @property
+    def y_ticks(self) -> List[float]:
+        return self._param("y_ticks", self._default_y_ticks_log if self.y_scale_log else self._default_y_ticks)
+
+    @property
+    def y_tick_labels(self) -> List[str]:
+        return self._param("y_tick_labels",
+                           self._default_y_tick_labels_log if self.y_scale_log else self._default_y_tick_labels_log)
 
     @property
     def lines(self):
@@ -42,6 +65,14 @@ class SpectralLineVelocityTimePlot(TimePlotSupportingLogAxes):
     @property
     def eruption_jd(self):
         return self._param("eruption_jd", self._default_eruption_jd)
+
+    def _configure_ax(self, ax: Axes, **kwargs):
+        super()._configure_ax(ax, **kwargs)
+        if self.y_scale_log:
+            ax.set(ylim=self.y_lim)
+            ax.set_yticks(self.y_ticks, minor=False)
+            ax.set_yticklabels(self.y_tick_labels, minor=False)
+        return
 
     def _draw_plot_data(self, ax: Axes, **kwargs):
         # The payload should be spectral line fitted models containing Gaussian fits to lines. It's a dictionary keyed
@@ -65,7 +96,7 @@ class SpectralLineVelocityTimePlot(TimePlotSupportingLogAxes):
                     for sub_fit in line_fit:
                         if sub_fit.name in self.lines[line_fit.name] and isinstance(sub_fit, Gaussian1D):
                             lambda_0 = sub_fit.mean.quantity
-                            v = fu.calculate_velocity_from_sigma(lambda_0, sub_fit.stddev.quantity).to("km / s")
+                            v = fu.calculate_velocity_from_sigma(lambda_0, 2 * sub_fit.stddev.quantity).to("km / s")
                             v_err = 0 * v.unit  # TODO: uncertainty
                             rows.append({
                                 "line": line_fit.name.replace("\\", "_"),

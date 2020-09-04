@@ -101,8 +101,10 @@
       {
         "type": "SpectralLineVelocityTimePlot",
         "file_name": "./output/spec/V3890Sgr-2019-line-velocity-time.pdf",
-        "title": "Spectral line velocity evolution",
-        "params": { "x_size": 1.5 },
+        "title": "Spectral line velocity evolution from the fitted lines",
+        "params": { "x_size": 1.5, "legend_loc": "lower left", "x_scale_log": true,
+          "y_scale_log": true, "y_lim": [100, 5000], "y_ticks": [100, 500, 1000, 2000, 3000, 4000, 5000],
+          "y_tick_labels": ["100", "500", "1000", "2000", "3000", "4000", "5000"]},
         "spectra": ["r_e_", "b_e_"],
         "line_fits": ["r_e_", "b_e_"]
       }
