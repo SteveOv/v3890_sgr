@@ -95,7 +95,7 @@ class SpectrumPlot(SpectralPlot):
         """
         if self.show_line_labels and spectral_line_labels is not None and len(spectral_line_labels) > 0:
             ix = 0
-            label_offset = 0.15
+            label_offset = 0.12
             color = "k"
             for labels_row in spectral_line_labels:
                 x_pos = list()
@@ -111,6 +111,6 @@ class SpectrumPlot(SpectralPlot):
                         labels.append(label)
 
                 self._draw_vertical_lines(ax, x=x_pos, text=labels, color=color, text_size="3.0", line_width=0.2,
-                                          v_align="bottom", text_top=True, text_offset=0.10 + (label_offset * ix))
+                                          v_align="bottom", text_top=True, text_offset=0.15 + (label_offset * ix))
                 ix += 1
         return
