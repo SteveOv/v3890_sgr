@@ -18,11 +18,11 @@ class SpectralLineVelocityTimePlot(TimePlotSupportingLogAxes):
         self._default_x_lim_log = [0.9, 20]
         self._default_x_ticks_log = [1, 5, 10, 15, 20]
 
-        self._default_y_label = "Velocity [km / s]"
-        self._default_y_lim = [0, 5000]
-        self._default_y_ticks = [0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000]
+        self._default_y_label = "FWHM [km / s]"
+        self._default_y_lim = [0, 6000]
+        self._default_y_ticks = [0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000]
         self._default_y_tick_labels = \
-            ["0", "500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"]
+            ["0", "500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000", "5500", "6000"]
         self._default_y_lim_log = [1, 10000]
         self._default_y_ticks_log = [1, 10, 100, 1000, 10000]
         self._default_y_tick_labels_log = ["1", "10", "100", "1000", "10000"]
@@ -96,7 +96,7 @@ class SpectralLineVelocityTimePlot(TimePlotSupportingLogAxes):
                     for sub_fit in line_fit:
                         if sub_fit.name in self.lines[line_fit.name] and isinstance(sub_fit, Gaussian1D):
                             lambda_0 = sub_fit.mean.quantity
-                            v = fu.calculate_velocity_from_sigma(lambda_0, 2 * sub_fit.stddev.quantity).to("km / s")
+                            v = fu.calculate_velocity_from_sigma(lambda_0, sub_fit.fwhm).to("km / s")
                             v_err = 0 * v.unit  # TODO: uncertainty
                             rows.append({
                                 "line": line_fit.name.replace("\\", "_"),

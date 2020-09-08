@@ -7,6 +7,7 @@ from astropy.io import fits
 from astropy.units import Quantity
 from astropy.utils.exceptions import AstropyUserWarning
 from specutils import SpectralRegion
+from specutils.manipulation import noise_region_uncertainty
 
 CRED = '\033[91m'
 CGREEN = '\33[32m'
@@ -62,7 +63,7 @@ class Spectrum1DEx(Spectrum1D):
         return self._obs_date
 
     @classmethod
-    def from_spectrum1d(cls, spec1d: Spectrum1D, name: str = None):
+    def from_spectrum1d(cls, spec1d: Spectrum1D, name: str = None, mjd: float = None, obs_date: datetime = None):
         """
         Creates a instance of a Spectrum1DEx from the passed Spectrum1D
         """
@@ -73,8 +74,15 @@ class Spectrum1DEx(Spectrum1D):
                 new_spec._name = spec1d._name
                 new_spec._mjd = spec1d._mjd
                 new_spec._obs_date = spec1d._mjd
-            else:
-                new_spec._name = new_spec._mjd, = new_spec._obs_date = None
+
+            if name is not None:
+                new_spec._name = name
+
+            if mjd is not None:
+                new_spec._mjd = mjd
+
+            if obs_date is not None:
+                new_spec._obs_date = obs_date
         else:
             new_spec = None
         return new_spec
@@ -119,6 +127,25 @@ class Spectrum1DEx(Spectrum1D):
         copy._mjd = self._mjd
         copy._obs_date = self._obs_date
         return copy
+
+    def to_uncertainty_spectrum(self, noise_region: SpectralRegion = None, new_name: str = None):
+        """
+        Derive the uncertainties in the spectrum from the noise. We use this for fitting as it provides weighting.
+        The noise_region may be set to a region of the spectrum to base the uncertainty on (otherwise the whole is used).
+        """
+        if self.uncertainty is None:
+            if noise_region is None:
+                noise_region = SpectralRegion((self.min_wavelength, self.min_wavelength))
+
+            unc_spec = noise_region_uncertainty(self, noise_region)
+            ret_val = Spectrum1DEx.from_spectrum1d(unc_spec, self._name, self._mjd, self._obs_date)
+        else:
+            ret_val = self.copy()
+
+        if new_name is not None:
+            ret_val._name = new_name
+
+        return ret_val
 
     def create_image_hdu(self, name, header=None) \
             -> fits.ImageHDU:

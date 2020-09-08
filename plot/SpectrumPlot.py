@@ -25,7 +25,7 @@ class SpectrumPlot(SpectralPlot):
 
     def _configure_ax(self, ax: Axes, **kwargs):
         # Get the spectra - we'll base the configuration on the data
-        spectra = kwargs["spectra"] if "spectra" in kwargs else None
+        spectra = kwargs["spectra"] if "spectra" in kwargs else list()
 
         # Now we can set the defaults for labels and axes based on the data
         s1 = spectra[next(iter(spectra))]
@@ -83,7 +83,7 @@ class SpectrumPlot(SpectralPlot):
             for fit_key, line_fit_list in line_fits.items():
                 spectrum = spectra[fit_key] if fit_key in spectra else None
                 for line_fit in line_fit_list:
-                    fit_utilities.draw_fit_on_ax(ax, spectrum, line_fit, annotate=self.annotate_fits)
+                    fit_utilities.draw_fit_on_ax(ax, spectrum, line_fit, annotate=self.annotate_fits, line_width=0.2)
         return
 
     def _draw_spectral_line_labels(self, ax: Axes, spectral_line_labels: List[Dict]):

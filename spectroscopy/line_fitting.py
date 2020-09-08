@@ -7,7 +7,6 @@ from astropy.modeling import CompoundModel
 from astropy.modeling.models import Gaussian1D, Polynomial1D
 from astropy.modeling.fitting import LevMarLSQFitter
 from specutils import SpectralRegion, Spectrum1D
-from specutils.manipulation.estimate_uncertainty import noise_region_uncertainty
 from specutils.fitting.continuum import fit_generic_continuum
 from spectroscopy import Spectrum1DEx, fit_utilities
 
@@ -35,38 +34,34 @@ def fit(spectrum: Spectrum1DEx, key: str = None) -> List[CompoundModel]:
 @fit_utilities.trace_fitting
 def fit_blue_arm_spectrum(spectrum: Spectrum1DEx) -> List[CompoundModel]:
     # Derive the uncertainties in the spectrum from the noise. We use this for fitting as it provides weighting.
-    if spectrum.uncertainty is None:
-        noise_region = Spectrum1DEx.spectral_region_over(4700, 4900)
-        unc_spec = noise_region_uncertainty(spectrum, noise_region)
-    else:
-        unc_spec = spectrum
+    unc_spec = spectrum.to_uncertainty_spectrum(Spectrum1DEx.spectral_region_over(4700, 4900, si.AA))
 
     # Work out the continuum model
     cont_model = _continuum_fit(unc_spec)
 
     # The hints for H-beta.  Early ones are a single Gaussian but later are double.
-    if spectrum.obs_date < datetime(2019, 8, 30):
+    if unc_spec.obs_date < datetime(2019, 8, 30):
         beta_hint = _named_gaussian(amplitude=2e-12, mean=4861.4, stddev=35, subscript="1")
     else:
         beta_hint = _named_gaussian(amplitude=2e-12, mean=(4855, 4865), stddev=(1, 10), subscript="2") \
                     + _named_gaussian(amplitude=0.5e-12, mean=(4855, 4865), stddev=(10, 25), subscript="1")
 
     # The hints of H-gamma.  Early ones are a single Gaussian but later are double.
-    if spectrum.obs_date < datetime(2019, 8, 30):
+    if unc_spec.obs_date < datetime(2019, 8, 30):
         gamma_hint = _named_gaussian(amplitude=2e-12, mean=4340.5, stddev=25, subscript="1")
     else:
         gamma_hint = _named_gaussian(amplitude=2e-12, mean=(4335, 4345), stddev=(1, 7), subscript="2") \
                     + _named_gaussian(amplitude=0.2e-12, mean=(4335, 4345), stddev=(7, 15), subscript="1")
 
     # The hints for H-delta.  Early ones are a single Gaussian but later ones are double.
-    if spectrum.obs_date < datetime(2019, 8, 30):
+    if unc_spec.obs_date < datetime(2019, 8, 30):
         delta_hint = _named_gaussian(amplitude=2e-12, mean=4101.7, stddev=20, subscript="1")
     else:
         delta_hint = _named_gaussian(amplitude=1e-12, mean=(4095, 4106), stddev=(1, 7), subscript="2") \
                     + _named_gaussian(amplitude=0.2e-12, mean=(4095, 4106), stddev=(7, 15), subscript="1")
 
     # The hints for the He I 4686 line.  Isn't present in the early spectra.
-    if spectrum.obs_date < datetime(2019, 9, 2):
+    if unc_spec.obs_date < datetime(2019, 9, 2):
         he4686_hint = None
     else:
         he4686_hint = _named_gaussian(amplitude=2e-12, mean=(4680, 4690), stddev=(1, 3), subscript="2") \
@@ -87,18 +82,14 @@ def fit_blue_arm_spectrum(spectrum: Spectrum1DEx) -> List[CompoundModel]:
 @fit_utilities.trace_fitting
 def fit_red_arm_spectrum(spectrum: Spectrum1DEx) -> List[CompoundModel]:
     # Derive the uncertainties in the spectrum from the noise. We use this for fitting as it provides weighting.
-    if spectrum.uncertainty is None:
-        noise_region = Spectrum1DEx.spectral_region_over(6200, 6900)
-        unc_spec = noise_region_uncertainty(spectrum, noise_region)
-    else:
-        unc_spec = spectrum
+    unc_spec = spectrum.to_uncertainty_spectrum(Spectrum1DEx.spectral_region_over(6200, 6900, si.AA))
 
     # Work out the continuum model
     cont_model = _continuum_fit(unc_spec)
 
-    if spectrum.obs_date < datetime(2019, 8, 29):
+    if unc_spec.obs_date < datetime(2019, 8, 29):
         alpha_hint = _named_gaussian(amplitude=8e-12, mean=6562.8, stddev=50, subscript="1")
-    elif spectrum.obs_date < datetime(2019, 9, 5):
+    elif unc_spec.obs_date < datetime(2019, 9, 5):
         # H-alpha double Gaussian - asymmetric expansion
         alpha_hint = _named_gaussian(amplitude=8e-12, mean=6562.8, stddev=(1, 15), subscript="2") \
                     + _named_gaussian(amplitude=2e-12, mean=(6560, 6565), stddev=(30, 60), subscript="1")
