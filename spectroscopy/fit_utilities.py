@@ -10,6 +10,15 @@ from astropy.modeling import CompoundModel
 from astropy.modeling.models import Gaussian1D, Polynomial1D
 from spectroscopy import Spectrum1DEx
 
+CRED = "\033[31m"
+CGREEN = "\33[32m"
+CYELLOW = "\33[33m"
+CBLUE = "\33[34m"
+CMAGENTA = "\33[35m"
+CCYAN = "\33[36m"
+CWHITE = "\33[37m"
+CEND = "\033[0m"
+
 _fit_colors = ["m", "royalblue", "darkmagenta", "cyan", "violet", "mediumpurple"]
 
 _frodo_spec_resolving_power = {
@@ -124,7 +133,12 @@ def describe_compound_fit(fit: CompoundModel, for_matplotlib: bool = False, **kw
     """
     Write text for tracing or plotting to matplotlib text/annotation describing the compound fit
     """
-    text = f"{fit.name}"
+    if for_matplotlib:
+        text = f"{fit.name}"
+    else:
+        n_color = f"{CRED}" if "alpha" in fit.name else f"{CBLUE}"
+        text = f"{n_color}{fit.name}{CEND}"
+
     for sub in fit:
         if isinstance(sub, Gaussian1D):
             text += ("\n\t\t" if not for_matplotlib else "\n") + describe_gaussian_fit(sub, for_matplotlib, **kwargs)
@@ -138,23 +152,28 @@ def describe_gaussian_fit(fit: Gaussian1D, for_matplotlib: bool = False, include
     """
     mu = fit.mean.quantity
     sigma = fit.stddev.quantity
+    fwhm = fit.fwhm
+
     text = f"{fit.name}: " if fit.name is not None and len(fit.name) > 0 else ""
-    text += f"$\\mu$={mu.value:.1f} {mu.unit:latex_inline}" if for_matplotlib else f"mu={mu:.2f}, sigma={sigma:.2f}"
+    text += f"$\\mu$={mu.value:.1f} {mu.unit:latex_inline}" if for_matplotlib else f"{CCYAN}mu = {mu:.2f}{CEND}"
+    text += f",$\\sigma$={sigma.value:.1f} {sigma.unit:latex_inline}" if for_matplotlib else f", sigma = {sigma:.2f}"
+    text += f",FWHM={fwhm.value:.1f} {fwhm.unit:latex_inline}" if for_matplotlib else f", {CCYAN}FWHM = {fwhm:.2f}{CEND}"
 
     if include_amplitude:
         amplitude = fit.amplitude.quantity
-        text += ", A={amplitude.value:.1e} {amplitude.unit:latex_inline}" if for_matplotlib else f", A={amplitude:.2e}"
+        text += ",A={amplitude.value:.1e} {amplitude.unit:latex_inline}" if for_matplotlib else f", A = {amplitude:.2e}"
 
     if include_flux:
         flux = calculate_flux(fit)
-        text += f", flux=${flux.value:.2e}$ {flux.unit:latex_inline}" if for_matplotlib else f", flux={flux:.3e}"
+        text += f",flux=${flux.value:.2e}$ {flux.unit:latex_inline}" if for_matplotlib else f", {CCYAN}F = {flux:.3e}{CEND}"
 
     if include_velocity:
         v_sigma = calculate_velocity_from_sigma(lambda_0=mu, sigma=sigma).to("km / s")
         v_2sigma = calculate_velocity_from_sigma(lambda_0=mu, sigma=2 * sigma).to("km / s")
+        v_fwhm = calculate_velocity_from_sigma(lambda_0=mu, sigma=fwhm).to("km / s")
         if for_matplotlib:
-            text += f", $v_{{\\sigma}}$={v_sigma.value:.3e} {v_sigma.unit:latex_inline}"
-            text += f", $v_{{2\\sigma}}$={v_2sigma.value:.3e} {v_2sigma.unit:latex_inline}"
+            text += f",$v_{{\\sigma}}$={v_sigma.value:.3e} {v_sigma.unit:latex_inline}"
+            text += f",$v_{{2\\sigma}}$={v_2sigma.value:.3e} {v_2sigma.unit:latex_inline}"
         else:
-            text += f", v_sigma={v_sigma:.3e}, v_2sigma={v_2sigma:.3e}"
+            text += f", v_sig = {v_sigma:.3e}, {CCYAN}v_2sig = {v_2sigma:.3e}{CEND}, v_fwhm = {v_fwhm:.3e}"
     return text
