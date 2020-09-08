@@ -135,7 +135,8 @@ class Spectrum1DEx(Spectrum1D):
         """
         if self.uncertainty is None:
             if noise_region is None:
-                noise_region = SpectralRegion((self.min_wavelength, self.min_wavelength))
+                noise_region = self.spectral_region_over(self.min_wavelength.value, self.max_wavelength.value,
+                                                         self.wavelength.unit)
 
             unc_spec = noise_region_uncertainty(self, noise_region)
             ret_val = Spectrum1DEx.from_spectrum1d(unc_spec, self._name, self._mjd, self._obs_date)
@@ -248,4 +249,8 @@ class Spectrum1DEx(Spectrum1D):
 
     def __repr__(self) \
             -> str:
-        return super().__repr__().replace("Spectrum1D(", f"Spectrum1DEx(name='{self.name}', ")
+        return super().__repr__().replace("Spectrum1D (", f"Spectrum1DEx (name='{self.name}', ")
+
+    def __str__(self) \
+            -> str:
+        return super().__str__().replace("Spectrum1D (", f"Spectrum1DEx (name='{self.name}', ")
