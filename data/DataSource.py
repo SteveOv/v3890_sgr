@@ -1,5 +1,6 @@
 from typing import Dict, Type, Union
 from abc import ABC, abstractmethod
+from collections import Counter
 from pathlib import Path
 from pandas import DataFrame
 from data import *
@@ -20,7 +21,12 @@ class DataSource(ABC):
 
         self._data = self._ingest(source)
         if isinstance(self._data, DataFrame):
-            print(F"\t... ingested {len(self._data)} row(s).")
+            counts = ""
+            for type in ["band", "filter", "rate_type", "data_type"]:
+                if type in self._data.columns:
+                    counts += f" In [{type}] are {Counter(self._data[type])}."
+
+            print(F"\t... ingested {len(self._data)} row(s)." + counts)
         elif isinstance(self._data, Spectrum1DEx):
             print(F"\t... ingested {self._data.flux.shape[0]} spectral readings over {self._data.spectral_axis}.")
         return
