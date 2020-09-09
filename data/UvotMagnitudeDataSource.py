@@ -1,7 +1,7 @@
 import glob
 from astropy.table import Table
 from data.MagnitudeDataSource import *
-
+from utility import timing as tm
 
 class UvotMagnitudeDataSource(MagnitudeDataSource):
     """
@@ -20,8 +20,10 @@ class UvotMagnitudeDataSource(MagnitudeDataSource):
                             "ab_mag", "ab_mag_err", "flux_hz", "flux_hz_err"]
         rows = []
 
-        fits_file_names = glob.glob(source)
+        source = self.__class__._canonicalize_filename(source)
+        fits_file_names = Path(source.parent).glob(source.name)
         for fits_file_name in sorted(fits_file_names):
+            print(f"\tParsing {fits_file_name.name}.")
             t = Table.read(fits_file_name, "MAGHIST")
 
             # Check the keywords to make sure this is the right instrument
@@ -49,7 +51,15 @@ class UvotMagnitudeDataSource(MagnitudeDataSource):
 
     @classmethod
     def _met_to_jd(cls, met: float) -> float:
-        # Reference values from the first observation; sw00011558001uw1_sk.img
+        # The issue here is that uvotmaghist/uvotsource don't copy over the UTCFINT & MJDREF fields either
+        # in the HDU headers or in fields (FFS why not?).  There's also no easy way to tie an observation
+        # back to the source file.  However, MJDREFI doesn't change and the change in UTCFINT amounts to 6 seconds
+        # over the course of the observations, so for now I'll use a median value for this and if time I'll revisit.
+        # Reference values from the first and last observations;
+        # sw00011558001uw1_sk.img.gz: UTCFINIT = -23.57402
+        # sw00011558033uw2_sk.img.gz: UTCFINIT = -23.62186
+        # sw00045788001uw2_sk.img.gz: UTCFINIT = -17.07584
+        # sw00045788105um2_sk.img.gz: UTCFINIT = -24.88188
         MJDREFI = 51910
-        UTCFINT = -23.57402
-        return 2400000 + MJDREFI + ((met + UTCFINT) / 86400)
+        UTCFINT = -20.97886
+        return tm.jd_from_mjd(MJDREFI + ((met + UTCFINT) / 86400))

@@ -236,8 +236,8 @@
             "lightcurve_group": "V3890-Sgr-2019-UV-nominal",
             "type": "StraightLineLogXFitSet",
             "fit_sets": {
-                "UVW2": { "breaks": [6.5, 12.0, 21.5, 30.5] },
-                "UVM2": { "breaks": [4.9,  9.5, 21.3, 31.8, 65.7] }
+                "UVW2": { "breaks": [7.0, 12.5, 22.0, 31.0] },
+                "UVM2": { "breaks": [5.4,  10.0, 21.8, 32.3, 66.2] }
             }
         },
         "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft": {
