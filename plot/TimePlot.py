@@ -93,7 +93,7 @@ class TimePlot(BasePlot, ABC):
 
         # Optionally draw the associated fitted lines
         if self.show_fits and fit_set is not None:
-            fit_set.draw_on_ax(ax, color, label=label, line_width=self._line_width, y_shift=this_y_shift)
+            fit_set.draw_on_ax(ax, color, label=label, line_width=self.line_width, y_shift=this_y_shift)
         return
 
     def _draw_epochs(self, ax: Axes, epochs: Dict[str, float]):

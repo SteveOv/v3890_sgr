@@ -67,11 +67,11 @@ class MagnitudeAndResidualsTimePlot(MagnitudeTimePlot):
         # but super() won't know about the 2nd axis so we set it up here
         if self.show_residuals and self._ax_res is not None:
             # Don't do anything with the x-axis - it's shared with the main ax so has already been set up
-            self._ax_res.grid(which='major', linestyle='-', linewidth=self._line_width, alpha=0.3)
+            self._ax_res.grid(which='major', linestyle='-', linewidth=self.line_width * 0.75, alpha=self.alpha * 0.75)
             self._ax_res.set(ylim=self.y_lim_residuals, ylabel=self.y_label_residuals, yticks=self.y_ticks_residuals)
             self._ax_res.invert_yaxis()
             if self._param("x_scale_log", self._default_x_scale_log):
-                self._ax_res.grid(which="minor", linestyle="-", linewidth=self._line_width, alpha=0.1)
+                self._ax_res.grid(which="minor", linestyle="-", linewidth=self.line_width * 0.5, alpha=self.alpha * 0.5)
         return
 
     def _draw_lightcurve_and_fit_set(self, ax: Axes, ix: int, lightcurve: Lightcurve = None, fit_set: FitSet = None):
@@ -83,5 +83,5 @@ class MagnitudeAndResidualsTimePlot(MagnitudeTimePlot):
             color = lightcurve.metadata.get_or_default("color", fit_set.metadata.get_or_default("color", "k"))
 
             x_res, y_res = fit_set.calculate_residuals(lightcurve.x, lightcurve.y)
-            self._ax_res.plot(x_res, y_res, ".", color=color, markersize=self._marker_size * 2, alpha=1, zorder=2)
+            self._ax_res.plot(x_res, y_res, ".", color=color, markersize=self.marker_size * 2, alpha=1, zorder=2)
         return

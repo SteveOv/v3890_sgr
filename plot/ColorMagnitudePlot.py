@@ -94,9 +94,9 @@ class ColorMagnitudePlot(BasePlot):
             ax.errorbar(x=a_color, y=a_mag,
                         # xerr=intrinsic_color_err, yerr=mag_err,
                         label=label,
-                        fmt=marker, mfc=fillcolor, color=color, fillstyle='none', markersize=self._marker_size * 10,
-                        capsize=1, ecolor=color, elinewidth=self._line_width / 2,
-                        linewidth=self._line_width / 4, alpha=0.5, zorder=1)
+                        fmt=marker, mfc=fillcolor, color=color, fillstyle='none', markersize=self.marker_size * 10,
+                        capsize=1, ecolor=color, elinewidth=self.line_width / 2,
+                        linewidth=self.line_width / 4, alpha=self.alpha, zorder=1)
 
             # Only spec the label once
             label = None

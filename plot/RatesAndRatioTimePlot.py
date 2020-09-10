@@ -86,9 +86,9 @@ class RatesAndRatioTimePlot(RateTimePlot):
                 ax.set(xlim=self.x_lim, ylim=self.y_lim, yticks=self.y_ticks, yticklabels=self.y_ticks)
 
             # Grids, where necessary, on all axes
-            ax.grid(which='major', linestyle='-', linewidth=self._line_width, alpha=0.3)
+            ax.grid(which='major', linestyle='-', linewidth=self.line_width * 0.75, alpha=self.alpha * 0.75)
             if self.y_scale_log | self.x_scale_log:
-                ax.grid(which="minor", linestyle="-", linewidth=self._line_width, alpha=0.1)
+                ax.grid(which="minor", linestyle="-", linewidth=self.line_width * 0.5, alpha=self.alpha * 0.5)
         return
 
     def _draw_lightcurve_and_fit_set(self, ax: Axes, ix: int, lightcurve: Lightcurve = None, fit_set: FitSet = None):

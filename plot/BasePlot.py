@@ -29,14 +29,16 @@ class BasePlot(ABC):
     _PLOT_SCALE_UNIT = 3.2
     _TITLE_SCALE_UNIT = 46
 
-    _line_width = 0.5
-    _marker_size = ((0.5 * 288) / _DEFAULT_DPI) ** 2
-
     _subclasses = None
 
     def __init__(self, plot_params: Dict):
         self._log(F"Initializing, plot_params={plot_params}")
         self._params = plot_params
+
+        # Used by the _draw/_plot methods
+        self._default_line_width = 0.5
+        self._default_alpha = 0.5
+        self._default_marker_size = ((0.5 * 288) / self._DEFAULT_DPI) ** 2
 
         self._default_show_title = self._default_show_legend = True
         self._default_legend_loc = "upper right"
@@ -53,6 +55,18 @@ class BasePlot(ABC):
     @property
     def _print_dpi(self) -> float:
         return self._DEFAULT_DPI
+
+    @property
+    def line_width(self) -> float:
+        return self._param("line_width", self._default_line_width)
+
+    @property
+    def alpha(self) -> float:
+        return self._param("alpha", self._default_alpha)
+
+    @property
+    def marker_size(self) -> float:
+        return self._param("marker_size", self._default_marker_size)
 
     @property
     def x_size(self) -> float:
@@ -155,7 +169,7 @@ class BasePlot(ABC):
         fig = self._create_fig()
         ax = self._create_ax(fig)
 
-        if self.show_title and title is not None:
+        if self.show_title and title is not None and ax is not None:
             ax.set_title(title)
 
         # Make it possible for subtype to override the config of the axis
@@ -164,7 +178,7 @@ class BasePlot(ABC):
         # The hook for the specific subtype to plot its data to the Axes
         self._draw_plot_data(ax, **kwargs)
 
-        if self.show_legend:
+        if self.show_legend and ax is not None:
             ax.legend(loc=self.legend_loc)
         return fig
 
@@ -187,7 +201,7 @@ class BasePlot(ABC):
         ax.set(xlim=self.x_lim, xlabel=self.x_label, ylabel=self.y_label)
         ax.set_xticks(self.x_ticks, minor=False)
         ax.set_xticklabels(self.x_tick_labels, minor=False)
-        ax.grid(which='major', linestyle='-', linewidth=self._line_width, alpha=0.3)
+        ax.grid(which='major', linestyle='-', linewidth=self.line_width * 0.75, alpha=self.alpha * 0.75)
         return
 
     @abstractmethod
@@ -234,46 +248,58 @@ class BasePlot(ABC):
 
     def _plot_df_to_error_bars_on_ax(self, ax: Axes, df: DataFrame, x_col: str, y_col: str, y_err_col: str,
                                      color: str, label: str = None, y_shift: float = 0, fmt: str = ",",
-                                     alpha=0.5, z_order=1):
+                                     line_width: float = None, alpha: float = None, z_order: float = 1):
         """
         Plot the passed data as a sequence of error bars using standard formatting as configured for this instance.
         """
         return self._plot_points_to_error_bars_on_ax(
-            ax, df[x_col], df[y_col], df[y_err_col], color, label, y_shift, fmt, alpha, z_order)
+            ax, df[x_col], df[y_col], df[y_err_col], color,
+            label=label, y_shift=y_shift, fmt=fmt, line_width=line_width, alpha=alpha, z_order=z_order)
 
     def _plot_points_to_error_bars_on_ax(self,
                                          ax: Axes, x_points: List[float], y_points: List[float],
-                                         y_err_points: List[float], color: str, label: str = None, y_shift: float = 0,
-                                         fmt: str = ",", alpha=0.5, z_order=1):
+                                         y_err_points: List[float],
+                                         color: str, label: str = None, y_shift: float = 0, fmt: str = ",",
+                                         line_width: float = None, alpha: float = None, z_order: float = 1):
         """
         Plot the passed data as a sequence of error bars using standard formatting as configured for this instance.
         """
+        if alpha is None:
+            alpha = self.alpha
+        if line_width is None:
+            line_width = self.line_width
         # TODO: extend this to include x_err too
         return ax.errorbar(x_points, np.add(y_points, y_shift), yerr=y_err_points,
-                           label=label, fmt=fmt, color=color, fillstyle='full', markersize=self._marker_size,
-                           capsize=1, ecolor=color, elinewidth=self._line_width, alpha=alpha, zorder=z_order)
+                           label=label, fmt=fmt, color=color, fillstyle='full', markersize=self.marker_size,
+                           capsize=1, ecolor=color, elinewidth=line_width, alpha=alpha, zorder=z_order)
 
     def _plot_df_to_lines_on_ax(self, ax: Axes, df: DataFrame, x_col: str, y_col: str,
                                 color: str, label: str = None, y_shift: float = 0, line_style: str = "-",
-                                alpha=1.0, z_order=2):
+                                line_width: float = None, alpha: float = None, z_order: float = 2):
         """
         Plot the passed data as a sequence of lines using standard formatting as configured for this instance.
         """
-        return self._plot_points_to_lines_on_ax(ax, df[x_col], df[y_col], color, label,
-                                                y_shift, line_style, alpha, z_order)
+        return self._plot_points_to_lines_on_ax(ax, df[x_col], df[y_col], color, label=label, y_shift=y_shift,
+                                                line_style=line_style, line_width=line_width, alpha=alpha, z_order=z_order)
 
     def _plot_points_to_lines_on_ax(self, ax: Axes, x_points: List[float], y_points: List[float],
                                     color: str, label: str = None, y_shift: float = 0, line_style: str = "-",
-                                    alpha=1.0, z_order=2):
+                                    line_width: float = None, alpha: float = None, z_order: float = 2):
         """
         Plot the passed data as a sequence of lines using standard formatting as configured for this instance.
         """
+        if alpha is None:
+            alpha = self.alpha
+        if line_width is None:
+            line_width = self.line_width
         return ax.plot(x_points, np.add(y_points, y_shift), line_style,
-                       label=label, color=color, linewidth=self._line_width, alpha=alpha, zorder=z_order)
+                       label=label, color=color, linewidth=line_width, alpha=alpha, zorder=z_order)
 
-    def _draw_vertical_lines(self, ax: Axes, x, text=None,
-                             color="k", line_width=0.5, line_style=":", h_align="center", v_align=None, alpha=0.3,
-                             text_top=True, text_offset=0.05, text_rotation=90, text_size="xx-small"):
+    def _draw_vertical_lines(self, ax: Axes, x, text: str = None,
+                             color: str = "k", line_width: float = None, line_style: str = ":",
+                             h_align: str = "center", v_align: str = None, alpha: float = None,
+                             text_top: bool = True, text_offset: float = 0.05, text_rotation: float = 90,
+                             text_size: str = "xx-small"):
         """
         Will draw one or more vertical lines to the Axes from top to bottom at the required x positions.
         The optional text will be written on the line at the required, proportional offset from the top/bottom.
@@ -282,6 +308,11 @@ class BasePlot(ABC):
         y_inverted = ax.yaxis_inverted()
         y_min = min(y_lim)
         y_max = max(y_lim)
+
+        if alpha is None:
+            alpha = self.alpha * 0.75
+        if line_width is None:
+            line_width = self.line_width * 0.75
 
         # Plot a vertical line for each entry
         ax.vlines(x=x, ymin=y_min, ymax=y_max, linestyle=line_style, linewidth=line_width, alpha=alpha, color=color)
@@ -312,9 +343,10 @@ class BasePlot(ABC):
                         rotation=text_rotation, verticalalignment=v_align, horizontalalignment=h_align)
         return
 
-    def _draw_horizontal_lines(self, ax: Axes, y, text=None,
-                               color="k", line_width=0.5, line_style=":", h_align=None, v_align="center", alpha=0.3,
-                               text_right=False, text_offset=0.05, text_size="x-small"):
+    def _draw_horizontal_lines(self, ax: Axes, y, text: str = None,
+                               color: str = "k", line_width: float = None, line_style: str = ":",
+                               h_align: str = None, v_align: str = "center", alpha: float = None,
+                               text_right: bool = False, text_offset: float = 0.05, text_size: str = "x-small"):
         """
         Will draw one or more horizontal lines to the Axes from top to bottom at the required x positions.
         The optional text will be written on the line at the required, proportional offset from the top/bottom.
@@ -322,6 +354,11 @@ class BasePlot(ABC):
         x_lim = ax.get_xlim()
         x_min = min(x_lim)
         x_max = max(x_lim)
+
+        if alpha is None:
+            alpha = self.alpha * 0.75
+        if line_width is None:
+            line_width = self.line_width * 0.75
 
         ax.hlines(y=y, xmin=x_min, xmax=x_max, linestyles=line_style, linewidth=line_width, alpha=alpha, color=color)
 
