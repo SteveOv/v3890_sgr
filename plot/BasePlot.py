@@ -47,7 +47,7 @@ class BasePlot(ABC):
 
         self._default_x_label = "x data"
         self._default_x_lim = (-1, 100)
-        self._default_x_ticks = np.arange(10, 100, 10)
+        self._default_x_ticks = np.arange(0, 110, 10)
 
         self._default_y_label = "y data"
         return
@@ -170,7 +170,7 @@ class BasePlot(ABC):
         ax = self._create_ax(fig)
 
         if self.show_title and title is not None and ax is not None:
-            ax.set_title(title)
+            ax.set_title(title, fontsize="medium")
 
         # Make it possible for subtype to override the config of the axis
         self._configure_ax(ax, **kwargs)
@@ -179,7 +179,7 @@ class BasePlot(ABC):
         self._draw_plot_data(ax, **kwargs)
 
         if self.show_legend and ax is not None:
-            ax.legend(loc=self.legend_loc)
+            ax.legend(loc=self.legend_loc, fontsize="medium")
         return fig
 
     def _create_fig(self) -> Figure:
@@ -295,7 +295,7 @@ class BasePlot(ABC):
         return ax.plot(x_points, np.add(y_points, y_shift), line_style,
                        label=label, color=color, linewidth=line_width, alpha=alpha, zorder=z_order)
 
-    def _draw_vertical_lines(self, ax: Axes, x, text: str = None,
+    def _draw_vertical_lines(self, ax: Axes, x, text: [Union[str, List[str]]] = None,
                              color: str = "k", line_width: float = None, line_style: str = ":",
                              h_align: str = "center", v_align: str = None, alpha: float = None,
                              text_top: bool = True, text_offset: float = 0.05, text_rotation: float = 90,
@@ -343,7 +343,7 @@ class BasePlot(ABC):
                         rotation=text_rotation, verticalalignment=v_align, horizontalalignment=h_align)
         return
 
-    def _draw_horizontal_lines(self, ax: Axes, y, text: str = None,
+    def _draw_horizontal_lines(self, ax: Axes, y, text: [Union[str, List[str]]] = None,
                                color: str = "k", line_width: float = None, line_style: str = ":",
                                h_align: str = None, v_align: str = "center", alpha: float = None,
                                text_right: bool = False, text_offset: float = 0.05, text_size: str = "x-small"):

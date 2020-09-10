@@ -86,14 +86,16 @@ class TimePlot(BasePlot, ABC):
 
         # Optionally render the lightcurve data
         if self.show_data and lightcurve is not None:
+            data_alpha = self.alpha / 3 if self.show_fits else self.alpha
             self._plot_points_to_error_bars_on_ax(ax, x_points=lightcurve.x, y_points=lightcurve.y,
-                                                  y_err_points=lightcurve.y_err,
-                                                  color=color, label=label, y_shift=this_y_shift)
+                                                  y_err_points=lightcurve.y_err, line_width=self.line_width / 2,
+                                                  color=color, alpha=data_alpha, label=label, y_shift=this_y_shift)
             label = None  # Make sure the label isn't used again
 
         # Optionally draw the associated fitted lines
         if self.show_fits and fit_set is not None:
-            fit_set.draw_on_ax(ax, color, label=label, line_width=self.line_width, y_shift=this_y_shift)
+            fit_set.draw_on_ax(ax, color, label=label,
+                               line_width=self.line_width, alpha=self.alpha * 2, z_order=2.0, y_shift=this_y_shift)
         return
 
     def _draw_epochs(self, ax: Axes, epochs: Dict[str, float]):

@@ -15,17 +15,22 @@ class MagnitudeAndResidualsTimePlot(MagnitudeTimePlot):
 
     def __init__(self, plot_params: Dict):
         super().__init__(plot_params)
-        self._default_x_size = 2
-        self._default_y_size = 2
+        self._default_x_size = 1
+        self._default_y_size = 1.2
 
         # Override the parent - as this plot is for fits/residuals it's "always" going to use a log x scale
         self._default_x_scale_log = True
 
+        self._default_show_breaks = False
         self._default_show_residuals = True
         self._default_y_label_residuals = "Residuals [mag]"
         self._default_y_lim_residuals = (-2, 2)
         self._default_y_ticks_residuals = [-2, 0, 2]
         return
+
+    @property
+    def show_breaks(self) -> bool:
+        return self._param("show_breaks", self._default_show_breaks)
 
     @property
     def show_residuals(self) -> bool:
@@ -67,9 +72,14 @@ class MagnitudeAndResidualsTimePlot(MagnitudeTimePlot):
         # but super() won't know about the 2nd axis so we set it up here
         if self.show_residuals and self._ax_res is not None:
             # Don't do anything with the x-axis - it's shared with the main ax so has already been set up
+            self._ax_res.set(ylim=self.y_lim_residuals)
+            self._ax_res.set_ylabel(self.y_label_residuals, fontsize="medium")
+            self._ax_res.set_yticks(self.y_ticks_residuals, minor=False)
+            self._ax_res.set_yticklabels(self.y_ticks_residuals, minor=False, fontsize="medium")
             self._ax_res.grid(which='major', linestyle='-', linewidth=self.line_width * 0.75, alpha=self.alpha * 0.75)
-            self._ax_res.set(ylim=self.y_lim_residuals, ylabel=self.y_label_residuals, yticks=self.y_ticks_residuals)
+
             self._ax_res.invert_yaxis()
+
             if self._param("x_scale_log", self._default_x_scale_log):
                 self._ax_res.grid(which="minor", linestyle="-", linewidth=self.line_width * 0.5, alpha=self.alpha * 0.5)
         return
@@ -84,4 +94,9 @@ class MagnitudeAndResidualsTimePlot(MagnitudeTimePlot):
 
             x_res, y_res = fit_set.calculate_residuals(lightcurve.x, lightcurve.y)
             self._ax_res.plot(x_res, y_res, ".", color=color, markersize=self.marker_size * 2, alpha=1, zorder=2)
+
+            if self.show_breaks and fit_set is not None:
+                breaks_text = ["%.2f" % x for x in fit_set.break_points]
+                # Y axis is inverted, and setting the text to the top puts it at the bottom
+                self._draw_vertical_lines(ax, fit_set.break_points, breaks_text, color=color)
         return

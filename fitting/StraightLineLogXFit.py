@@ -88,12 +88,13 @@ class StraightLineLogXFit(StraightLineFit):
             assert all(cp._y_endpoints) == all(test_y)
         return cp
 
-    def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, label: str = None, y_shift: float = 0):
+    def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, alpha: float = 1.0, z_order: float = 2.0,
+                   label: str = None, y_shift: float = 0):
         """
         Gets the FitSet to draw itself onto the passed matplotlib ax
         """
         return ax.plot(np.power(10, self._x_endpoints), np.add(self._y_endpoints, y_shift), label=label,
-                       color=color, linestyle="-", linewidth=line_width, alpha=1, zorder=2, antialiased=True)
+                       color=color, linestyle="-", linewidth=line_width, alpha=alpha, zorder=z_order, antialiased=True)
 
     def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):
         """

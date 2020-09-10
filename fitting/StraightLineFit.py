@@ -108,12 +108,13 @@ class StraightLineFit(FittedFit, ABC):
                 fit = cls(id, x_endpoints, y_endpoints, range_from=range_from, range_to=range_to, fit_params=fit_params)
         return fit
 
-    def draw_on_ax(self, ax, color: str, line_width: float = 0.5, label: str = None, y_shift: float = 0):
+    def draw_on_ax(self, ax, color: str, line_width: float = 0.5, alpha: float = 1.0, z_order: float = 2.0,
+                   label: str = None, y_shift: float = 0):
         """
         Gets the FitSet to draw itself onto the passed matplotlib ax
         """
-        return ax.plot(self._x_endpoints, np.add(self._y_endpoints, y_shift), "-'", label=label,
-                       color=color, linewidth=line_width, alpha=1, zorder=2)
+        return ax.plot(self._x_endpoints, np.add(self._y_endpoints, y_shift), "-", label=label,
+                       color=color, linewidth=line_width, alpha=alpha, zorder=z_order, antialiased=True)
 
     def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):
         """

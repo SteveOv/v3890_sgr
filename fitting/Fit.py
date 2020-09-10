@@ -60,7 +60,8 @@ class Fit(ABC):
         return cp
 
     @abstractmethod
-    def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, label: str = None, y_shift: float = 0):
+    def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, alpha: float = 1.0, z_order: float = 2.0,
+                   label: str = None, y_shift: float = 0):
         """
         Gets the Fit to draw itself onto the passed matplotlib ax
         """

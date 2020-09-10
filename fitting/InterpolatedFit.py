@@ -45,7 +45,8 @@ class InterpolatedFit(Fit):
     def has_fit(self) -> bool:
         return self._next_fit is not None and self._prior_fit is not None
 
-    def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, label: str = None, y_shift: float = 0):
+    def draw_on_ax(self, ax: Axes, color: str, line_width: float = 1.0, alpha: float = 0.5, z_order: float = 2.0,
+                   label: str = None, y_shift: float = 0):
         if self._prior_fit is not None and self._next_fit is not None:
             # The y-values may need to be interpreted
             # A more generic approach would be to use properties of the prior/next Fit to work out the linear
@@ -58,7 +59,8 @@ class InterpolatedFit(Fit):
             x = [self._prior_fit.range_to, self._next_fit.range_from]
 
             return \
-                ax.plot(x, np.add(y, y_shift), "--", label=label, color=color, linewidth=line_width, alpha=1.0, zorder=2)
+                ax.plot(x, np.add(y, y_shift), "--", label=label, color=color,
+                        linewidth=line_width, alpha=alpha, zorder=z_order)
         else:
             return
 

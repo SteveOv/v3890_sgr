@@ -66,8 +66,8 @@ class TwoByTwoMagnitudeLogTimePlot(MagnitudeTimePlot):
 
             if self.show_breaks and fit_set is not None:
                 color = fit_set.metadata.get_or_default("color", "k")
-                breaks_text = ["%.2f" % x for x in fit_set.breaks]
-                self._draw_vertical_lines(ax, fit_set.breaks, breaks_text, color=color, alpha=0.4)
+                breaks_text = ["%.2f" % x for x in fit_set.break_points]
+                self._draw_vertical_lines(ax, fit_set.break_points, breaks_text, color=color, alpha=0.4)
 
             ax_ix += 1
 

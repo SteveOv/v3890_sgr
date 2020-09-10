@@ -17,7 +17,7 @@ class FitSet(WithMetadata):
     # TODO: Python 3 does support some form of generics so look at reworking this as a generic type.
     #       This should make the logic around the Fits factory easier, and we'll require less from any subclass.
 
-    def __init__(self, name: str, fits: List[Fit], breaks: List[float], **kwargs):
+    def __init__(self, name: str, fits: List[Fit], breaks: List[Union[str, float, int]], **kwargs):
         self._name = name
         self._fits = fits
         self._breaks = breaks
@@ -41,8 +41,18 @@ class FitSet(WithMetadata):
         return self._name
 
     @property
-    def breaks(self) -> List[float]:
+    def breaks(self) -> List[Union[str, float, int]]:
+        """
+        The breaks indicate where to break for a new fit and can also indicate what type of fit to use.
+        """
         return self._breaks
+
+    @property
+    def break_points(self) -> List[Union[float, int]]:
+        """
+        The break points are the x-values between each fit in the set.
+        """
+        return [x for x in self.breaks if not isinstance(x, str)]
 
     @property
     def label(self) -> str:
@@ -110,17 +120,19 @@ class FitSet(WithMetadata):
         print(f"Fitted {fit_set.__class__.__name__} to {lightcurve}.")
         return fit_set
 
-    def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, label: str = None, y_shift: float = 0):
+    def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, alpha: float = 1.0, z_order: float = 2.0,
+                   label: str = None, y_shift: float = 0):
         """
         Gets the FitSet to draw itself onto the passed matplotlib ax
         """
         for fit in self:
             if isinstance(fit, FittedFit):
-                fit.draw_on_ax(ax, color, line_width=line_width, label=label, y_shift=y_shift)
+                fit.draw_on_ax(ax, color,
+                               line_width=line_width, alpha=alpha, z_order=z_order, label=label, y_shift=y_shift)
                 label = None  # Make sure we only set the label once otherwise it will be duplicated in any legend
             else:
                 # Don't associate the label with a non-fitted Fit so that it renders properly in the legend.
-                fit.draw_on_ax(ax, color, line_width=line_width, y_shift=y_shift)
+                fit.draw_on_ax(ax, color, line_width=line_width, alpha=alpha, z_order=z_order, y_shift=y_shift)
         return
 
     def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):
