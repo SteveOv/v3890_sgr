@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Tuple
 import numpy as np
 import uncertainties
 import copy
@@ -59,13 +59,32 @@ class Fit(ABC):
             cp = None
         return cp
 
-    @abstractmethod
-    def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, alpha: float = 1.0, z_order: float = 2.0,
-                   label: str = None, y_shift: float = 0):
+    def draw_on_ax(self, ax, color: str, line_style: str = "-", line_width: float = 0.5,
+                   alpha: float = 1.0, z_order: float = 2.0, label: str = None, y_shift: float = 0,
+                   annotate: bool = True, annotation_format: str = r"$\alpha_{%d}$"):
         """
-        Gets the Fit to draw itself onto the passed matplotlib ax
+        Gets the FitSet to draw itself onto the passed matplotlib ax
         """
-        pass
+        # The subclass will know how to generate the necessary points in order to plot it on the requested axes.
+        # If no data returned interpret that as there being nothing that requires plotting.
+        data_points = self._calculate_plot_points(ax, y_shift)
+        if data_points is not None and len(data_points) > 0:
+            ax.plot(data_points[0], data_points[1], label=label, color=color,
+                    linestyle=line_style, linewidth=line_width, alpha=alpha, zorder=z_order, antialiased=True)
+
+            if annotate:
+                text = annotation_format % self.id if "%d" in annotation_format else annotation_format
+
+                # In order to transform data points into axes points we need to reformat the data points from separate
+                # x and y lists into a list of (x, y) tuples required by transform. It's worthwhile as the transforms
+                # handle log data/axes, so our subsequent positioning based on median values is easier to manipulate.
+                points = [p for p in zip(data_points[0], data_points[1])]
+                ax_points = ax.transAxes.inverted().transform(ax.transData.transform(points))
+                x_pos = np.median(ax_points[:, 0]) + 0.01
+                y_pos = np.median(ax_points[:, 1]) + 0.05
+                ax.annotate(text, xycoords="axes fraction", xy=(x_pos, y_pos),
+                            color=color, horizontalalignment="center", fontsize="x-small")
+        return
 
     @abstractmethod
     def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):
@@ -102,4 +121,10 @@ class Fit(ABC):
         """
         return (x_value >= min(self._x_endpoints)) & (x_value <= max(self._x_endpoints))
 
-
+    @abstractmethod
+    def _calculate_plot_points(self, ax: Axes, y_shift: float = 0.0) -> Tuple[List[float], List[float]]:
+        """
+        Calculate the points to (line) plot in order to render this Fit onto the indicated Axes.
+        The points should be returned in the form of two lists, for the x coordinates and y coordinates.
+        """
+        pass

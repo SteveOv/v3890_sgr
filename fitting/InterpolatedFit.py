@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 from uncertainties import UFloat
 from matplotlib.axes import Axes
 import numpy as np
@@ -45,8 +45,26 @@ class InterpolatedFit(Fit):
     def has_fit(self) -> bool:
         return self._next_fit is not None and self._prior_fit is not None
 
-    def draw_on_ax(self, ax: Axes, color: str, line_width: float = 1.0, alpha: float = 0.5, z_order: float = 2.0,
-                   label: str = None, y_shift: float = 0):
+    def draw_on_ax(self, ax: Axes, color: str, line_style: str = "--", line_width: float = 1.0,
+                   alpha: float = 0.5, z_order: float = 2.0, label: str = None, y_shift: float = 0,
+                   annotate: bool = True, annotation_format: str = r"$\alpha_{%d}$"):
+        # Overrides the default line_style to use
+        return super().draw_on_ax(ax, color, line_style, line_width, alpha, z_order,
+                                  label, y_shift, annotate, annotation_format)
+
+    def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):
+        return [], []
+
+    def find_peak_y_value(self, is_minimum: bool) -> (float, UFloat):
+        return None
+
+    def find_x_value(self, y_value: UFloat) -> float:
+        return None
+
+    def find_y_value(self, x_value: float) -> UFloat:
+        return None
+
+    def _calculate_plot_points(self, ax: Axes, y_shift: float = 0.0):
         if self._prior_fit is not None and self._next_fit is not None:
             # The y-values may need to be interpreted
             # A more generic approach would be to use properties of the prior/next Fit to work out the linear
@@ -58,20 +76,6 @@ class InterpolatedFit(Fit):
             # Range from/to are always in terms of public (linear) values so we use them for the x-values
             x = [self._prior_fit.range_to, self._next_fit.range_from]
 
-            return \
-                ax.plot(x, np.add(y, y_shift), "--", label=label, color=color,
-                        linewidth=line_width, alpha=alpha, zorder=z_order)
+            return x, y
         else:
             return
-
-    def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):
-        return ([], [])
-
-    def find_peak_y_value(self, is_minimum: bool) -> (float, UFloat):
-        return None
-
-    def find_x_value(self, y_value: UFloat) -> float:
-        return None
-
-    def find_y_value(self, x_value: float) -> UFloat:
-        return None

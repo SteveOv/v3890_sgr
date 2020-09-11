@@ -307,7 +307,7 @@
                 "type": "MagnitudeTimePlot",
                 "file_name": "./output/phot/V3890Sgr-1962-1990-LC-Schaefer-linear-day-nominal.pdf",
                 "title": "The 1962 & 1990 eruptions of V3890 Sgr",
-                "params": {"show_title": true, "x_lim": [-5, 55], "x_ticks": [0, 10, 20, 30, 40, 50], "x_scale_log": false, "x_size": 1, "y_size": 1},
+                "params": {"show_title": true, "x_lim": [-5, 80], "x_ticks": [0, 10, 20, 30, 40, 50, 60, 70,80], "x_scale_log": false, "x_size": 1, "y_size": 1},
                 "lightcurves": {
                     "V3890-Sgr-1990-Vis-nominal/B-band": { "color": "b", "label": "1990 B-band" },
                     "V3890-Sgr-1990-Vis-nominal/V-band": { "color": "g", "label": "1990 V-band" },
@@ -320,7 +320,7 @@
             {
                 "type": "RateTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-LC-XRT-linear-rates-day-nominal.pdf",
-                "title": "The 2019 eruption of V3890 Sgr in Swift XRT",
+                "title": "The X-ray lightcurves of the 2019 eruption",
                 "params": {"show_title": true, "show_data": true, "legend_loc": "upper right", "x_scale_log": false},
                 "lightcurves": { "V3890-Sgr-1990-X-ray-rates-nominal/": {} },
                 "fit_sets": {}
@@ -337,28 +337,28 @@
                 "type": "RateAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-hard-x-ray-nominal(ratio-data).pdf",
                 "title": "The 2019 eruption Hard X-ray power law fits",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "legend_loc": "upper left",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "legend_loc": "upper left",
                     "y_scale_log": true, "y_lim": [0.01, 30], "y_ticks": [0.01, 0.1, 1, 10], "x_lim": [0.1, 100],
                     "y_lim_residuals": [-1.1, 1.1], "y_ticks_residuals": [-1, 0, 1], "y_tick_labels_residuals": [-10, 0, 10]},
                 "lightcurves": { "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft/hard_data": {} },
-                "fit_sets": { "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft/hard_data": {} }
+                "fit_sets": { "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft/hard_data": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "RateAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-soft-x-ray-nominal(ratio-data).pdf",
                 "title": "The 2019 eruption Soft X-ray power law fits",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "legend_loc": "upper left",
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "legend_loc": "upper left",
                     "y_scale_log": true, "y_lim": [0.01, 30], "y_ticks": [0.01, 0.1, 1, 10], "x_lim": [0.1, 100],
                     "y_lim_residuals": [-1.1, 1.1], "y_ticks_residuals": [-1, 0, 1], "y_tick_labels_residuals": [-10, 0, 10]},
                 "lightcurves": { "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft/soft_data": {} },
-                "fit_sets": { "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft/soft_data": {} }
+                "fit_sets": { "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft/soft_data": {"color": "k", "label": "Fit"} }
             }
         ],
         "2019 Eruption UVOT plots": [
             {
                 "type": "MagnitudeTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-LC-UVOT-linear-day-nominal.pdf",
-                "title": "The 2019 eruption of V3890 Sgr in\nSwift UV ($t_{{e}}=2458723.278$)",
+                "title": "The UVW2 and UVM2 lighturves of the 2019 eruption",
                 "params": { "show_title": true },
                 "lightcurves": {"V3890-Sgr-2019-UV-nominal": {}},
                 "fit_sets": {}
@@ -367,25 +367,25 @@
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-UVOT-UVW2-nominal.pdf",
                 "title": "The 2019 eruption UVW2 power law fits",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-UV-nominal/UVW2": {} },
-                "fit_sets": { "V3890-Sgr-2019-UV-nominal/UVW2": {} }
+                "fit_sets": { "V3890-Sgr-2019-UV-nominal/UVW2": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-UVOT-UVM2-nominal.pdf",
                 "title": "The 2019 eruption UVM2 power law fits",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-UV-nominal/UVM2": {} },
-                "fit_sets": { "V3890-Sgr-2019-UV-nominal/UVM2": {} }
+                "fit_sets": { "V3890-Sgr-2019-UV-nominal/UVM2": {"color": "k", "label": "Fit"} }
             }
         ],
         "2019 AAVSO Visual plots":[
             {
                 "type": "MagnitudeTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-LC-AAVSO-linear-day-nominal.pdf",
-                "title": "Photometry of the 2019 eruption of V3890 Sgr\n",
-                "params": {"show_title": true, "x_scale_log": false, "x_size": 1, "y_size": 1},
+                "title": "Photometry of the 2019 eruption of V3890 Sgr",
+                "params": {"show_title": true, "x_scale_log": false, "x_size": 1, "y_size": 1, "x_lim": [-5, 80], "x_ticks": [0, 10, 20, 30, 40, 50, 60, 70,80]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal/": {} },
                 "fit_sets": { }
             },
@@ -403,33 +403,33 @@
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-I-band-nominal.pdf",
                 "title": "The 2019 eruption I-band power law fits",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal/I-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal/I-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal/I-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-R-band-nominal.pdf",
                 "title": "The 2019 eruption R-band power law fits",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal/R-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal/R-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal/R-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-V-band-nominal.pdf",
                 "title": "The 2019 eruption V-band power law fits",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal/V-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal/V-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal/V-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-B-band-nominal.pdf",
                 "title": "The 2019 eruption B-band power law fits",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal/B-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal/B-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal/B-band": {"color": "k", "label": "Fit"} }
             }
         ],
         "2019 AAVSO Visual Power Laws (nominal - err)": [
@@ -437,33 +437,33 @@
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-I-band-nominal-err.pdf",
                 "title": "2019 eruption I-band power law fits ($t_{e}-\\Delta t_{e}$)",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal-err/I-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-err/I-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-err/I-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-R-band-nominal-err.pdf",
                 "title": "2019 eruption R-band power law fits ($t_{e}-\\Delta t_{e}$)",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal-err/R-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-err/R-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-err/R-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-V-band-nominal-err.pdf",
                 "title": "2019 eruption V-band power law fits ($t_{e}-\\Delta t_{e}$)",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal-err/V-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-err/V-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-err/V-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-B-band-nominal-err.pdf",
                 "title": "2019 eruption B-band power law fits ($t_{e}-\\Delta t_{e}$)",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal-err/B-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-err/B-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-err/B-band": {"color": "k", "label": "Fit"} }
             }
         ],
         "2019 AAVSO Visual Power Laws (nominal + err)": [
@@ -471,33 +471,33 @@
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-I-band-nominal+err.pdf",
                 "title": "2019 eruption I-band power law fits ($t_{e}+\\Delta t_{e}$)",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.01, 100], "x_ticks": [0.01, 0.1, 1, 10, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.01, 100], "x_ticks": [0.01, 0.1, 1, 10, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal+err/I-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+err/I-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+err/I-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-R-band-nominal+err.pdf",
                 "title": "2019 eruption R-band power law fits ($t_{e}+\\Delta t_{e}$)",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.01, 100], "x_ticks": [0.01, 0.1, 1, 10, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.01, 100], "x_ticks": [0.01, 0.1, 1, 10, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal+err/R-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+err/R-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+err/R-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-V-band-nominal+err.pdf",
                 "title": "2019 eruption V-band power law fits ($t_{e}+\\Delta t_{e}$)",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.01, 100], "x_ticks": [0.01, 0.1, 1, 10, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.01, 100], "x_ticks": [0.01, 0.1, 1, 10, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal+err/V-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+err/V-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+err/V-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-B-band-nominal+err.pdf",
                 "title": "2019 eruption B-band power law fits ($t_{e}+\\Delta t_{e}$)",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.01, 100], "x_ticks": [0.01, 0.1, 1, 10, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.01, 100], "x_ticks": [0.01, 0.1, 1, 10, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal+err/B-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+err/B-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+err/B-band": {"color": "k", "label": "Fit"} }
             }
         ],
         "1990 Eruption Visual Plots (based on Schaefer data)": [
@@ -513,33 +513,33 @@
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-1990-PL-Schaefer-V-band-nominal.pdf",
                 "title": "The 1990 eruption V-band power law fits",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-1990-Vis-nominal/V-band": {} },
-                "fit_sets": { "V3890-Sgr-1990-Vis-nominal/V-band": {} }
+                "fit_sets": { "V3890-Sgr-1990-Vis-nominal/V-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-1990-PL-Schaefer-B-band-nominal.pdf",
                 "title": "The 1990 eruption B-band power law fits",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_break": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-1990-Vis-nominal/B-band": {} },
-                "fit_sets": { "V3890-Sgr-1990-Vis-nominal/B-band": {} }
+                "fit_sets": { "V3890-Sgr-1990-Vis-nominal/B-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-1990-PL-Schaefer-V-band-nominal-2019-fits.pdf",
                 "title": "1990 eruption V-band lightcurve & 2019 power laws",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": false, "show_residuals": true, "x_lim": [0.1, 100]},
-                "lightcurves": { "V3890-Sgr-1990-Vis-nominal/V-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal/V-band": {} }
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": false, "show_breaks": false, "show_residuals": true, "x_lim": [0.1, 100]},
+                "lightcurves": { "V3890-Sgr-1990-Vis-nominal/V-band": {"label": "1990 data"} },
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal/V-band": {"label": "2019 fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-1990-PL-Schaefer-B-band-nominal-2019-fits.pdf",
                 "title": "1990 eruption B-band lightcurve & 2019 power laws",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_break": false, "show_residuals": true, "x_lim": [0.1, 100]},
-                "lightcurves": { "V3890-Sgr-1990-Vis-nominal/B-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal/B-band": {} }
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": false, "show_breaks": false, "show_residuals": true, "x_lim": [0.1, 100]},
+                "lightcurves": { "V3890-Sgr-1990-Vis-nominal/B-band": {"label": "1990 data"} },
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal/B-band": {"label": "2019 fit"} }
             }
         ],
         "1962 Eruption Visual Plots (based on Schaefer data)": [
@@ -555,17 +555,17 @@
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-1962-PL-Schaefer-B-band-nominal.pdf",
                 "title": "The 1962 eruption B-band power law fits",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_break": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-1962-Vis-nominal/": {} },
-                "fit_sets": { "V3890-Sgr-1962-Vis-nominal/": {} }
+                "fit_sets": { "V3890-Sgr-1962-Vis-nominal/": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-1962-PL-Schaefer-B-band-nominal-2019-fits.pdf",
                 "title": "1962 eruption B-band lightcurve & 2019 power laws",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_break": false, "show_residuals": true, "x_lim": [0.1, 100]},
-                "lightcurves": { "V3890-Sgr-1962-Vis-nominal/B-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal/B-band": {} }
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": false, "show_breaks": false, "show_residuals": true, "x_lim": [0.1, 100]},
+                "lightcurves": { "V3890-Sgr-1962-Vis-nominal/B-band": {"label": "1990 data"} },
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal/B-band": {"label": "2019 fit"} }
             }
         ],
         "Comparison System Lightcurve Plots (V745 Sco, RS Oph)": [
@@ -608,33 +608,33 @@
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO+SPET-I-band-revised-breaks.pdf",
                 "title": "The 2019 eruption initial I-band power law fits",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal+SPET/I-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+SPET-Revised-Fits/I-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+SPET-Revised-Fits/I-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO+SPET-R-band-revised-breaks.pdf",
                 "title": "The 2019 eruption initial R-band power law fits",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal+SPET/R-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+SPET-Revised-Fits/R-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+SPET-Revised-Fits/R-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO+SPET-V-band-revised-breaks.pdf",
                 "title": "The 2019 eruption initial V-band power law fits",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal+SPET/V-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+SPET-Revised-Fits/V-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+SPET-Revised-Fits/V-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO+SPET-B-band-revised-breaks.pdf",
                 "title": "The 2019 eruption initial B-band power law fits",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal+SPET/B-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+SPET-Revised-Fits/B-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal+SPET-Revised-Fits/B-band": {"color": "k", "label": "Fit"} }
             }
         ],
         "Testing Plots (shifted fits)": [
@@ -642,33 +642,33 @@
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-I-band-nominal-shifted.pdf",
                 "title": "The 2019 eruption I-band power law fits with shift",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal/I-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-shifted/I-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-shifted/I-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-R-band-nominal-shifted.pdf",
                 "title": "The 2019 eruption R-band power law fits with shift",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal/R-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-shifted/R-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-shifted/R-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-V-band-nominal-shifted.pdf",
                 "title": "The 2019 eruption V-band power law fits with shift",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal/V-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-shifted/V-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-shifted/V-band": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "MagnitudeAndResidualsTimePlot",
                 "file_name": "./output/phot/V3890Sgr-2019-PL-AAVSO-B-band-nominal-shifted.pdf",
                 "title": "The 2019 eruption B-band power law fits with shift",
-                "params": {"show_title": true, "show_data": true, "show_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
+                "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "x_lim": [0.1, 100]},
                 "lightcurves": { "V3890-Sgr-2019-Vis-nominal/B-band": {} },
-                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-shifted/B-band": {} }
+                "fit_sets": { "V3890-Sgr-2019-Vis-nominal-shifted/B-band": {"color": "k", "label": "Fit"} }
             }
         ]
     }

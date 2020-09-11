@@ -1,9 +1,10 @@
 from abc import ABC
-from typing import List, Union
+from typing import List, Union, Tuple
 import numpy as np
 import uncertainties
 from uncertainties import ufloat
 from scipy.optimize import curve_fit
+from matplotlib.axes import Axes
 from fitting import Fit, FittedFit, StraightLineFit
 
 
@@ -108,14 +109,6 @@ class StraightLineFit(FittedFit, ABC):
                 fit = cls(id, x_endpoints, y_endpoints, range_from=range_from, range_to=range_to, fit_params=fit_params)
         return fit
 
-    def draw_on_ax(self, ax, color: str, line_width: float = 0.5, alpha: float = 1.0, z_order: float = 2.0,
-                   label: str = None, y_shift: float = 0):
-        """
-        Gets the FitSet to draw itself onto the passed matplotlib ax
-        """
-        return ax.plot(self._x_endpoints, np.add(self._y_endpoints, y_shift), "-", label=label,
-                       color=color, linewidth=line_width, alpha=alpha, zorder=z_order, antialiased=True)
-
     def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):
         """
         Calculate the residuals - the y-difference between the y data points' nominal value
@@ -211,3 +204,9 @@ class StraightLineFit(FittedFit, ABC):
         c = y - mx
         """
         return np.subtract(y, np.multiply(m, x))
+
+    def _calculate_plot_points(self, ax: Axes, y_shift: float = 0.0) -> Tuple[List[float], List[float]]:
+        """
+        Called by super() when drawing the Fit.  Tell it what data points to draw.
+        """
+        return self._x_endpoints, np.add(self._y_endpoints, y_shift)

@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List, Union
+from typing import List, Union, Tuple
 import uncertainties
 from uncertainties import ufloat, UFloat
 from matplotlib.axes import Axes
@@ -88,14 +88,6 @@ class StraightLineLogXFit(StraightLineFit):
             assert all(cp._y_endpoints) == all(test_y)
         return cp
 
-    def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, alpha: float = 1.0, z_order: float = 2.0,
-                   label: str = None, y_shift: float = 0):
-        """
-        Gets the FitSet to draw itself onto the passed matplotlib ax
-        """
-        return ax.plot(np.power(10, self._x_endpoints), np.add(self._y_endpoints, y_shift), label=label,
-                       color=color, linestyle="-", linewidth=line_width, alpha=alpha, zorder=z_order, antialiased=True)
-
     def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):
         """
         Calculate the residuals - the y-difference between the y data points
@@ -142,3 +134,9 @@ class StraightLineLogXFit(StraightLineFit):
         """
         data = np.power(10, log_data)
         return np.log10(np.add(data, shift)).tolist()
+
+    def _calculate_plot_points(self, ax: Axes, y_shift: float = 0.0) -> Tuple[List[float], List[float]]:
+        """
+        Called by super() when drawing the Fit.  Tell it what data points to draw.
+        """
+        return np.power(10, self._x_endpoints), np.add(self._y_endpoints, y_shift)

@@ -121,18 +121,21 @@ class FitSet(WithMetadata):
         return fit_set
 
     def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, alpha: float = 1.0, z_order: float = 2.0,
-                   label: str = None, y_shift: float = 0):
+                   label: str = None, y_shift: float = 0,
+                   annotate: bool = True, annotation_format: str = r"$\alpha_{%d}$"):
         """
         Gets the FitSet to draw itself onto the passed matplotlib ax
         """
         for fit in self:
             if isinstance(fit, FittedFit):
                 fit.draw_on_ax(ax, color,
-                               line_width=line_width, alpha=alpha, z_order=z_order, label=label, y_shift=y_shift)
+                               line_width=line_width, alpha=alpha, z_order=z_order, label=label, y_shift=y_shift,
+                               annotate=annotate, annotation_format=annotation_format)
                 label = None  # Make sure we only set the label once otherwise it will be duplicated in any legend
             else:
                 # Don't associate the label with a non-fitted Fit so that it renders properly in the legend.
-                fit.draw_on_ax(ax, color, line_width=line_width, alpha=alpha, z_order=z_order, y_shift=y_shift)
+                fit.draw_on_ax(ax, color, line_width=line_width, alpha=alpha, z_order=z_order, y_shift=y_shift,
+                               annotate=annotate, annotation_format=annotation_format)
         return
 
     def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):

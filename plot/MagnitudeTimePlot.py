@@ -16,7 +16,7 @@ class MagnitudeTimePlot(TimePlotSupportingLogAxes):
 
         self._default_x_label = "$\\Delta t$ [days]"
         self._default_y_label = f"Apparent magnitude [mag]"
-        self._default_y_lim = (5.8, 19)
+        self._default_y_lim = (5, 19)
         return
 
     @property

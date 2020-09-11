@@ -20,6 +20,7 @@ class TimePlot(BasePlot, ABC):
 
         self._default_show_data = True
         self._default_show_fits = False
+        self._default_annotate_fits = False
         self._default_show_epochs = False
         self._default_show_epoch_labels = False
 
@@ -33,6 +34,10 @@ class TimePlot(BasePlot, ABC):
     @property
     def show_fits(self) -> bool:
         return self._param("show_fits", self._default_show_fits)
+
+    @property
+    def annotate_fits(self) -> bool:
+        return self._param("annotate_fits", self._default_annotate_fits)
 
     @property
     def show_epochs(self) -> bool:
@@ -72,30 +77,27 @@ class TimePlot(BasePlot, ABC):
     def _draw_lightcurve_and_fit_set(self, ax: Axes, ix: int, lightcurve: Lightcurve = None, fit_set: FitSet = None):
         this_y_shift = self.y_shift * ix
 
-        # We only want to show one color & label, so prioritise the lightcurve label but fall back on the fit set.
-        label = ""
-        color = "k"
-        if lightcurve is not None:
-            label = self._define_data_label(lightcurve.label, this_y_shift)
-            default_color = fit_set.metadata.get_or_default("color", "k") if fit_set is not None else "k"
-            color = lightcurve.metadata.get_or_default("color", default_color)
-        elif fit_set is not None:
-            label = self._define_data_label(fit_set.label, this_y_shift)
-            default_color = lightcurve.metadata.get_or_default("color", "k") if lightcurve is not None else "k"
-            color = fit_set.metadata.get_or_default("color", default_color)
-
         # Optionally render the lightcurve data
+        data_label = ""
+        data_color = "k"
         if self.show_data and lightcurve is not None:
-            data_alpha = self.alpha / 3 if self.show_fits else self.alpha
-            self._plot_points_to_error_bars_on_ax(ax, x_points=lightcurve.x, y_points=lightcurve.y,
+            data_label = self._define_data_label(lightcurve.label, this_y_shift)
+            data_color = lightcurve.metadata.get_or_default("color", data_color)
+            data_alpha = self.alpha / 2 if self.show_fits else self.alpha
+            self._plot_points_to_error_bars_on_ax(ax, x_points=lightcurve.x, y_points=lightcurve.y, y_shift=this_y_shift,
                                                   y_err_points=lightcurve.y_err, line_width=self.line_width / 2,
-                                                  color=color, alpha=data_alpha, label=label, y_shift=this_y_shift)
-            label = None  # Make sure the label isn't used again
+                                                  color=data_color, alpha=data_alpha, label=data_label)
 
         # Optionally draw the associated fitted lines
         if self.show_fits and fit_set is not None:
-            fit_set.draw_on_ax(ax, color, label=label,
-                               line_width=self.line_width, alpha=self.alpha * 2, z_order=2.0, y_shift=this_y_shift)
+            fit_label = self._define_data_label(fit_set.label, this_y_shift)
+            fit_color = fit_set.metadata.get_or_default("color", data_color)
+            fit_alpha = self.alpha * 2
+            if fit_color == data_color and data_label.casefold() == fit_label.casefold():
+                fit_label = None  # Label and color same as for the data so don't bother repeating the label
+            fit_set.draw_on_ax(ax, fit_color, label=fit_label, annotate=self.annotate_fits,
+                               line_width=self.line_width, alpha=fit_alpha, z_order=2.0, y_shift=this_y_shift)
+
         return
 
     def _draw_epochs(self, ax: Axes, epochs: Dict[str, float]):

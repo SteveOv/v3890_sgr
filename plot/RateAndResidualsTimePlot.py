@@ -97,6 +97,7 @@ class RateAndResidualsTimePlot(RateTimePlot):
             self._ax_res.plot(x_res, y_res, ".", color=color, markersize=self.marker_size * 2, alpha=1, zorder=2)
 
             if self.show_breaks and fit_set is not None:
+                fit_color = fit_set.metadata.get_or_default("color", color)
                 breaks_text = ["%.2f" % x for x in fit_set.break_points]
-                self._draw_vertical_lines(ax, fit_set.break_points, breaks_text, color=color)
+                self._draw_vertical_lines(ax, fit_set.break_points, breaks_text, color=fit_color)
         return

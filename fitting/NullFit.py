@@ -21,11 +21,6 @@ class NullFit(Fit):
     def has_fit(self) -> bool:
         return False
 
-    def draw_on_ax(self, ax: Axes, color: str, line_width: float = 0.5, alpha: float = 1.0, z_order: float = 2.0,
-                   label: str = None, y_shift: float = 0):
-        # Nothing to draw
-        return
-
     def calculate_residuals(self, xi: List[float], yi: List[float]) -> (List[float], List[float]):
         # No residuals
         return [], []
@@ -42,3 +37,5 @@ class NullFit(Fit):
         # No values
         return None
 
+    def _calculate_plot_points(self, ax: Axes, y_shift: float = 0.0):
+        return
