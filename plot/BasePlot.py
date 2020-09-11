@@ -5,6 +5,7 @@ from pandas import DataFrame
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import itertools
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 
@@ -298,49 +299,37 @@ class BasePlot(ABC):
     def _draw_vertical_lines(self, ax: Axes, x, text: [Union[str, List[str]]] = None,
                              color: str = "k", line_width: float = None, line_style: str = ":",
                              h_align: str = "center", v_align: str = None, alpha: float = None,
-                             text_top: bool = True, text_offset: float = 0.05, text_rotation: float = 90,
+                             text_top: bool = False, text_offset: float = 0.05, text_rotation: float = 90,
                              text_size: str = "xx-small"):
         """
-        Will draw one or more vertical lines to the Axes from top to bottom at the required x positions.
-        The optional text will be written on the line at the required, proportional offset from the top/bottom.
+        Will draw one or more vertical lines to the Axes from top to bottom at the required x positions (data coords).
+        The optional text is written on the line at the required, proportional offset from the top/bottom (axes coords).
         """
-        y_lim = ax.get_ylim()
-        y_inverted = ax.yaxis_inverted()
-        y_min = min(y_lim)
-        y_max = max(y_lim)
-
         if alpha is None:
             alpha = self.alpha * 0.75
         if line_width is None:
             line_width = self.line_width * 0.75
+        if v_align is None:
+            v_align = "top" if text_top else "bottom"
+        if isinstance(x, float):
+            x = [x]
+        if isinstance(text, str):
+            text = [text]
 
-        # Plot a vertical line for each entry
-        ax.vlines(x=x, ymin=y_min, ymax=y_max, linestyle=line_style, linewidth=line_width, alpha=alpha, color=color)
+        y_dummy = np.median(ax.get_ylim())
+        for x_data_pos, this_text in itertools.zip_longest(x, text if text is not None else []):
+            if x_data_pos is not None:
+                # Translate the x data position into Axes position - we're only interested in the x coordinate.
+                x_pos, _ = ax.transAxes.inverted().transform_point(ax.transData.transform_point((x_data_pos, y_dummy)))
+                ax.vlines(x=x_pos, ymin=0, ymax=1, transform=ax.transAxes,
+                          linestyles=line_style, linewidth=line_width, alpha=alpha, color=color)
 
-        # Add the optional text
-        if text is not None and len(text):
-            # Set the text position. Anchor to top/bottom with any offset a fraction of the scale towards the middle
-            y_scale = y_max - y_min
+                if this_text is not None:
+                    y_pos = max(1 - text_offset, 0) if text_top else min(text_offset, 1)
+                    ax.text(x_pos, y_pos, this_text, transform=ax.transAxes,
+                            size=text_size, color=color, alpha=min([alpha * 2, 1]),
+                            rotation=text_rotation, verticalalignment=v_align, horizontalalignment=h_align)
 
-            # If the y axis is inverted just invert the text location and offset calculations to compensate.
-            y_pos = y_max if text_top else y_min
-
-            # Stop the offset from taking the text off the body of the plot
-            y_offset = abs(y_scale * text_offset) if abs(text_offset) <= 0.90 else y_scale * 0.90
-
-            # Align and position the text.
-            if text_top:
-                y_pos -= y_offset
-                if v_align is None:
-                    v_align = "top" if not y_inverted else "bottom"
-            else:
-                y_pos += y_offset
-                if v_align is None:
-                    v_align = "bottom" if not y_inverted else "top"
-
-            for x_pos, this_text in zip(x, text):
-                ax.text(x_pos, y_pos, this_text, size=text_size, color=color, alpha=min([alpha * 2, 1]),
-                        rotation=text_rotation, verticalalignment=v_align, horizontalalignment=h_align)
         return
 
     def _draw_horizontal_lines(self, ax: Axes, y, text: [Union[str, List[str]]] = None,
@@ -348,34 +337,31 @@ class BasePlot(ABC):
                                h_align: str = None, v_align: str = "center", alpha: float = None,
                                text_right: bool = False, text_offset: float = 0.05, text_size: str = "x-small"):
         """
-        Will draw one or more horizontal lines to the Axes from top to bottom at the required x positions.
-        The optional text will be written on the line at the required, proportional offset from the top/bottom.
+        Will draw one or more horizontal lines to the Axes from top to bottom at the required y positions.
+        The optional text will be written on the line at the required, proportional offset from the left/right.
         """
-        x_lim = ax.get_xlim()
-        x_min = min(x_lim)
-        x_max = max(x_lim)
-
         if alpha is None:
             alpha = self.alpha * 0.75
         if line_width is None:
             line_width = self.line_width * 0.75
+        if h_align is None:
+            h_align = "right" if text_right else "left"
+        if isinstance(y, float):
+            y = [y]
+        if isinstance(text, str):
+            text = [text]
 
-        ax.hlines(y=y, xmin=x_min, xmax=x_max, linestyles=line_style, linewidth=line_width, alpha=alpha, color=color)
+        x_dummy = np.median(ax.get_xlim())
+        for y_data_pos, this_text in itertools.zip_longest(y, text if text is not None else []):
+            if y_data_pos is not None:
+                # Translate the y data position into Axes position - we're only interested in the y coordinate.
+                _, y_pos = ax.transAxes.inverted().transform_point(ax.transData.transform_point((x_dummy, y_data_pos)))
+                ax.vlines(xmin=0, xmax=1, y=y_pos, transform=ax.transAxes,
+                          linestyles=line_style, linewidth=line_width, alpha=alpha, color=color)
 
-        if text is not None and len(text) > 0:
-            # Set the text position.  Anchored to left/right with any offset a fraction of the scale towards the middle.
-            x_scale = x_max - x_min
-            x_pos = x_max if text_right else x_min
-            x_offset = abs(x_scale * text_offset) if abs(text_offset) <= 0.90 else x_scale * 0.90
-
-            if text_right:
-                x_pos -= x_offset
-                h_align = "right" if h_align is None else h_align
-            else:
-                x_pos += x_offset
-                h_align = "left" if h_align is None else h_align
-
-            for y_pos, this_text in zip(y, text):
-                ax.text(x_pos, y_pos, this_text, size=text_size, color=color, alpha=min([alpha * 2, 1]),
-                        verticalalignment=v_align, horizontalalignment=h_align)
+                if this_text is not None:
+                    x_pos = max(1 - text_offset, 0) if text_right else min(text_offset, 1)
+                    ax.text(x_pos, y_pos, this_text, transform=ax.transAxes,
+                            size=text_size, color=color, alpha=min([alpha * 2, 1]),
+                            verticalalignment=v_align, horizontalalignment=h_align)
         return
