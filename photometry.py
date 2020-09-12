@@ -60,8 +60,10 @@ for grp_key, grp_config in settings["fit_set_groups"].items():
                 fit_set = StraightLineLogXFitSet.fit_to_data(
                     fit_set_key, lightcurve, x_col="day", y_col="mag", y_err_col="mag_err", breaks=fit_set_config['breaks'])
             elif fit_set_type == "StraightLineLogLogFitSet":
+                # We use unweighted fits for the XRT/Rate data
+                y_err_col = "mag_err" if lightcurve.data_type != "rate" else None
                 fit_set = StraightLineLogLogFitSet.fit_to_data(
-                    fit_set_key, lightcurve, x_col="day", y_col="rate", y_err_col=None, breaks=fit_set_config['breaks'])
+                    fit_set_key, lightcurve, x_col="day", y_col="rate", y_err_col=y_err_col, breaks=fit_set_config['breaks'])
 
             if fit_set is not None:
                 fit_set.metadata.conflate(lightcurve.metadata)
