@@ -32,13 +32,17 @@ class XrtRateDataSource(RateDataSource):
                     csv.write(F"'{rate_type}'\t{line}")
 
         csv.seek(0)
-        file_column_names = ["rate_type", "mjd", "mjd_plus_err", "mjd_minus_err", "rate", "rate_plus_err",
-                             "rate_minus_err", "bg_rate", "bg_err", "frac_exp", "obs_id"]
+        if "curve2" in source.__str__():
+            file_column_names = ["rate_type", "mjd", "mjd_plus_err", "mjd_minus_err", "rate", "rate_plus_err",
+                                 "rate_minus_err", "bg_rate", "bg_err", "frac_exp", "obs_id"]
+        else:
+            file_column_names = ["rate_type", "mjd", "mjd_plus_err", "mjd_minus_err", "rate", "rate_plus_err",
+                                 "rate_minus_err", "obs_id"]
         df = pd.read_csv(csv,
                          header=0, delimiter="\t", index_col=None, comment="!", skip_blank_lines=True, quotechar="'")
         df.columns = file_column_names
 
-        # TODO: temporary - add better handling - perhaps the larger absolute value
+        # Deprecated - For anything that can only work with one error field - Lightcurve is now OK with separate fields.
         df["rate_err"] = df["rate_plus_err"]
 
         # For these data there is no underlying "data_type" field,

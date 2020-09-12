@@ -41,7 +41,7 @@
             "type": "UvotMagnitudeDataSource"
         },
         "V3890-Sgr-2019-X-ray-Rates": {
-            "file_spec": "./data/XRT/curve2_plain_nosys.dat",
+            "file_spec": "./data/XRT/curve_plain_nosys.dat",
             "description": "Data from Swift/XRT.  Use my eruption JD = 2458723.278+/-0.256",
             "type": "XrtRateDataSource"
         },

@@ -20,11 +20,17 @@ class Lightcurve(WithMetadata):
         if "mag" in df.columns:
             self._data_type = "mag"
             self._y_col = "mag"
-            self._y_err_col = "mag_err"
+            if "mag_minus_err" in df.columns and "mag_plus_err" in df.columns:
+                self._y_err_col = ("mag_minus_err", "mag_plus_err")
+            else:
+                self._y_err_col = "mag_err"
         elif "rate" in df.columns:
             self._data_type = "rate"
             self._y_col = "rate"
-            self._y_err_col = "rate_err"
+            if "rate_minus_err" in df.columns and "rate_plus_err" in df.columns:
+                self._y_err_col = ("rate_minus_err", "rate_plus_err")
+            else:
+                self._y_err_col = "rate_err"
         else:
             raise ValueError("Unknown data type.  Neither mag nor rate columns found")
         print(f"Lightcurve({name}): Initialized")
@@ -54,8 +60,11 @@ class Lightcurve(WithMetadata):
         return self._df[self._y_col].to_list()
 
     @property
-    def y_err(self) -> List[float]:
-        return self._df[self._y_err_col].to_list() if self._y_err_col is not None else None
+    def y_err(self) -> Union[List[float], Tuple[List[float], List[float]]]:
+        if isinstance(self._y_err_col, str):
+            return self._df[self._y_err_col].to_list()
+        else:
+            return [self._df[col].to_list() for col in self._y_err_col]
 
     @property
     def df(self) -> DataFrame:
