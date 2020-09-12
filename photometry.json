@@ -144,7 +144,7 @@
                 "UVM2": { "band": "UVM2", "color": "violet", "label": "UVM2 filter"}
             }
         },
-        "V3890-Sgr-1990-X-ray-rates-nominal": {
+        "V3890-Sgr-2019-X-ray-rates-nominal": {
             "data_source": "V3890-Sgr-2019-X-ray-Rates",
             "eruption_jd": 2458723.278,
             "query_params": { "day_range": [0, 100] },
@@ -153,7 +153,7 @@
                 "PC": { "where": "rate_type=='PC'", "color": "lightskyblue" }
             }
         },
-        "V3890-Sgr-1990-X-ray-ratios": {
+        "V3890-Sgr-2019-X-ray-ratios": {
             "data_source": "V3890-Sgr-2019-X-ray-Ratios",
             "eruption_jd": 2458723.278,
             "query_params": { "day_range": [0, 100] },
@@ -166,7 +166,7 @@
                 "ratio_PC": { "where": "data_type=='ratio' and rate_type=='PC'", "data_type": "ratio", "label": "PC", "color": "lightskyblue" }
             }
         },
-        "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft": {
+        "V3890-Sgr-2019-X-ray-ratios-nominal-hard-soft": {
             "data_source": "V3890-Sgr-2019-X-ray-Ratios",
             "eruption_jd": 2458723.278,
             "query_params": { "day_range": [0, 100], "where": "((rate_type == 'WT') or (rate_type == 'PC' and rate <= 1.0)) and (rate >= 0)"},
@@ -240,8 +240,8 @@
                 "UVM2": { "breaks": [5.4,  10.0, 21.8, 32.3, 66.2] }
             }
         },
-        "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft": {
-            "lightcurve_group": "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft",
+        "V3890-Sgr-2019-X-ray-ratios-nominal-hard-soft": {
+            "lightcurve_group": "V3890-Sgr-2019-X-ray-ratios-nominal-hard-soft",
             "type": "StraightLineLogLogFitSet",
             "fit_sets": {
                 "hard_data": { "breaks": [1.28, 2.20, "...", 3.225, 5.9, 75.5] },
@@ -295,12 +295,12 @@
                 "lightcurves": {
                     "V3890-Sgr-2019-Vis-nominal/": {},
                     "V3890-Sgr-2019-UV-nominal/": {},
-                    "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft/": {}
+                    "V3890-Sgr-2019-X-ray-ratios-nominal-hard-soft/": {}
                 },
                 "fit_sets": {
                     "V3890-Sgr-2019-Vis-nominal/": {},
                     "V3890-Sgr-2019-UV-nominal/": {},
-                    "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft/": {}
+                    "V3890-Sgr-2019-X-ray-ratios-nominal-hard-soft/": {}
                 }
             },
             {
@@ -322,7 +322,7 @@
                 "file_name": "./output/phot/V3890Sgr-2019-LC-XRT-linear-rates-day-nominal.pdf",
                 "title": "The X-ray lightcurves of the 2019 eruption",
                 "params": {"show_title": true, "show_data": true, "legend_loc": "upper right", "x_scale_log": false},
-                "lightcurves": { "V3890-Sgr-1990-X-ray-rates-nominal/": {} },
+                "lightcurves": { "V3890-Sgr-2019-X-ray-rates-nominal/": {} },
                 "fit_sets": {}
             },
             {
@@ -330,7 +330,7 @@
                 "file_name": "./output/phot/V3890Sgr-2019-LC-XRT-log(day)-triple-ratios-nominal.pdf",
                 "title": "The Swift XRT X-ray Hard/Soft ratio for the 2019 eruption of V3890 Sgr",
                 "params": {"show_title": true, "legend_loc": "upper left", "x_scale_log": true, "y_scale_log": true, "x_lim": [0.1, 100]},
-                "lightcurves": { "V3890-Sgr-1990-X-ray-ratios/": {} },
+                "lightcurves": { "V3890-Sgr-2019-X-ray-ratios/": {} },
                 "fit_sets": {}
             },
             {
@@ -340,8 +340,8 @@
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "legend_loc": "upper left",
                     "y_scale_log": true, "y_lim": [0.01, 30], "y_ticks": [0.01, 0.1, 1, 10], "x_lim": [0.1, 100],
                     "y_lim_residuals": [-1.1, 1.1], "y_ticks_residuals": [-1, 0, 1], "y_tick_labels_residuals": [-10, 0, 10]},
-                "lightcurves": { "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft/hard_data": {} },
-                "fit_sets": { "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft/hard_data": {"color": "k", "label": "Fit"} }
+                "lightcurves": { "V3890-Sgr-2019-X-ray-ratios-nominal-hard-soft/hard_data": {} },
+                "fit_sets": { "V3890-Sgr-2019-X-ray-ratios-nominal-hard-soft/hard_data": {"color": "k", "label": "Fit"} }
             },
             {
                 "type": "RateAndResidualsTimePlot",
@@ -350,8 +350,8 @@
                 "params": {"show_title": true, "show_data": true, "show_fits": true, "annotate_fits": true, "show_breaks": true, "show_residuals": true, "legend_loc": "upper left",
                     "y_scale_log": true, "y_lim": [0.01, 30], "y_ticks": [0.01, 0.1, 1, 10], "x_lim": [0.1, 100],
                     "y_lim_residuals": [-1.1, 1.1], "y_ticks_residuals": [-1, 0, 1], "y_tick_labels_residuals": [-10, 0, 10]},
-                "lightcurves": { "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft/soft_data": {} },
-                "fit_sets": { "V3890-Sgr-1990-X-ray-ratios-nominal-hard-soft/soft_data": {"color": "k", "label": "Fit"} }
+                "lightcurves": { "V3890-Sgr-2019-X-ray-ratios-nominal-hard-soft/soft_data": {} },
+                "fit_sets": { "V3890-Sgr-2019-X-ray-ratios-nominal-hard-soft/soft_data": {"color": "k", "label": "Fit"} }
             }
         ],
         "2019 Eruption UVOT plots": [
