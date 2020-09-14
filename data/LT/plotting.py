@@ -30,7 +30,7 @@ def plot_histogram_to_ax(ax: Axes, flux_ratios: [float], is_blue: bool):
     """
     Produce a histogram showing the distribution of the non_ss_spectra ratios
     """
-    ax.set_title(f"Histogram of the H$\\{'beta' if is_blue else 'alpha'}$/continuum\nflux ratio over the fibre array")
+    ax.set_title(f"Histogram of the H$\\{'beta' if is_blue else 'alpha'}$:continuum\nflux ratio over the fibre array")
     bin_edges = np.arange(0, 125, 5)
     ax.set_yscale("log")
     ax.yaxis.set_major_formatter(ScalarFormatter())
@@ -44,7 +44,7 @@ def plot_fibre_heatmap_to_ax(fig: Figure, ax: Axes, flux_ratios: [float]):
     c_map = cm.get_cmap("plasma")
     norm = matplotlib.colors.Normalize(vmin=0, vmax=100)
     flux_grid = flux_array_to_square_grid(flux_ratios)
-    ax.set_title(f"The heatmap of the flux ratio\nover the FRODOSpec fibre array\n")
+    ax.set_title(f"The heatmap of the flux ratio\nover the FRoDOSpec fibre array\n")
     ax.set(xlim=(0, 12), ylim=(0, 12), xticks=[0, 2, 4, 6, 8, 10, 12], xticklabels=[], yticks=[0, 2, 4, 6, 8, 10, 12])
     ax.imshow(flux_grid, cmap=c_map, norm=norm, origin="upper", aspect="equal", extent=(0, 12, 12, 0))
     fig.colorbar(cm.ScalarMappable(cmap=c_map, norm=norm), ax=[ax], orientation="vertical", fraction=0.2, pad=0.15)
@@ -55,7 +55,7 @@ def plot_spectrum_to_ax(ax: Axes, spectrum: Spectrum1D, title: str,
                         c_range: SpectralRegion = None, h_range: SpectralRegion = None,
                         sky_flux: [Quantity] = None, nss_spec_flux: [Quantity] = None):
     ax.set_xlabel(f"Wavelength [{spectrum.wavelength.unit}]")
-    ax.set_ylabel(f"flux [{spectrum.flux.unit}]")
+    ax.set_ylabel(f"flux [adu]")
     ax.set_title(title)
     ax.set_xticks(_calculate_ticks(spectrum.wavelength.value, 250), minor=False)
     ax.set_xticks(_calculate_ticks(spectrum.wavelength.value, 50), minor=True)
@@ -95,7 +95,7 @@ def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename
                      output_dir: Union[str, Path], expand_flux: bool = True):
     fig = plt.figure(figsize=(12.8, 25.6), constrained_layout=True)
     ax = fig.add_subplot(1, 1, 1)
-    ax.set_title(f"The RSS_NONSS FRODOSpec spectra in {basename}")
+    ax.set_title(f"The RSS_NONSS FRoDOSpec fibre spectra in {basename}")
     ax.set_xlabel(f"Wavelength [{spectra.wavelength.unit}]")
 
     ax.set_xticks(_calculate_ticks(spectra.wavelength.value, 100), minor=False)
@@ -123,7 +123,7 @@ def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename
         ratio_key = (np.max(flux_ratios) // 15) / 5
         flux_expansion = np.max([1, 1.5 - ratio_key])
 
-    y_label = f"flux [{spectra.flux.unit}]"
+    y_label = f"flux [adu]"
     y_label += f" (scaled as $y = f_{{\\lambda}}^{{{flux_expansion}}}$)" if flux_expansion != 1 else ""
     print(f"\tplot_rss_spectra: " + y_label)
     ax.set_ylabel(y_label)
@@ -156,7 +156,7 @@ def plot_rss_spectra(spectra: SpectrumCollection, flux_ratios: [float], basename
 
     ax.grid(which="minor", linestyle="-", linewidth=0.25, alpha=0.3)
     ax.grid(which="major", linestyle="-", linewidth=0.25, alpha=0.5)
-    plt.savefig(f"{output_dir}/rss_nonss_{basename}.png", dpi=300)
+    plt.savefig(f"{output_dir}/rss_nonss_{basename}.pdf", dpi=300)
     plt.close()
     return
 

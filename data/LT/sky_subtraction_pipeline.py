@@ -20,7 +20,7 @@ def read_setting(group, name, default=None, printout=True):
     return value
 
 
-settings = json.load(open("spec_calibration.json"))
+settings = json.load(open("sky_subtraction_pipeline.json"))
 for spec_set in ["std-obs-Hilt102-blue", "std-obs-Hilt102-red", "target-obs-blue", "target-obs-red"]:
     spec_set_settings = settings["sky_subtraction"][spec_set]
     lambda_high = read_setting(spec_set_settings, "lambda_high", 6563)
@@ -47,7 +47,7 @@ for spec_set in ["std-obs-Hilt102-blue", "std-obs-Hilt102-red", "target-obs-blue
         fits_group_settings = spec_set_settings["subtraction_settings"][fits_group]
         fits_group_ss_spectra = SpectrumList()
 
-        # We'll note these are we got through the group as these will form the bases of the output fits.
+        # We'll note these as we go through the group as these will form the basis of the output fits.
         source_fits_full_name1 = None
         spec_ss_header = None
 
@@ -61,7 +61,7 @@ for spec_set in ["std-obs-Hilt102-blue", "std-obs-Hilt102-red", "target-obs-blue
             if source_fits_full_name1 is None:
                 source_fits_full_name1 = source_fits_full_name
 
-            # For each NON-SS spectra we calculate the flux ratio between chosen high and low flux regions
+            # For each RSS_NONSS spectrum we calculate the flux ratio between chosen high and low flux regions
             # The two ranges are chosen specifically to discriminate between an object and a "sky" spectrum
             num_spectra = non_ss_spectra.shape[0]
             flux_ratios = np.zeros(num_spectra)
@@ -77,14 +77,15 @@ for spec_set in ["std-obs-Hilt102-blue", "std-obs-Hilt102-red", "target-obs-blue
             # Plot histogram and heat/fibre map of ratios.  Also print the standard pipeline ss spectrum for reference.
             # matplotlib.use("Agg")  # Stop annoying popup when debugging plots being saved to file
             plt.rc("font", size=8)
-            fig = plt.figure(figsize=(6.4, 9.6), constrained_layout=False)
-            gs = GridSpec(ncols=2, nrows=3, width_ratios=[2, 3], height_ratios=[3, 3, 3], wspace=0.4, hspace=0.4, figure=fig)
-            fig.suptitle(f"The sky subtraction pipeline of the FRODOSpec asset {fits_file_name}")
-            plotting.plot_histogram_to_ax(fig.add_subplot(gs[0, 0]), flux_ratios, is_blue)
-            plotting.plot_fibre_heatmap_to_ax(fig, fig.add_subplot(gs[0, 1]), flux_ratios)
+            diag_fig = plt.figure(figsize=(6.4, 9.6), constrained_layout=False)
+            gs = GridSpec(
+                ncols=2, nrows=3, width_ratios=[2, 3], height_ratios=[3, 3, 3], wspace=0.4, hspace=0.4, figure=diag_fig)
+            diag_fig.suptitle(f"The sky subtraction pipeline of the FRoDOSpec asset {fits_file_name}")
+            plotting.plot_histogram_to_ax(diag_fig.add_subplot(gs[0, 0]), flux_ratios, is_blue)
+            plotting.plot_fibre_heatmap_to_ax(diag_fig, diag_fig.add_subplot(gs[0, 1]), flux_ratios)
             try:
                 ss_spec, header = FrodoSpecDS.read_spectrum(source_fits_full_name, "SPEC_SS", header=True)
-                plotting.plot_spectrum_to_ax(fig.add_subplot(gs[1, :]), ss_spec,
+                plotting.plot_spectrum_to_ax(diag_fig.add_subplot(gs[1, :]), ss_spec,
                                              "Standard pipeline sky subtracted spectrum", low_region, high_region)
                 if spec_ss_header is None:
                     spec_ss_header = header
@@ -140,9 +141,10 @@ for spec_set in ["std-obs-Hilt102-blue", "std-obs-Hilt102-red", "target-obs-blue
             avg_obj_flux = np.mean(obj_spectra.flux, axis=0)
             ss_obj_flux = np.subtract(avg_obj_flux, avg_sky_flux)
             ss_spectrum = Spectrum1DEx(flux=ss_obj_flux, spectral_axis=non_ss_spectra.spectral_axis[0])
-            plotting.plot_spectrum_to_ax(fig.add_subplot(gs[2, :]), ss_spectrum, "My pipeline sky subtracted spectrum",
+            plotting.plot_spectrum_to_ax(diag_fig.add_subplot(gs[2, :]), ss_spectrum,
+                                         "Custom pipeline sky subtracted spectrum",
                                          sky_flux=avg_sky_flux, c_range=low_region, h_range=high_region)
-            plt.savefig(output_dir / (fits_file_name + ".png"), dpi=300)
+            plt.savefig(output_dir / (fits_file_name + ".pdf"), dpi=300)
             plt.close()
 
             # Diagnostics - plot the spectra from every fibre (to a different file to the other plots - it's big!!)
@@ -153,11 +155,11 @@ for spec_set in ["std-obs-Hilt102-blue", "std-obs-Hilt102-red", "target-obs-blue
             fits_group_ss_spectra.append(ss_spectrum)
 
         # Combine the spectra in the group
-        image_file_name = output_dir / f"ss_{fits_group}.png"
+        image_file_name = output_dir / f"ss_{fits_group}.pdf"
         grp_spectra = SpectrumCollectionEx.from_spectra(fits_group_ss_spectra, fits_group)
         grp_spectrum = Spectrum1DEx(flux=np.mean(grp_spectra.flux, axis=0), spectral_axis=grp_spectra.spectral_axis[0])
         plotting.plot_spectrum(grp_spectrum, filename=image_file_name,
-                               title=f"My pipeline sky subtracted and combined spectrum for observations {fits_group}")
+                               title=f"Custom pipeline sky subtracted & combined spectrum for observations {fits_group}")
 
         # Save to a new fits file
         # Copy the primary HDU from the first file of the set
