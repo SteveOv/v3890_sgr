@@ -121,8 +121,12 @@ for group_key in ['V3890-Sgr-2019-Vis-nominal-err', 'V3890-Sgr-2019-Vis-nominal+
     # Significantly lower than Schaefer's E(B-V) of 0.9 +/- 0.3.
     # As recommended by Matt Darnley (private communication), we use the Pan-STARRS reddening survey along
     # alpha=277.68, delta=-24.019 for r>5 kpc (which V380 Sgr has with even E(B-V)=0.9) giving E(g-r)=0.51 +/- 0.02
-    E_BV = ufloat(*mag.E_gr_to_E_BV(0.51, 0.02))
-    print(F"[{group_key}] Using E(B-V) = {E_BV:.4f} (derived from Pan-STARRS E(g-r) = 0.51 +/- 0.02)")
+    E_BVs = [
+        ufloat(*colors.E_BV_from_E_gr_Jordi_metal_poor(0.514, 0.002)),
+        ufloat(*colors.E_BV_from_E_gr_Jordi_populationI(0.514, 0.002)),
+        ufloat(*colors.E_BV_from_E_gr_Lupton(0.514, 0.002))]
+    E_BV = np.mean(E_BVs)
+    print(F"[{group_key}] Using E(B-V) = {E_BV:.3f} (derived from Pan-STARRS E(g-r) = 0.514 +/- 0.002)")
 
     # Now use the MMRD to work out the absolute magnitude
     M_V_tp = rn.absolute_magnitude_from_t2_fast_nova(t2)
