@@ -4,7 +4,6 @@ from plot import PlotHelper
 from utility import timing as tm, magnitudes as mag
 from spectroscopy import line_fitting
 
-# Placeholder for pulling together all of the spectroscopy tasks
 settings = json.load(open("spectroscopy.json"))
 eruption_jd = 2458723.278
 
@@ -28,14 +27,16 @@ print(F"****************************************************************")
 for plot_group_config in settings["plots"]:
     print(F"\nProcessing plot group: {plot_group_config}")
     flux_units = mag.units_flux_density_cgs_angstrom
+
     for plot_config in settings["plots"][plot_group_config]:
-        # Create the requested spectral data sources and get the data from them
         spectra = {}
         spectral_lines = {}
         plot_line_fits = {}
         delta_t = None
+
+        # Each plot will generally have 2 spectra (blue arm and red arm)
         for spec_match in plot_config["spectra"]:
-            # Get all the data source whose name start with the key value - for most plots each individually specified
+            # Get all the data source whose name start with the key value - mostly each individually specified
             filtered_data_sources = {k: v for k, v in data_sources.items() if k.startswith(spec_match)}
             for spec_name, ds in filtered_data_sources.items():
                 delta_t = tm.delta_t_from_jd(tm.jd_from_mjd(ds.header["MJD"]), eruption_jd)
@@ -44,12 +45,12 @@ for plot_group_config in settings["plots"]:
                 spectra[spec_name] = spectrum
                 flux_units = spectrum.flux.unit
 
-        # Pick up any fitted spectral lines taken from this spectrum
         if "line_fits" in plot_config:
+            # Pick up any fitted spectral lines configured
             for fit_match in plot_config["line_fits"]:
                 plot_line_fits.update({k: v for k, v in line_fit_sets.items() if k.startswith(fit_match)})
 
-        # Do the print!
+        # Easier to apply these params in blanket fashion/dynamically than fiddle with the json file.
         plot_config["params"]["eruption_jd"] = eruption_jd
         if plot_config["type"] == "SpectrumPlot":
             plot_config["params"]["y_lim"] = [-1e-12, 27e-12]
@@ -57,5 +58,8 @@ for plot_group_config in settings["plots"]:
             plot_config["params"]["y_tick_labels"] = ["0", "5", "10", "15", "20", "25"]
             plot_config["params"]["y_label"] = f"Flux density [$10^{{-12}}$ {flux_units:latex_inline}]"
 
+        # These are the dictionaries of the identified spectral lines
         line_labels = plot_config["spectral_line_labels"] if "spectral_line_labels" in plot_config else None
-        PlotHelper.plot_to_file(plot_config, spectra=spectra, line_fits=plot_line_fits, spectral_line_labels=line_labels)
+
+        PlotHelper.plot_to_file(plot_config,
+                                spectra=spectra, line_fits=plot_line_fits, spectral_line_labels=line_labels)

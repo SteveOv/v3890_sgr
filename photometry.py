@@ -27,14 +27,14 @@ for grp_key, grp_config in settings["lightcurve_groups"].items():
         lightcurves[f"{grp_key}/{lc_key}"] = Lightcurve.create_from_data_source(lc_key, data_source, grp_config)
 
 print(F"\n\n****************************************************************")
-print(F"* Parsing photometry data and creating fitted light curves.")
+print(F"* Parsing photometry data and creating fitted power laws.")
 print(F"****************************************************************")
 fit_sets = {}
 for grp_key, grp_config in settings["fit_set_groups"].items():
     print(F"\nProcessing FitSet group: {grp_key}")
     if "copy_fit_sets" in grp_config:
+        # Rather than generating new by fitting, we're copying, and optionally translating, existing fit_sets.
         copy_fits_config = grp_config["copy_fit_sets"]
-        # Rather than generating new from lightcurves we are copying, and optionally translating, existing fit_sets.
         for key_match, copy_config in copy_fits_config.items():
             matches = {k: v for k, v in lightcurves.items() if k.startswith(key_match)}
             for fit_set_key in matches:
@@ -50,34 +50,39 @@ for grp_key, grp_config in settings["fit_set_groups"].items():
         fit_set_type = grp_config["type"] if "type" in grp_config else "StraightLineLogXFitSet"
 
         for fit_set_key, fit_set_config in grp_config["fit_sets"].items():
-            # Get the lightcurve to base this fit on.  Either it's explicit or it's implied by the name and group
-            lightcurve_key = fit_set_config["lightcurve"] if "lightcurve" in fit_set_config else f"{lightcurve_grp_key}/{fit_set_key}"
-            lightcurve = lightcurves[lightcurve_key]
+            # Get the lightcurve to fit to.  It's explicit or implied by the fit's name and group
+            if "lightcurve" in fit_set_config:
+                lightcurve = lightcurves[fit_set_config["lightcurve"]]
+            else:
+                lightcurve = lightcurves[f"{lightcurve_grp_key}/{fit_set_key}"]
 
             # Currently there are only two types, so no factory implemented.
             fit_set = None
             if fit_set_type == "StraightLineLogXFitSet":
-                fit_set = StraightLineLogXFitSet.fit_to_data(
-                    fit_set_key, lightcurve, x_col="day", y_col="mag", y_err_col="mag_err", breaks=fit_set_config['breaks'])
+                fit_set = StraightLineLogXFitSet.fit_to_data(fit_set_key, lightcurve,
+                                                             x_col="day", y_col="mag", y_err_col="mag_err",
+                                                             breaks=fit_set_config['breaks'])
             elif fit_set_type == "StraightLineLogLogFitSet":
                 # We use unweighted fits for the XRT/Rate data
                 y_err_col = "mag_err" if lightcurve.data_type != "rate" else None
-                fit_set = StraightLineLogLogFitSet.fit_to_data(
-                    fit_set_key, lightcurve, x_col="day", y_col="rate", y_err_col=y_err_col, breaks=fit_set_config['breaks'])
+                fit_set = StraightLineLogLogFitSet.fit_to_data(fit_set_key, lightcurve,
+                                                               x_col="day", y_col="rate", y_err_col=y_err_col,
+                                                               breaks=fit_set_config['breaks'])
 
             if fit_set is not None:
                 fit_set.metadata.conflate(lightcurve.metadata)
                 fit_sets[f"{grp_key}/{fit_set_key}"] = fit_set
 
+# Print the resulting fitted power laws as latex tables for pasting into documentation
 for fit_set_key, fit_set in fit_sets.items():
     print(f"\n\t\tFit set {fit_set_key}\n{fit_set.to_latex()}\n")
 
 print(F"\n\n****************************************************************")
-print(F"* Analysing photometry data and fitted light curves ")
+print(F"* Analysing photometry data; colour excess, MMRD and distance ")
 print(F"****************************************************************")
 tt = []
 for group_key in ['V3890-Sgr-2019-Vis-nominal-err', 'V3890-Sgr-2019-Vis-nominal+err', 'V3890-Sgr-2019-Vis-nominal']:
-    print(f"Analysing photometry for light curve [{group_key}]")
+    print(f"Analysing photometry for lightcurve power laws [{group_key}]")
     fitsV = fit_sets[f"{group_key}/V-band"]
     fitsB = fit_sets[f"{group_key}/B-band"]
 
@@ -99,7 +104,7 @@ for group_key in ['V3890-Sgr-2019-Vis-nominal-err', 'V3890-Sgr-2019-Vis-nominal+
     t3 = fitsV.find_x_value(V_t3) - tp
     print(F"[{group_key}] t3 time: t3 = t - tp = {t3:.4f} (when V = V(tp) + 3 = {V_t3:.4f} mag)")
 
-    # We can find the observed colour at tp - it's very blue (B > V)
+    # We can find the observed colour at tp
     BV_obs_tp = B_tp - V_tp
     print(F"[{group_key}] Observed colour at tp: (B-V)_obs(tp) = {B_tp:.4f} - {V_tp:.4f} = {BV_obs_tp:.4f}")
 
@@ -132,7 +137,7 @@ for group_key in ['V3890-Sgr-2019-Vis-nominal-err', 'V3890-Sgr-2019-Vis-nominal+
     M_V_tp = rn.absolute_magnitude_from_t2_fast_nova(t2)
     print(F"[{group_key}] Peak absolute magnitude from MMRD: M_V(tp) = {M_V_tp:.4f} mag")
 
-    # And the distance modulus from th apparent and absolute magnitudes
+    # And the distance modulus from the apparent and absolute magnitudes
     mu = V_tp - M_V_tp
     print(F"[{group_key}] Distance modulus: mu = V(tp) - M_V(tp) = {V_tp:.4f} - {M_V_tp:.4f} = {mu:.4f}s")
 
@@ -146,22 +151,26 @@ for group_key in ['V3890-Sgr-2019-Vis-nominal-err', 'V3890-Sgr-2019-Vis-nominal+
 
     tt.append({"key": group_key, "tp": tp, "t2": t2, "t3": t3, "E_BV": E_BV, "M_V_tp": M_V_tp, "d": d})
 
-# Summary
+# Summary and mean values - it's not pretty, or clever, but it works for now
 df_sum = pd.DataFrame.from_records(tt, columns=["key", 'tp', 't2', 't3', 'E_BV', "M_V_tp", "d"])
 print("Summary of the 2019 eruption")
 print(F"[2019] t_eruption (JD) = 2458723.278+/-0.256")
-#print(F"[2019] tp = {ufloat(.35, .25):.3} d")
-print(F"[2019] <tp> = {np.mean(unumpy.uarray(unumpy.nominal_values(df_sum['tp']), unumpy.std_devs(df_sum['tp']))):.3f} d")
-print(F"[2019] <t2> = {np.mean(unumpy.uarray(unumpy.nominal_values(df_sum['t2']), unumpy.std_devs(df_sum['t2']))):.3f} d")
-print(F"[2019] <t3> = {np.mean(unumpy.uarray(unumpy.nominal_values(df_sum['t3']), unumpy.std_devs(df_sum['t3']))):.3f} d")
-print(F"[2019] <E(B-V)> = {np.mean(unumpy.uarray(unumpy.nominal_values(df_sum['E_BV']), unumpy.std_devs(df_sum['E_BV']))):.3f}")
-print(F"[2019] <M_V_tp> = {np.mean(unumpy.uarray(unumpy.nominal_values(df_sum['M_V_tp']), unumpy.std_devs(df_sum['M_V_tp']))):.4f} mag")
-print(F"[2019] <d> = {np.mean(unumpy.uarray(unumpy.nominal_values(df_sum['d']), unumpy.std_devs(df_sum['d']))):.0f} pc")
+print(F"[2019] <tp> = "
+      F"{np.mean(unumpy.uarray(unumpy.nominal_values(df_sum['tp']), unumpy.std_devs(df_sum['tp']))):.3f} d")
+print(F"[2019] <t2> = "
+      F"{np.mean(unumpy.uarray(unumpy.nominal_values(df_sum['t2']), unumpy.std_devs(df_sum['t2']))):.3f} d")
+print(F"[2019] <t3> = "
+      F"{np.mean(unumpy.uarray(unumpy.nominal_values(df_sum['t3']), unumpy.std_devs(df_sum['t3']))):.3f} d")
+print(F"[2019] <E(B-V)> = "
+      F"{np.mean(unumpy.uarray(unumpy.nominal_values(df_sum['E_BV']), unumpy.std_devs(df_sum['E_BV']))):.3f}")
+print(F"[2019] <M_V_tp> = "
+      F"{np.mean(unumpy.uarray(unumpy.nominal_values(df_sum['M_V_tp']), unumpy.std_devs(df_sum['M_V_tp']))):.4f} mag")
+print(F"[2019] <d> = "
+      F"{np.mean(unumpy.uarray(unumpy.nominal_values(df_sum['d']), unumpy.std_devs(df_sum['d']))):.0f} pc")
 
 print(F"\n\n****************************************************************")
 print(F"* Producing plots of photometry data and fitted light curves ")
 print(F"****************************************************************")
-# Produce any configured plots
 for grp_key in settings["plot_groups"]:
     print(F"\nProcessing plot group: {grp_key}")
     group_config = settings["plot_groups"][grp_key]
@@ -173,26 +182,26 @@ for grp_key in settings["plot_groups"]:
         plot_config["params"]["A_V"] = A_V
         plot_config["params"]["distance_pc"] = d
         plot_config["params"]["mu"] = mu
-        epochs = spectra_lookup.get_spectra_epochs(eruption_jd)
 
-        # Get the lightcurves for this plot
+        # Get the lightcurves for this plot and apply any metadata overrides
         plot_lightcurves = {}
         for key_match, metadata_overrides in plot_config["lightcurves"].items():
-            # Get all the matching lightcurves
             matches = {k: v for k, v in lightcurves.items() if k.startswith(key_match)}
             for key in matches:
                 lightcurve = deepcopy(lightcurves[key])
                 lightcurve.metadata.conflate(metadata_overrides)
                 plot_lightcurves[key] = lightcurve
 
-        # Get the FitSets for this plot
+        # Get the FitSets for this plot and apply any metadata overrides
         plot_fit_sets = {}
         for key_match, metadata_overrides in plot_config["fit_sets"].items():
-            # Get all the matching FitSets and
             matches = {k: v for k, v in fit_sets.items() if k.startswith(key_match)}
             for key, item in matches.items():
                 fit_set = deepcopy(fit_sets[key])
                 fit_set.metadata.conflate(metadata_overrides)
                 plot_fit_sets[key] = fit_set
+
+        # The timing of any spectra captured
+        epochs = spectra_lookup.get_spectra_epochs(eruption_jd)
 
         PlotHelper.plot_to_file(plot_config, lightcurves=plot_lightcurves, fit_sets=plot_fit_sets, epochs=epochs)
