@@ -41,31 +41,34 @@ def fit_blue_arm_spectrum(spectrum: Spectrum1DEx) -> List[CompoundModel]:
 
     # The hints for H-beta.  Early ones are a single Gaussian but later are double.
     if unc_spec.obs_date < datetime(2019, 8, 30):
-        beta_hint = _named_gaussian(amplitude=2e-12, mean=4861.4, stddev=35, subscript="1")
+        beta_hint = _named_gaussian(amplitude=5e-12, mean=4861.4, stddev=35, subscript="1")
     else:
-        beta_hint = _named_gaussian(amplitude=2e-12, mean=(4855, 4865), stddev=(1, 10), subscript="2") \
-                    + _named_gaussian(amplitude=0.5e-12, mean=(4855, 4865), stddev=(10, 25), subscript="1")
+        beta_hint = _named_gaussian(amplitude=4e-12, mean=(4855, 4865), stddev=(1, 10), subscript="2") \
+                    + _named_gaussian(amplitude=2e-12, mean=(4855, 4865), stddev=(10, 50), subscript="1")
 
     # The hints of H-gamma.  Early ones are a single Gaussian but later are double.
     if unc_spec.obs_date < datetime(2019, 8, 30):
         gamma_hint = _named_gaussian(amplitude=2e-12, mean=4340.5, stddev=25, subscript="1")
     else:
-        gamma_hint = _named_gaussian(amplitude=2e-12, mean=(4335, 4345), stddev=(1, 7), subscript="2") \
-                    + _named_gaussian(amplitude=0.2e-12, mean=(4335, 4345), stddev=(7, 15), subscript="1")
+        gamma_hint = _named_gaussian(amplitude=4e-12, mean=(4335, 4345), stddev=(1, 7), subscript="2") \
+                    + _named_gaussian(amplitude=2e-12, mean=(4335, 4345), stddev=(7, 50), subscript="1")
 
     # The hints for H-delta.  Early ones are a single Gaussian but later ones are double.
     if unc_spec.obs_date < datetime(2019, 8, 30):
         delta_hint = _named_gaussian(amplitude=2e-12, mean=4101.7, stddev=20, subscript="1")
     else:
-        delta_hint = _named_gaussian(amplitude=1e-12, mean=(4095, 4106), stddev=(1, 7), subscript="2") \
-                    + _named_gaussian(amplitude=0.2e-12, mean=(4095, 4106), stddev=(7, 15), subscript="1")
+        delta_hint = _named_gaussian(amplitude=3e-12, mean=(4095, 4106), stddev=(1, 7), subscript="2") \
+                    + _named_gaussian(amplitude=1e-12, mean=(4095, 4106), stddev=(7, 50), subscript="1")
 
     # The hints for the He I 4686 line.  Isn't present in the early spectra.
     if unc_spec.obs_date < datetime(2019, 9, 2):
         he4686_hint = None
+    elif unc_spec.obs_date < datetime(2019, 9, 5):
+        he4686_hint = _named_gaussian(amplitude=4e-12, mean=(4680, 4690), stddev=(1, 5), subscript="2") \
+                     + _named_gaussian(amplitude=0.5e-12, mean=(4680, 4690), stddev=(7, 50), subscript="1")
     else:
-        he4686_hint = _named_gaussian(amplitude=2e-12, mean=(4680, 4690), stddev=(1, 3), subscript="2") \
-                     + _named_gaussian(amplitude=0.2e-12, mean=(4680, 4690), stddev=(3, 8), subscript="1")
+        he4686_hint = _named_gaussian(amplitude=6e-12, mean=(4680, 4690), stddev=(1, 5), subscript="2") \
+                     + _named_gaussian(amplitude=0.2e-12, mean=(4680, 4690), stddev=(7, 50), subscript="1")
 
     # Now we fit the lines + continuum to the spectrum + uncertainty based on the hints.
     # From the astropy documentation; to get 1/sigma^2 weighting pass in 1/sigma

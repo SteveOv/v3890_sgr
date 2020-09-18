@@ -1,51 +1,51 @@
 
-# SBANDS: NOAO/IRAF V2.16 steveo@Steves-Mac.local Fri 15:40:29 21-Aug-2020
+# SBANDS: NOAO/IRAF V2.16 steveo@Steves-Mac.local Fri 11:04:21 18-Sep-2020
 #   bands = bandpass.txt, norm = yes, mag = no
 #       band     filter wavelength      width
 #          U       none      3656.       340.
-#          B       none      4353.       781.
+#          B b_band2.txt      4353.       781.
 #          V       none      5477.       991.
-#          R       none      6349.       897.
+#          R r_band2.txt      6349.       897.
 #          I       none      8797.      2892.
 #
 #                 spectrum    band        flux
-./calibrated/cal_b_e_20190828_3.fits[*,1](1)       B 6.34790E-13
-./calibrated/cal_b_e_20190828_11.fits[*,1](1)       B 9.67548E-13
-./calibrated/cal_b_e_20190830_5.fits[*,1](1)       B 6.27379E-13
-./calibrated/cal_b_e_20190831_5.fits[*,1](1)       B 3.57901E-13
-./calibrated/cal_b_e_20190831_11.fits[*,1](1)       B 3.15411E-13
-./calibrated/cal_b_e_20190901_5.fits[*,1](1)       B 3.34849E-13
-./calibrated/cal_b_e_20190901_11.fits[*,1](1)       B 1.89696E-13
-./calibrated/cal_b_e_20190902_5.fits[*,1](1)       B 3.41798E-13
-./calibrated/cal_b_e_20190902_7.fits[*,1](1)       B 2.84326E-13
-./calibrated/cal_b_e_20190903_5.fits[*,1](1)       B 2.86212E-13
-./calibrated/cal_b_e_20190903_7.fits[*,1](1)       B 2.48210E-13
-./calibrated/cal_b_e_20190904_4.fits[*,1](1)       B 2.93339E-13
-./calibrated/cal_b_e_20190905_5.fits[*,1](1)       B 2.51051E-13
-./calibrated/cal_b_e_20190905_7.fits[*,1](1)       B 1.21134E-13
-./calibrated/cal_b_e_20190910_1.fits[*,1](1)       B 1.68551E-13
-./calibrated/cal_b_e_20190911_5.fits[*,1](1)       B 1.14096E-13
-./calibrated/cal_b_e_20190911_7.fits[*,1](1)       B 5.97705E-14
-./calibrated/cal_b_e_20190913_5.fits[*,1](1)       B 1.45967E-14
-./calibrated/cal_b_e_20190913_7.fits[*,1](1)       B 3.45840E-14
-./calibrated/cal_b_e_20190915_5.fits[*,1](1)       B 4.67948E-14
-./calibrated/cal_r_e_20190828_3.fits[*,1](1)       R 2.03695E-12
-./calibrated/cal_r_e_20190828_11.fits[*,1](1)       R 2.06300E-12
-./calibrated/cal_r_e_20190830_5.fits[*,1](1)       R 1.01696E-12
-./calibrated/cal_r_e_20190831_5.fits[*,1](1)       R 6.93841E-13
-./calibrated/cal_r_e_20190831_11.fits[*,1](1)       R 6.20489E-13
-./calibrated/cal_r_e_20190901_5.fits[*,1](1)       R 8.48131E-13
-./calibrated/cal_r_e_20190901_11.fits[*,1](1)       R 8.49803E-13
-./calibrated/cal_r_e_20190902_5.fits[*,1](1)       R 6.64106E-13
-./calibrated/cal_r_e_20190902_7.fits[*,1](1)       R 6.70956E-13
-./calibrated/cal_r_e_20190903_5.fits[*,1](1)       R 5.51859E-13
-./calibrated/cal_r_e_20190903_7.fits[*,1](1)       R 3.84260E-13
-./calibrated/cal_r_e_20190904_4.fits[*,1](1)       R 4.05089E-13
-./calibrated/cal_r_e_20190905_5.fits[*,1](1)       R 3.39973E-13
-./calibrated/cal_r_e_20190905_7.fits[*,1](1)       R 2.32552E-13
-./calibrated/cal_r_e_20190910_1.fits[*,1](1)       R 1.75495E-13
-./calibrated/cal_r_e_20190911_5.fits[*,1](1)       R 1.38515E-13
-./calibrated/cal_r_e_20190911_7.fits[*,1](1)       R 1.05867E-13
-./calibrated/cal_r_e_20190913_5.fits[*,1](1)       R 3.47049E-14
-./calibrated/cal_r_e_20190913_7.fits[*,1](1)       R 7.22719E-14
-./calibrated/cal_r_e_20190915_5.fits[*,1](1)       R 8.57365E-14
+./calibrated/cal_b_e_20190828_3.fits[*,1](1)       B 6.30492E-13
+./calibrated/cal_b_e_20190828_11.fits[*,1](1)       B 9.61856E-13
+./calibrated/cal_b_e_20190830_5.fits[*,1](1)       B 6.21404E-13
+./calibrated/cal_b_e_20190831_5.fits[*,1](1)       B 3.55393E-13
+./calibrated/cal_b_e_20190831_11.fits[*,1](1)       B 3.12891E-13
+./calibrated/cal_b_e_20190901_5.fits[*,1](1)       B 3.30870E-13
+./calibrated/cal_b_e_20190901_11.fits[*,1](1)       B 1.84033E-13
+./calibrated/cal_b_e_20190902_5.fits[*,1](1)       B 3.37153E-13
+./calibrated/cal_b_e_20190902_7.fits[*,1](1)       B 2.78809E-13
+./calibrated/cal_b_e_20190903_5.fits[*,1](1)       B 2.81919E-13
+./calibrated/cal_b_e_20190903_7.fits[*,1](1)       B 2.44566E-13
+./calibrated/cal_b_e_20190904_4.fits[*,1](1)       B 2.87338E-13
+./calibrated/cal_b_e_20190905_5.fits[*,1](1)       B 2.46308E-13
+./calibrated/cal_b_e_20190905_7.fits[*,1](1)       B 1.18608E-13
+./calibrated/cal_b_e_20190910_1.fits[*,1](1)       B 1.64737E-13
+./calibrated/cal_b_e_20190911_5.fits[*,1](1)       B 1.11405E-13
+./calibrated/cal_b_e_20190911_7.fits[*,1](1)       B 5.81072E-14
+./calibrated/cal_b_e_20190913_5.fits[*,1](1)       B 1.40740E-14
+./calibrated/cal_b_e_20190913_7.fits[*,1](1)       B 3.34190E-14
+./calibrated/cal_b_e_20190915_5.fits[*,1](1)       B 4.53077E-14
+./calibrated/cal_r_e_20190828_3.fits[*,1](1)       R 1.92594E-12
+./calibrated/cal_r_e_20190828_11.fits[*,1](1)       R 1.95264E-12
+./calibrated/cal_r_e_20190830_5.fits[*,1](1)       R 9.61248E-13
+./calibrated/cal_r_e_20190831_5.fits[*,1](1)       R 6.51284E-13
+./calibrated/cal_r_e_20190831_11.fits[*,1](1)       R 5.82118E-13
+./calibrated/cal_r_e_20190901_5.fits[*,1](1)       R 7.99124E-13
+./calibrated/cal_r_e_20190901_11.fits[*,1](1)       R 8.02190E-13
+./calibrated/cal_r_e_20190902_5.fits[*,1](1)       R 6.33142E-13
+./calibrated/cal_r_e_20190902_7.fits[*,1](1)       R 6.41304E-13
+./calibrated/cal_r_e_20190903_5.fits[*,1](1)       R 5.20980E-13
+./calibrated/cal_r_e_20190903_7.fits[*,1](1)       R 3.62216E-13
+./calibrated/cal_r_e_20190904_4.fits[*,1](1)       R 3.81718E-13
+./calibrated/cal_r_e_20190905_5.fits[*,1](1)       R 3.20861E-13
+./calibrated/cal_r_e_20190905_7.fits[*,1](1)       R 2.21146E-13
+./calibrated/cal_r_e_20190910_1.fits[*,1](1)       R 1.63557E-13
+./calibrated/cal_r_e_20190911_5.fits[*,1](1)       R 1.30031E-13
+./calibrated/cal_r_e_20190911_7.fits[*,1](1)       R 9.88374E-14
+./calibrated/cal_r_e_20190913_5.fits[*,1](1)       R 3.24799E-14
+./calibrated/cal_r_e_20190913_7.fits[*,1](1)       R 6.80198E-14
+./calibrated/cal_r_e_20190915_5.fits[*,1](1)       R 8.00860E-14

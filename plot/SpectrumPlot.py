@@ -10,6 +10,7 @@ class SpectrumPlot(SpectralPlot):
         self._default_y_size = 1
 
         self._default_annotate_fits = False
+        self._default_subtract_continuum = False
         self._default_show_line_labels = True
 
         self._default_y_ticks = [0]
@@ -22,6 +23,10 @@ class SpectrumPlot(SpectralPlot):
     @property
     def show_line_labels(self) -> bool:
         return self._param("show_line_labels", self._default_show_line_labels)
+
+    @property
+    def subtract_continuum(self) -> bool:
+        return self._param("subtract_continuum", self._default_subtract_continuum)
 
     def _configure_ax(self, ax: Axes, **kwargs):
         # Get the spectra - we'll base the configuration on the data
@@ -72,6 +77,7 @@ class SpectrumPlot(SpectralPlot):
 
     def _draw_spectra(self, ax: Axes, spectra: Dict[str, Spectrum1DEx], line_fits: Dict[str, List[Model]]):
         if self.show_data and spectra is not None:
+            # TODO: currently doesn't support subtract continuum
             for spec_key, spectrum in spectra.items():
                 color = "b" if spectrum.is_blue else "r"
                 label = "Blue arm" if spectrum.is_blue else "Red arm"
@@ -83,7 +89,8 @@ class SpectrumPlot(SpectralPlot):
             for fit_key, line_fit_list in line_fits.items():
                 spectrum = spectra[fit_key] if fit_key in spectra else None
                 for line_fit in line_fit_list:
-                    fit_utilities.draw_fit_on_ax(ax, spectrum, line_fit, annotate=self.annotate_fits, line_width=0.2)
+                    fit_utilities.draw_fit_on_ax(ax, spectrum, line_fit, annotate=self.annotate_fits,
+                                                 subtract_continuum=self.subtract_continuum, line_width=0.2)
         return
 
     def _draw_spectral_line_labels(self, ax: Axes, spectral_line_labels: List[Dict]):

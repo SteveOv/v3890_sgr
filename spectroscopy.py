@@ -52,9 +52,9 @@ for plot_group_config in settings["plots"]:
         # Do the print!
         plot_config["params"]["eruption_jd"] = eruption_jd
         if plot_config["type"] == "SpectrumPlot":
-            plot_config["params"]["y_lim"] = [-1e-12, 21e-12]
-            plot_config["params"]["y_ticks"] = [0, 5e-12, 10e-12, 15e-12, 20e-12]
-            plot_config["params"]["y_tick_labels"] = ["0", "5", "10", "15", "20"]
+            plot_config["params"]["y_lim"] = [-1e-12, 27e-12]
+            plot_config["params"]["y_ticks"] = [0, 5e-12, 10e-12, 15e-12, 20e-12, 25e-12]
+            plot_config["params"]["y_tick_labels"] = ["0", "5", "10", "15", "20", "25"]
             plot_config["params"]["y_label"] = f"Flux density [$10^{{-12}}$ {flux_units:latex_inline}]"
 
         line_labels = plot_config["spectral_line_labels"] if "spectral_line_labels" in plot_config else None

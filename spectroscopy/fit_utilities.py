@@ -51,23 +51,30 @@ def calculate_flux(fit: Gaussian1D) -> Quantity:
 
 
 def draw_fit_on_ax(ax: Axes, spectrum: Spectrum1DEx, fit: Model, annotate: bool = True,
-                   color: str = "m", line_width: float = 0.5, y_shift: float = 0, split=False):
+                   color: str = "m", line_width: float = 0.5, y_shift: float = 0,
+                   subtract_continuum: bool = False, split: bool = False):
     draw_fit_on_ax_over_range(ax, spectrum.min_wavelength, spectrum.max_wavelength, fit, annotate=annotate,
-                              color=color, line_width=line_width, y_shift=y_shift, split=split)
+                              color=color, line_width=line_width, y_shift=y_shift,
+                              subtract_continuum=subtract_continuum, split=split)
     return
 
 
 def draw_fit_on_ax_over_range(ax: Axes, start: Quantity, end: Quantity, fit: Model, annotate: bool = True,
-                              color: str = "m", line_width: float = 0.5, y_shift: float = 0, split=False):
+                              color: str = "m", line_width: float = 0.5, y_shift: float = 0,
+                              split: bool = False, subtract_continuum: bool = False):
     x_plot = Quantity(np.linspace(start.value, end.value, 1000), start.unit)
 
     if not split or not isinstance(fit, CompoundModel):
-        # Draw the whole model
+        # Draw the whole model, and optionally subtract the continuum
         y_plot = fit(x_plot)
+        if subtract_continuum and isinstance(fit, CompoundModel) and "continuum" in fit.submodel_names:
+            continuum_fit = fit["continuum"]
+            y_plot = np.subtract(y_plot, continuum_fit(x_plot))
+
         ax.plot(x_plot, np.add(y_plot, y_shift), "-",
                 color=_fit_colors[0], linewidth=line_width, alpha=0.5, zorder=2)
     else:
-        # Draw the individual elements (except continuum)
+        # Draw the individual elements (except continuum) - cannot subtract the continuum as all offest from zero
         color_ix = 0
         for sub in fit:
             if isinstance(sub, Polynomial1D) and "cont" in sub.name:
@@ -89,8 +96,19 @@ def draw_fit_on_ax_over_range(ax: Axes, start: Quantity, end: Quantity, fit: Mod
 
         # Have to take the units off for this, otherwise you get an UnitConversionError when saving the plot
         peak_position = (fit.mean_0.value, max(y_plot).value)
-        ax.annotate(text, xycoords="data", xy=peak_position, textcoords="offset pixels", xytext=(20, 0),
-                    color=color, fontsize="x-small")
+        if "delta" in fit.name:
+            xytext = (0.05, 0.5)
+        elif "gamma" in fit.name:
+            xytext = (0.1, 0.6)
+        elif "beta" in fit.name:
+            xytext = (0.25, 0.7)
+        elif "He" in fit.name:
+            xytext = (0.2, 0.85)
+        else:
+            xytext = (0.65, 0.8)
+
+        ax.annotate(text, xycoords="data", xy=peak_position, textcoords="axes fraction", xytext=xytext,
+                    color=color, fontsize="4")
     return
 
 
@@ -155,25 +173,24 @@ def describe_gaussian_fit(fit: Gaussian1D, for_matplotlib: bool = False, include
     fwhm = fit.fwhm
 
     text = f"{fit.name}: " if fit.name is not None and len(fit.name) > 0 else ""
-    text += f"$\\mu$={mu.value:.1f} {mu.unit:latex_inline}" if for_matplotlib else f"{CCYAN}mu = {mu:.2f}{CEND}"
-    text += f",$\\sigma$={sigma.value:.1f} {sigma.unit:latex_inline}" if for_matplotlib else f", sigma = {sigma:.2f}"
-    text += f",FWHM={fwhm.value:.1f} {fwhm.unit:latex_inline}" if for_matplotlib else f", {CCYAN}FWHM = {fwhm:.2f}{CEND}"
+    text += f" $\\mu$={mu.value:.1f} {mu.unit:latex_inline}" if for_matplotlib else f"{CCYAN}mu = {mu:.2f}{CEND}"
+    text += f", $\\sigma$={sigma.value:.1f} {sigma.unit:latex_inline}" if for_matplotlib else f", sigma = {sigma:.2f}"
+    text += "" if for_matplotlib else f", {CCYAN}FWHM = {fwhm:.2f}{CEND}"
 
     if include_amplitude:
         amplitude = fit.amplitude.quantity
-        text += ",A={amplitude.value:.1e} {amplitude.unit:latex_inline}" if for_matplotlib else f", A = {amplitude:.2e}"
+        text += ", A={amplitude.value:.1e} {amplitude.unit:latex_inline}" if for_matplotlib else f", A = {amplitude:.2e}"
 
     if include_flux:
         flux = calculate_flux(fit)
-        text += f",flux=${flux.value:.2e}$ {flux.unit:latex_inline}" if for_matplotlib else f", {CCYAN}F = {flux:.3e}{CEND}"
+        text += f", flux=${flux.value:.2e}$ {flux.unit:latex_inline}" if for_matplotlib else f", {CCYAN}F = {flux:.3e}{CEND}"
 
     if include_velocity:
         v_sigma = calculate_velocity_from_sigma(lambda_0=mu, sigma=sigma).to("km / s")
         v_2sigma = calculate_velocity_from_sigma(lambda_0=mu, sigma=2 * sigma).to("km / s")
         v_fwhm = calculate_velocity_from_sigma(lambda_0=mu, sigma=fwhm).to("km / s")
         if for_matplotlib:
-            text += f",$v_{{\\sigma}}$={v_sigma.value:.3e} {v_sigma.unit:latex_inline}"
-            text += f",$v_{{2\\sigma}}$={v_2sigma.value:.3e} {v_2sigma.unit:latex_inline}"
+            text += f", $v_{{fwhm}}$={v_fwhm.value:.1f} {v_sigma.unit:latex_inline}"
         else:
             text += f", v_sig = {v_sigma:.3e}, {CCYAN}v_2sig = {v_2sigma:.3e}{CEND}, v_fwhm = {v_fwhm:.3e}"
     return text

@@ -47,9 +47,9 @@
         "type": "SpectralLineEvolutionPlot",
         "file_name": "./output/spec/V3890Sgr-2019-line-evo-H-alpha-delta-t.pdf",
         "title": "Evolution of the H$\\alpha$ line.\nVertically shifted proportionally to $\\Delta t$",
-        "params": {"show_legend": false, "show_data": true, "show_fits": false, "x_size": 1, "y_size": 1.3,
+        "params": {"show_legend": false, "show_data": true, "show_fits": false, "x_size": 1, "y_size": 1.3, "x_lim": [-7000, 7000],
           "lambda_0": 6562.79, "fit_name": "H$\\alpha$", "y_shift": -1e-12, "y_shift_type": "delta-t", "subtract_continuum": true,
-          "y_lim": [-20e-12, 10e-12], "y_ticks": [-20e-12, -15e-12, -10e-12, -5e-12, 0, 5e-12, 10e-12], "y_tick_labels": ["-20", "-15","-10", "5", "0", "5", "10"]},
+          "y_lim": [-20e-12, 17e-12], "y_ticks": [-20e-12, -15e-12, -10e-12, -5e-12, 0, 5e-12, 10e-12, 15e-12], "y_tick_labels": ["-20", "-15","-10", "5", "0", "5", "10", "15"]},
         "spectra": [
           "r_e_20190828_11","r_e_20190830_5","r_e_20190831_11", "r_e_20190901_5", "r_e_20190902_5", "r_e_20190903_7",
           "r_e_20190904_4", "r_e_20190905_7", "r_e_20190910_1", "r_e_20190911_5", "r_e_20190913_5", "r_e_20190915_5"],
@@ -61,9 +61,9 @@
         "type": "SpectralLineEvolutionPlot",
         "file_name": "./output/spec/V3890Sgr-2019-line-fit-evo-H-alpha.pdf",
         "title": "Evolution of the H$\\alpha$ fitted line",
-        "params": {"show_legend": false, "show_data": false, "show_fits": true, "x_size": 1, "y_size": 1,
+        "params": {"show_legend": false, "show_data": false, "show_fits": true, "x_size": 1, "y_size": 1, "x_lim": [-7000, 7000],
           "lambda_0": 6562.79, "fit_name": "H$\\alpha$", "y_shift": 0, "subtract_continuum": true,
-          "y_lim": [-1e-12, 10e-12], "y_ticks": [0, 5e-12, 10e-12], "y_tick_labels": ["0", "5", "10"]
+          "y_lim": [-1e-12, 17e-12], "y_ticks": [0, 5e-12, 10e-12, 15e-12], "y_tick_labels": ["0", "5", "10", "15"]
           },
         "spectra": ["r_e_"],
         "line_fits": ["r_e_"]
@@ -72,9 +72,9 @@
         "type": "SpectralLineEvolutionPlot",
         "file_name": "./output/spec/V3890Sgr-2019-line-evo-H-beta.pdf",
         "title": "Evolution of the H$\\beta$ line\nVertically shifted proportionally to $\\Delta t$",
-        "params": {"show_legend": false, "show_data": true, "show_fits": false, "x_size": 1, "y_size": 1.3,
+        "params": {"show_legend": false, "show_data": true, "show_fits": false, "x_size": 1, "y_size": 1.3, "x_lim": [-7000, 7000],
           "lambda_0": 4861.35, "fit_name": "H$\\beta$", "y_shift": -1e-12, "y_shift_type": "delta-t", "subtract_continuum": true,
-          "y_lim": [-20e-12, 5e-12], "y_ticks": [-20e-12, -15e-12, -10e-12, -5e-12, 0, 5e-12], "y_tick_labels": ["-20", "-15","-10", "5", "0", "5"]},
+          "y_lim": [-20e-12, 12e-12], "y_ticks": [-20e-12, -15e-12, -10e-12, -5e-12, 0, 5e-12, 10e-12], "y_tick_labels": ["-20", "-15","-10", "5", "0", "5", "10"]},
         "spectra": [
           "b_e_20190828_11","b_e_20190830_5","b_e_20190831_11", "b_e_20190901_5", "b_e_20190902_5", "b_e_20190903_7",
           "b_e_20190904_4", "b_e_20190905_7", "b_e_20190910_1", "b_e_20190911_5", "b_e_20190913_5", "b_e_20190915_5"],
@@ -163,7 +163,7 @@
         "line_fits": ["b_e_20190830_5", "r_e_20190830_5"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4444": "%s?", "4618": "%s?", "4825": "%s?",
+            "4444": "%s?", "4618": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *"},
           {"4144": "He I %s", "4388": "He I %s", "4471": "He I %s", "4517": "N III %s", "4922": "He I %s", "5016": "He I %s", "5048": "He I %s",
             "6678": "He I %s", "7065": "He I %s"},
@@ -188,7 +188,7 @@
         "line_fits": ["b_e_20190831_5", "r_e_20190831_5"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4825": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4517": "N III %s",
             "4922": "He I %s", "5016": "He I %s", "5048": "He I %s",
@@ -212,7 +212,7 @@
         "line_fits": ["b_e_20190831_11", "r_e_20190831_11"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4825": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4517": "N III %s",
             "4922": "He I %s", "5016": "He I %s", "5048": "He I %s",
@@ -238,7 +238,7 @@
         "line_fits": ["b_e_20190901_5", "r_e_20190901_5"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4825": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4517": "N III %s",
             "4638": "N III %s", "4922": "He I %s", "5016": "He I %s", "5048": "He I %s",
@@ -262,7 +262,7 @@
         "line_fits": ["b_e_20190901_11", "r_e_20190901_11"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4825": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4517": "N III %s",
             "4638": "N III %s", "4922": "He I %s", "5016": "He I %s", "5048": "He I %s",
@@ -288,7 +288,7 @@
         "line_fits": ["b_e_20190902_5", "r_e_20190902_5"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "4825": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *",
             "6432": "Fe II %s (40) +"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4686": "He II %s",
@@ -315,7 +315,7 @@
         "line_fits": ["b_e_20190902_7", "r_e_20190902_7"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "4825": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *",
             "6432": "Fe II %s (40) +"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4686": "He II %s",
@@ -344,7 +344,7 @@
         "line_fits": ["b_e_20190903_5", "r_e_20190903_5"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "4825": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *",
             "6432": "Fe II %s (40) +"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4686": "He II %s",
@@ -371,7 +371,7 @@
         "line_fits": ["b_e_20190903_7", "r_e_20190903_7"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "4825": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *",
             "6432": "Fe II %s (40) +"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4686": "He II %s",
@@ -400,7 +400,7 @@
         "line_fits": ["b_e_20190904_4", "r_e_20190904_4"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "4825": "%s?", "6239": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "6239": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *", "6106": "O IV %s *",
             "6432": "Fe II %s (40) +"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4686": "He II %s",
@@ -429,7 +429,7 @@
         "line_fits": ["b_e_20190905_5", "r_e_20190905_5"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "4825": "%s?", "6239": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "6239": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *", "6106": "O IV %s *", "6315": "[K V][S III] %s *",
             "6432": "Fe II %s (40) +"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4686": "He II %s",
@@ -456,7 +456,7 @@
         "line_fits": ["b_e_20190905_7", "r_e_20190905_7"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "4825": "%s?", "6239": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "6239": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *", "6106": "O IV %s *", "6315": "[K V][S III] %s *",
             "6432": "Fe II %s (40) +"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4686": "He II %s",
@@ -485,7 +485,7 @@
         "line_fits": ["b_e_20190910_1", "r_e_20190910_1"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "4825": "%s?", "6239": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "6239": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *", "6106": "O IV %s *", "6315": "[K V][S III] %s *",
             "6432": "Fe II %s (40) +"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4686": "He II %s",
@@ -514,7 +514,7 @@
         "line_fits": ["b_e_20190911_5", "r_e_20190911_5"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "4825": "%s?", "6239": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "6239": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *", "6106": "O IV %s *", "6315": "[K V][S III] %s *",
             "6432": "Fe II %s (40) +"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4686": "He II %s",
@@ -541,7 +541,7 @@
         "line_fits": ["b_e_20190911_7", "r_e_20190911_7"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "4825": "%s?", "6239": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "6239": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *", "6106": "O IV %s *", "6315": "[K V][S III] %s *",
             "6432": "Fe II %s (40) +"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4686": "He II %s",
@@ -570,7 +570,7 @@
         "line_fits": ["b_e_20190913_5", "r_e_20190913_5"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "4825": "%s?", "6239": "%s?", "7887": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "6239": "%s?", "7887": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *", "6106": "O IV %s *", "6315": "[K V][S III] %s *",
             "6432": "Fe II %s (40) +"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4686": "He II %s",
@@ -597,7 +597,7 @@
         "line_fits": ["b_e_20190913_7", "r_e_20190913_7"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "4825": "%s?", "6239": "%s?", "7887": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "6239": "%s?", "7887": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *", "6106": "O IV %s *", "6315": "[K V][S III] %s *",
             "6432": "Fe II %s (40) +"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4686": "He II %s",
@@ -625,7 +625,7 @@
         "line_fits": ["b_e_20190915_5", "r_e_20190915_5"],
         "spectral_line_labels": [
           {"6562.79": "H$\\alpha$", "4861.35": "H$\\beta$", "4340.472": "H$\\gamma$", "4101.734": "H$\\delta$",
-            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "4825": "%s?", "6239": "%s?", "7887": "%s?",
+            "4127": "%s?", "4268": "%s?", "4444": "%s?", "4618": "%s?", "4730": "%s?", "6239": "%s?", "7887": "%s?",
             "5041": "Si II %s *", "5056": "\nSi II %s *", "6106": "O IV %s *", "6315": "[K V][S III] %s *",
             "6432": "Fe II %s (40) +"},
           {"4144": "He I %s", "4200": "He II %s", "4388": "He I %s", "4471": "He I %s", "4686": "He II %s",
@@ -639,6 +639,209 @@
             "6347": "Si II %s (2)", "6375": "Si II %s (2)", "7773": "O I (%s)",
             "7308": "Fe II %s (73)", "7462": "Fe II %s (73)", "7712": "Fe II %s (73)"},
           {"4363": "[O III] %s", "4942": "[Fe VII]", "6375": "[Fe X] %s", "7892": "[Fe XI] %s"}
+        ]
+      }
+    ],
+    "Spec FITS ONLY": [
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190828_3.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=1.08$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190828_3", "r_e_20190828_3"],
+        "line_fits": ["b_e_20190828_3", "r_e_20190828_3"],
+        "spectral_line_labels": [
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190828_11.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=1.13$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190828_11", "r_e_20190828_11"],
+        "line_fits": ["b_e_20190828_11", "r_e_20190828_11"],
+        "spectral_line_labels": [
+
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190830_5.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=3.08$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190830_5", "r_e_20190830_5"],
+        "line_fits": ["b_e_20190830_5", "r_e_20190830_5"],
+        "spectral_line_labels": [
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190831_5.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=4.08$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190831_5", "r_e_20190831_5"],
+        "line_fits": ["b_e_20190831_5", "r_e_20190831_5"],
+        "spectral_line_labels": [
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190831_11.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=4.15$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190831_11", "r_e_20190831_11"],
+        "line_fits": ["b_e_20190831_11", "r_e_20190831_11"],
+        "spectral_line_labels": [
+        ]
+      },
+            {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190901_5.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=5.08$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190901_5", "r_e_20190901_5"],
+        "line_fits": ["b_e_20190901_5", "r_e_20190901_5"],
+        "spectral_line_labels": [
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190901_11.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=5.15$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190901_11", "r_e_20190901_11"],
+        "line_fits": ["b_e_20190901_11", "r_e_20190901_11"],
+        "spectral_line_labels": [
+        ]
+      },
+            {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190902_5.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=6.08$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190902_5", "r_e_20190902_5"],
+        "line_fits": ["b_e_20190902_5", "r_e_20190902_5"],
+        "spectral_line_labels": [
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190902_7.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=6.14$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190902_7", "r_e_20190902_7"],
+        "line_fits": ["b_e_20190902_7", "r_e_20190902_7"],
+        "spectral_line_labels": [
+        ]
+      },
+            {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190903_5.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=7.09$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190903_5", "r_e_20190903_5"],
+        "line_fits": ["b_e_20190903_5", "r_e_20190903_5"],
+        "spectral_line_labels": [
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190903_7.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=7.15$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190903_7", "r_e_20190903_7"],
+        "line_fits": ["b_e_20190903_7", "r_e_20190903_7"],
+        "spectral_line_labels": [
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190904_4.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=8.09$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190904_4", "r_e_20190904_4"],
+        "line_fits": ["b_e_20190904_4", "r_e_20190904_4"],
+        "spectral_line_labels": [
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190905_5.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=9.07$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190905_5", "r_e_20190905_5"],
+        "line_fits": ["b_e_20190905_5", "r_e_20190905_5"],
+        "spectral_line_labels": [
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190905_7.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=9.15$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190905_7", "r_e_20190905_7"],
+        "line_fits": ["b_e_20190905_7", "r_e_20190905_7"],
+        "spectral_line_labels": [
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190910_1.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=14.08$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190910_1", "r_e_20190910_1"],
+        "line_fits": ["b_e_20190910_1", "r_e_20190910_1"],
+        "spectral_line_labels": [
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190911_5.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=15.07$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190911_5", "r_e_20190911_5"],
+        "line_fits": ["b_e_20190911_5", "r_e_20190911_5"],
+        "spectral_line_labels": [
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190911_7.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=15.13$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190911_7", "r_e_20190911_7"],
+        "line_fits": ["b_e_20190911_7", "r_e_20190911_7"],
+        "spectral_line_labels": [
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190913_5.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=17.07$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190913_5", "r_e_20190913_5"],
+        "line_fits": ["b_e_20190913_5", "r_e_20190913_5"],
+        "spectral_line_labels": [
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190913_7.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=17.13$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190913_7", "r_e_20190913_7"],
+        "line_fits": ["b_e_20190913_7", "r_e_20190913_7"],
+        "spectral_line_labels": [
+        ]
+      },
+      {
+        "type": "SpectrumPlot",
+        "file_name": "./output/spec/V3890Sgr-2019-fit-20190915_5.pdf",
+        "title": "Prominent continuum subtracted fitted spectral lines at $\\Delta t=19.07$ d",
+        "params": { "show_data": false, "show_fits": true, "subtract_continuum": true, "annotate_fits": true},
+        "spectra": ["b_e_20190915_5", "r_e_20190915_5"],
+        "line_fits": ["b_e_20190915_5", "r_e_20190915_5"],
+        "spectral_line_labels": [
         ]
       }
     ]
