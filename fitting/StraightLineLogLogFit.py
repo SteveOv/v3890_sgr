@@ -12,6 +12,15 @@ class StraightLineLogLogFit(StraightLineLogXFit):
     This subclass need only look after converting y values to/from log(y)
     """
 
+    @property
+    def alpha(self) -> UFloat:
+        """
+        The alpha value of the slope power law as expressed as t^alpha
+        """
+        # The slope here is not propto 1/-2.5 as here we measure log counts (mag are inverted hence the minus).
+        # In this case the slope is propto 1/2.5
+        return self.slope / ufloat(2.5, 0)
+
     @classmethod
     def fit_to_data(cls, id: int, xi: List[float], yi: List[float],
                     dxi: List[float] = None, dyi: List[float] = None,
