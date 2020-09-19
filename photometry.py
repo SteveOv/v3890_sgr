@@ -78,6 +78,24 @@ for fit_set_key, fit_set in fit_sets.items():
     print(f"\n\t\tFit set {fit_set_key}\n{fit_set.to_latex()}\n")
 
 print(F"\n\n****************************************************************")
+print(F"* Analysing photometry data; SSS turn-on/off ")
+print(F"* Using Kato & Hachisu (2020) threshold of SSS phase > 10% maximum")
+print(F"****************************************************************")
+# Find the SSS maximum value and timing.
+fits_sss = fit_sets["V3890-Sgr-2019-X-ray-ratios-nominal-hard-soft/soft_data"]
+sss_peak_time, sss_peak = fits_sss.find_peak_y_value()
+
+# The uncertainty returned is huge because of the near vertical nature of the slope so just use the nominal.
+sss_peak = ufloat(sss_peak.nominal_value, 0)
+print(F"[SSS] peak SSS count is {sss_peak:.2f} at delta_t={sss_peak_time:.2f}")
+
+sss_threshold = np.divide(sss_peak, 10)
+sss_turn_on = fits_sss.find_x_value(sss_threshold)
+sss_turn_off = fits_sss.find_x_value(sss_threshold, min_x=sss_peak_time)
+print(F"[SSS] SSS turn-on = {sss_turn_on:.2f}")
+print(F"[SSS] SSS turn-off = {sss_turn_off:.2f}")
+
+print(F"\n\n****************************************************************")
 print(F"* Analysing photometry data; colour excess, MMRD and distance ")
 print(F"****************************************************************")
 tt = []

@@ -1,5 +1,5 @@
 from fitting.StraightLineLogXFit import *
-
+from utility import uncertainty_math as um
 
 class StraightLineLogLogFit(StraightLineLogXFit):
     """
@@ -58,6 +58,35 @@ class StraightLineLogLogFit(StraightLineLogXFit):
         log_yi = np.log10(yi)
         res_x, log_res_y = super().calculate_residuals(xi, log_yi)
         return res_x, log_res_y
+
+    def find_peak_y_value(self, is_minimum: bool = False) -> (float, uncertainties.UFloat):
+        """
+        Find the peak y value of this Fit.  Returns a tuple of the x value and y_value where found.
+        The is_minimum argument may be set to true, in which case the peak is considered the minimum y_value (not max)
+        """
+        at_x, peak_y = super().find_peak_y_value(is_minimum)
+        # Super() is LogX fit and handles log/de-logging the x-axis but not the y-axis, so we do it here.
+        if peak_y is not None:
+            peak_y = np.power(10, peak_y)
+        return at_x, peak_y
+
+    def find_x_value(self, y_value: uncertainties.UFloat) -> float:
+        """
+        Finds the value of the independent (x) variable at the requested dependent (y) variable based on the nominal
+        value of the the dependent variable. Handles the fact that the fit is calculated against log(x) values.
+        """
+        # Transform the linear y_value into the log10 form underlying (super() is logX so only expects x-axis logs)
+        log_y = ufloat(*um.log10(y_value.nominal_value, y_value.std_dev))
+        return super().find_x_value(log_y)
+
+    def find_y_value(self, x_value: float) -> uncertainties.UFloat:
+        """
+        Finds the value of the dependent (y) variable at the requested independent (x) variable
+        """
+        # Super handles logX values but is unaware of the log y values
+        log_y = super().find_y_value(x_value)
+        linear_y = ufloat(*um.power(10, 0, log_y.nominal_value, log_y.std_dev)) if log_y is not None else None
+        return linear_y
 
     def _calculate_plot_points(self, ax: Axes, y_shift: float = 0.0) -> Tuple[List[float], List[float]]:
         """

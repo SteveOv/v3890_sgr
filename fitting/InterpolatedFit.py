@@ -56,7 +56,7 @@ class InterpolatedFit(Fit):
         return [], []
 
     def find_peak_y_value(self, is_minimum: bool) -> (float, UFloat):
-        return None
+        return None, None
 
     def find_x_value(self, y_value: UFloat) -> float:
         return None

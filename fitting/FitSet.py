@@ -166,21 +166,24 @@ class FitSet(WithMetadata):
         at_x = 0
         for fit in self:
             is_at, new_peak = fit.find_peak_y_value(is_minimum)
-            if peak_y is None or (is_minimum and new_peak < peak_y) or (is_minimum is False and new_peak > peak_y):
-                peak_y = new_peak
-                at_x = is_at
+            if is_at is not None and new_peak is not None:
+                if peak_y is None or (is_minimum and new_peak < peak_y) or (is_minimum is False and new_peak > peak_y):
+                    peak_y = new_peak
+                    at_x = is_at
 
         return at_x, peak_y
 
-    def find_x_value(self, y_value: uncertainties.UFloat) -> float:
+    def find_x_value(self, y_value: uncertainties.UFloat, min_x: float = None) -> float:
         """
-        Uses the fit set to calculate the first x_value (no uncertainty) which will have the passed y_value
+        Uses the fit set to calculate the first x_value from min_x (no uncertainty) which will have the passed y_value
         """
         x_value = None
         for fit in self:
             x_value = fit.find_x_value(y_value)
             if x_value is not None:
-                break
+                if min_x is None or (x_value > min_x):
+                    # We have an x value and it's greater than any specified minimum
+                    break
         return x_value
 
     def find_y_value(self, x_value: float) -> uncertainties.UFloat:
